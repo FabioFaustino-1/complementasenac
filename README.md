@@ -1,6 +1,9 @@
 # complementa-senac
 Sistema de gerenciamento de horas complementares com React + Firebase
 
+
+CHICO CHAPELOTE
+
 # Sistema de Horas Complementares
 
 Projeto acadêmico para gerenciamento de horas complementares de alunos.
