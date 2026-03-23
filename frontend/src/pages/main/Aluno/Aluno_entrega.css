@@ -1,1 +1,271 @@
+/* Forçamos as cores do tema claro, independente da configuração do sistema */
+:root {
+  color-scheme: light; /* Diz ao navegador para preferir o modo claro */
+}
+
+.entrega-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff !important; /* Branco puro fixo */
+  color: #333333 !important; /* Texto escuro fixo */
+}
+
+/* Resetamos as variáveis do index.css que podem estar atrapalhando */
+.entrega-container :is(h1, h2, p, label, span, button) {
+  color: inherit;
+}
+
+.entrega-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  border-bottom: 1px solid #e5e4e7; /* Usando cor fixa para borda */
+  background-color: #ffffff;
+}
+
+.senac-logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.senac-logo strong {
+  color: #004c94;
+  text-align: right 150px;
+
+}
+
+.blue-text {
+  color: #004587 !important;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.complementares-text {
+  color: #3d7fb8 !important;
+  font-size: 0.9rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #08060d !important; /* Cor var(--text-h) original */
+  cursor: pointer;
+  padding: 8px 15px;
+}
+
+.nav-link.active {
+  background-color: #1a4d8f !important;
+  color: #ffffff !important;
+  border-radius: 6px;
+}
+
+.user-badge span {
+  background-color: #f0f0f0 !important;
+  padding: 8px 25px;
+  border-radius: 8px;
+  color: #555555 !important;
+  font-weight: 500;
+  
+}
+
+.entrega-main {
+  max-width: 1000px;
+  margin: 40px auto;
+  text-align: left;
+  padding: 0 20px;
+}
+
+.intro-text h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #08060d !important; /* Cor var(--text-h) original */
+}
+
+.intro-text p {
+  color: #6b6375 !important; /* Cor var(--text) original */
+  margin-top: 8px;
+  font-size: 1.1rem;
+}
+
+.form-wrapper {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 50px;
+  margin-top: 40px;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  color: #08060d !important; /* Cor var(--text-h) original */
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+}
+
+.drop-area {
+  border: 2px dashed #bbb;
+  border-radius: 15px;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff !important; /* Força fundo branco */
+}
+
+.drop-label {
+  text-align: center;
+  cursor: pointer;
+}
+
+.drop-label strong {
+  display: block;
+  font-size: 1.3rem;
+  color: #333333 !important;
+}
+
+.drop-label span {
+  color: #888888 !important;
+  font-size: 0.9rem;
+}
+
+.fields-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Forçamos os inputs a terem fundo branco e texto escuro */
+.full-input, .short-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background-color: #ffffff !important; /* Fundo branco fixo */
+  color: #333333 !important; /* Texto escuro fixo */
+}
+
+.full-input:focus, .short-input:focus {
+  outline: 2px solid #1a4d8f;
+  border-color: transparent;
+}
+
+.row-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.submit-button {
+  background-color: #1a4d8f !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 18px;
+  border-radius: 8px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submit-button:hover {
+  background-color: #143e74 !important;
+}
+
+.ai-hint {
+  font-size: 0.8rem;
+  color: #888888 !important;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .entrega-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  .header-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .form-wrapper {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .drop-area {
+    height: 200px;
+  }
+}
+
+
+
+/* ... outros estilos acima (entrega-container, etc) ... */
+
+.entrega-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  border-bottom: 1px solid #e5e4e7;
+  background-color: #ffffff;
+}
+
+/* Contêiner principal da logo e texto juntos */
+.logo-group {
+  display: flex;
+  align-items: center; /* Alinha tudo verticalmente ao centro */
+  gap: 15px; /* Espaço entre a logo com borda e os textos */
+}
+
+/* O contêiner com a BORDA AZUL */
+.logo-container {
+  border: 2px solid #004587; /* Cor azul oficial do Senac */
+  border-radius: 12px; /* Cantos arredondados */
+  padding: 8px; /* Espaço interno */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+/* A imagem dentro do contêiner com borda */
+.logo-img {
+  height: 35px; /* Ajuste para caber bem */
+  width: auto;
+  display: block;
+}
+
+/* Novo contêiner para os textos (Senac e Complementares) */
+.logo-text-wrapper {
+  display: flex;
+  flex-direction: column; /* Um texto embaixo do outro */
+  line-height: 1.2;
+  text-align: left; /* Garante alinhamento à esquerda */
+}
+
+/* Texto "Senac" - Forçando cor escura */
+.senac-text {
+  color: #004c94 !important; /* Azul Senac */
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* Texto "Complementares" - Forçando cor azul clara */
+.complementares-text {
+  color: #004c94 !important;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ... restante dos estilos abaixo (header-nav, etc) ... */  
 
