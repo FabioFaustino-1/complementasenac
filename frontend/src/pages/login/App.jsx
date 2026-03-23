@@ -6,7 +6,7 @@ import './App.css';
 function App() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-
+  const [perfilAtivo, setPerfilAtivo] = useState("aluno");
   const handleCadastro = async () => {
     if (!email || !senha) {
         alert("Preencha todos os campos!");
@@ -21,79 +21,86 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#00337C] flex items-center justify-center p-4 relative overflow-hidden font-sans text-white">
+    <div className="body-wrapper">
       
       {/* Elementos Decorativos de Fundo */}
-      <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-white/5 rounded-full" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] border border-white/10 rounded-full" />
+      <div className="bg-circle-1" />
+      <div className="bg-circle-2" />
 
-      <div className="container max-w-6xl grid lg:grid-cols-2 gap-12 items-center z-10">
+      <div className="main-container">
         
         {/* Lado Esquerdo: Texto */}
-        <div className="space-y-6">
-          <div className="bg-[#F7941D] w-12 h-12 rounded-lg flex items-center justify-center shadow-lg">
+        <div className="hero-section">
+          <div className="icon-box">
             <GraduationCap size={28} />
           </div>
-          <h1 className="text-5xl font-bold leading-tight">
+          <h1>
             Atividades <br /> Complementares
           </h1>
-          <p className="text-blue-100 text-lg max-w-md leading-relaxed">
+          <p>
             Sua evolução acadêmica, simplificada. Envie, acompanhe e valide suas horas em um único lugar.
           </p>
         </div>
 
         {/* Lado Direito: Card de Login */}
-        <div className="flex justify-center lg:justify-end">
+        <div className="login-card">
           <div className="bg-white rounded-3xl p-10 w-full max-w-md shadow-2xl text-slate-800">
-            <h2 className="text-3xl font-bold text-[#00337C]">Entrar</h2>
-            <p className="text-slate-500 mt-2 mb-8">Acesse sua conta para continuar.</p>
+            <h2>Entrar</h2>
+            <p className="subtitle">Acesse sua conta para continuar.</p>
 
             <form className="space-y-6">
               {/* Seletor de Perfil */}
               <div>
-                <label className="text-sm font-semibold text-[#00337C] block mb-3">Perfil de Acesso</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button type="button" className="border-2 border-[#00337C] bg-blue-50 rounded-xl p-3 text-center flex flex-col items-center justify-center transition-all">
-                    <span className="font-bold text-[#00337C] text-sm">Aluno <br /></span>
-                    <span className="text-[10px] text-slate-500 leading-tight mt-1">Submeter atividades</span>
+                <label className="profile-label">Perfil de Acesso</label>
+                <div className="profile-grid">
+                  <button type="button"
+                    className={`profile-option ${perfilAtivo === 'aluno' ? 'active' : ''}`}
+                    onClick={() => setPerfilAtivo('aluno')}
+                    >
+                    <span>Aluno <br /></span>
+                    <span>Submeter atividades</span>
+                    
                   </button>
-                  <button type="button" className="border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center hover:bg-slate-50 transition-all">
-                    <span className="font-bold text-slate-600 text-sm">Coordenador <br /></span>
-                    <span className="text-[10px] text-slate-400 leading-tight mt-1">Validar atividades</span>
+                  <button type="button"
+                    className={`profile-option ${perfilAtivo === 'coord' ? 'active' : ''}`}
+                    onClick={() => setPerfilAtivo('coord')}>
+                    <span>Coordenador <br /></span>
+                    <span>Validar atividades</span>
                   </button>
-                  <button type="button" className="border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center hover:bg-slate-50 transition-all">
-                    <span className="font-bold text-slate-600 text-sm">Administrador <br /></span>
-                    <span className="text-[10px] text-slate-400 leading-tight mt-1">Gerenciar cursos</span>
+                  <button type="button"
+                    className={`profile-option ${perfilAtivo === 'admin' ? 'active' : ''}`}
+                    onClick={() => setPerfilAtivo('admin')}>
+                    <span>Administrador <br /></span>
+                    <span>Gerenciar cursos</span>
                   </button>
                 </div>
               </div>
 
               {/* Input E-mail */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-[#00337C]">E-mail</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <div className="form-group">
+                <label>E-mail</label>
+                <div className="input-wrapper">
+                  <Mail className="icon" size={18} />
                   <input 
                     type="email" 
-                    placeholder="demo@senac.pe"
+                    placeholder="demo@edu.pe.senac.br"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                   
                   />
                 </div>
               </div>
 
               {/* Input Senha */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-[#00337C]">Senha</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <div className="form-group">
+                <label>Senha</label>
+                <div className="input-wrapper">
+                  <Lock className="icon" size={18} />
                   <input 
                     type="password" 
                     placeholder="••••••"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
@@ -102,7 +109,7 @@ function App() {
               <button
                 type="button"
                 onClick={handleCadastro}
-                className="w-full bg-[#154284] hover:bg-[#00337C] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg">
+                className="btn-submit">
                 Entrar <ArrowRight size={18} />
               </button>
             </form>
