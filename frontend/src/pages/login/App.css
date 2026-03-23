@@ -176,6 +176,12 @@ body {
   position: relative;
 }
 
+.input-wrapper input:focus{
+  color: #000000;
+  border-color: #00337C;
+}
+
+
 .input-wrapper input {
   width: 100%;
   padding: 12px 12px 12px 40px;
@@ -184,6 +190,7 @@ body {
   border-radius: 8px;
   font-size: 0.9rem;
   outline: none;
+  color: #1e293b;
 }
 
 .input-wrapper .icon {
@@ -229,6 +236,8 @@ footer {
   .main-container {
     grid-template-columns: 1fr;
     text-align: center;
+    background-color: #00337C;
+    width: 100%;
   }
   .hero-section {
     padding-right: 0;
