@@ -1,11 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-// Olha como o caminho ficou limpo agora, só com o ponto e barra:
-import Aluno from "./Aluno.jsx"; 
-import "./index.css";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './pages/login/App'
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Aluno />
-  </React.StrictMode>
-);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
