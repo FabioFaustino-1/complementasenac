@@ -20,9 +20,12 @@ public class FirebaseAuthFilter implements Filter {
 
             try {
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+
                 request.setAttribute("uid", decodedToken.getUid());
+                request.setAttribute("email", decodedToken.getEmail());
+
             } catch (Exception e) {
-                throw new ServletException("Token inválido");
+                System.out.println("Erro ao validar token: " + e.getMessage());
             }
         }
 

@@ -4,7 +4,7 @@ import './Aluno.css';
 
 // IMPORTANTE: Importe o logotipo que você salvou na pasta assets.
 // O caminho é relativo de 'pages/login' para 'assets'
-import logoSenac from '../src/assets/logo_senac.png';
+import logoSenac from '../../assets/logo-senac.png';
 
 function Aluno() {
   const atividades = [
