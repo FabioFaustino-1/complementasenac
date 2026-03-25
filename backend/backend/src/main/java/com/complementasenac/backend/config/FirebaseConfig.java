@@ -16,6 +16,11 @@ public class FirebaseConfig {
         try {
             InputStream serviceAccount =
                 getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
+            if (serviceAccount == null) {
+                throw new RuntimeException("Arquivo do Firebase NÃO encontrado!");
+            }
+
+
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
