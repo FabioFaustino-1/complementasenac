@@ -1,0 +1,22 @@
+.container-coord{
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+html, body, #root {
+  width: 100% !important; /* Garante que o root ocupe a largura total */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: white !important; /* Força o fundo branco na tela toda */
+  overflow: hidden; /* Remove as rolagens indesejadas */
+  font-family: sans-serif;
+}
+
+#root {
+  max-width: none !important; /* Remove qualquer limite de largura do root */
+}
+}

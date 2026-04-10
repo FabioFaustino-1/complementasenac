@@ -7,7 +7,7 @@ import './Login.css';
 
 const testarBackend = async () => {
   try {
-    const resposta = await fetch("http://localhost:8080/api/teste");
+    const resposta = await fetch("http://localhost:8080/api/usuario");
     const texto = await resposta.text();
     alert(texto);
   } catch (erro) {
@@ -22,8 +22,9 @@ function Login() {
   const navigate = useNavigate(); 
   
 const handleLogin = async () => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+    try {
+      // mock momentaneo
+    /*const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
     
     const token = await user.getIdToken();
@@ -44,14 +45,24 @@ const handleLogin = async () => {
       navigate("/aluno");
     }
     console.log("TOKEN:", token);
-
+*/
+  console.log("Login simulado");
+  if (perfilAtivo === "aluno") {
+  navigate("/aluno");
+  }else if (perfilAtivo === "Coordenador") {
+    navigate ("/Coordenador");
+    alert("Login para coordenador ainda não implementado");
+  }else if (perfilAtivo === "admin") {
+    navigate ("/admin");
+    alert("Login para administrador ainda não implementado");
+  }
   } catch (erro) {
     alert("Erro: " + erro.message);
   }
 };
 
 const enviarParaBackend = async (token) => {
-  const resposta = await fetch("http://localhost:8080/api/teste", {
+  const resposta = await fetch("http://localhost:8080/api/usuario", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`
@@ -110,8 +121,8 @@ const enviarParaBackend = async (token) => {
                     
                   </button>
                   <button type="button"
-                    className={`profile-option ${perfilAtivo === 'coord' ? 'active' : ''}`}
-                    onClick={() => setPerfilAtivo('coord')}>
+                    className={`profile-option ${perfilAtivo === 'Coordenador' ? 'active' : ''}`}
+                    onClick={() => setPerfilAtivo('Coordenador')}>
                     <span>Coordenador <br /></span>
                     <span>Validar atividades</span>
                   </button>

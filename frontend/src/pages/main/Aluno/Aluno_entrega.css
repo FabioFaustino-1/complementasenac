@@ -1,271 +1,159 @@
-/* Forçamos as cores do tema claro, independente da configuração do sistema */
-:root {
-  color-scheme: light; /* Diz ao navegador para preferir o modo claro */
+.container-aluno{:root {
+  --blue-sidebar: #003a70;
+  --blue-active-bg: rgba(255, 255, 255, 0.15);
+  --blue-dark: #002855;
+  --orange-senac: #eb8024;
+  --green-status: #28a745;
+  --orange-status: #f39c12;
+  --text-light: #ffffff;
+  --text-gray: #777;
+  --bg-main: #f4f7f9;
+  --bg-card: #ffffff;
 }
 
-.entrega-container {
-  width: 100%;
-  min-height: 100vh;
-  background-color: #ffffff !important; /* Branco puro fixo */
-  color: #333333 !important; /* Texto escuro fixo */
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-main); overflow-x: hidden; }
 
-/* Resetamos as variáveis do index.css que podem estar atrapalhando */
-.entrega-container :is(h1, h2, p, label, span, button) {
-  color: inherit;
-}
+.container-aluno { display: flex; min-height: 100vh; position: relative; }
 
-.entrega-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 40px;
-  border-bottom: 1px solid #e5e4e7; /* Usando cor fixa para borda */
-  background-color: #ffffff;
-}
-
-.senac-logo {
+/* SIDEBAR - ABA AZUL */
+.sidebar {
+  position: fixed;
+  left: -100%;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  background-color: var(--blue-sidebar);
+  color: var(--text-light);
   display: flex;
   flex-direction: column;
-  line-height: 1;
+  padding: 30px;
+  transition: left 0.3s ease-in-out;
+  z-index: 1000;
+  box-shadow: 5px 0 15px rgba(0,0,0,0.1);
 }
 
-.senac-logo strong {
-  color: #004c94;
-  text-align: right 150px;
-
+.sidebar.open {
+  left: 0;
 }
 
-.blue-text {
-  color: #004587 !important;
-  font-weight: 800;
-  font-size: 1.4rem;
+.sidebar-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 999;
 }
 
-.complementares-text {
-  color: #3d7fb8 !important;
-  font-size: 0.9rem;
-}
+.sidebar-header { margin-bottom: 50px; }
+.logo-section { display: flex; align-items: center; justify-content: flex-start; }
+.logo-text { font-size: 1.1rem; font-weight: 600; text-align: left; }
+.logo-text span { color: var(--orange-senac); display: block; font-size: 0.85rem; font-weight: 400; }
 
-.header-nav {
+.sidebar-nav { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
+
+.sidebar-nav a, .logout-button {
+  color: #fff;
+  text-decoration: none;
   display: flex;
-  gap: 30px;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  color: #08060d !important; /* Cor var(--text-h) original */
-  cursor: pointer;
-  padding: 8px 15px;
-}
-
-.nav-link.active {
-  background-color: #1a4d8f !important;
-  color: #ffffff !important;
-  border-radius: 6px;
-}
-
-.user-badge span {
-  background-color: #f0f0f0 !important;
-  padding: 8px 25px;
-  border-radius: 8px;
-  color: #555555 !important;
-  font-weight: 500;
-  
-}
-
-.entrega-main {
-  max-width: 1000px;
-  margin: 40px auto;
-  text-align: left;
-  padding: 0 20px;
-}
-
-.intro-text h1 {
-  margin: 0;
-  font-size: 32px;
-  color: #08060d !important; /* Cor var(--text-h) original */
-}
-
-.intro-text p {
-  color: #6b6375 !important; /* Cor var(--text) original */
-  margin-top: 8px;
-  font-size: 1.1rem;
-}
-
-.form-wrapper {
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 50px;
-  margin-top: 40px;
-}
-
-.field-label {
-  display: block;
-  font-weight: 600;
-  color: #08060d !important; /* Cor var(--text-h) original */
-  margin-bottom: 12px;
-  font-size: 1.2rem;
-}
-
-.drop-area {
-  border: 2px dashed #bbb;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 18px;
   border-radius: 15px;
-  height: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #ffffff !important; /* Força fundo branco */
-}
-
-.drop-label {
-  text-align: center;
-  cursor: pointer;
-}
-
-.drop-label strong {
-  display: block;
-  font-size: 1.3rem;
-  color: #333333 !important;
-}
-
-.drop-label span {
-  color: #888888 !important;
-  font-size: 0.9rem;
-}
-
-.fields-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Forçamos os inputs a terem fundo branco e texto escuro */
-.full-input, .short-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
   font-size: 1rem;
-  box-sizing: border-box;
-  background-color: #ffffff !important; /* Fundo branco fixo */
-  color: #333333 !important; /* Texto escuro fixo */
+  transition: all 0.2s ease;
+  background-color: transparent;
 }
 
-.full-input:focus, .short-input:focus {
-  outline: 2px solid #1a4d8f;
-  border-color: transparent;
+.sidebar-nav a:hover, .logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-.row-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+.sidebar-nav a.active {
+  background-color: var(--blue-active-bg);
 }
 
-.submit-button {
-  background-color: #1a4d8f !important;
-  color: #ffffff !important;
-  border: none;
-  padding: 18px;
-  border-radius: 8px;
-  font-size: 1.3rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
+.icon-wrap {
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.submit-button:hover {
-  background-color: #143e74 !important;
+.sidebar-nav a.active .icon-wrap {
+  border: 1.5px solid var(--orange-senac);
 }
 
-.ai-hint {
-  font-size: 0.8rem;
-  color: #888888 !important;
-  text-align: center;
+.sidebar-footer { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; margin-top: auto;}
+
+.logout-button {
+  margin-bottom: 25px;
 }
 
-@media (max-width: 768px) {
-  .entrega-header {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-  }
-  .header-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-  .form-wrapper {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  .drop-area {
-    height: 200px;
-  }
+.user-info .user-name { font-weight: 600; font-size: 1rem; margin-top: 15px;}
+.user-info .user-email { font-size: 0.8rem; opacity: 0.7; }
+
+/* MAIN CONTENT */
+.main-content { flex-grow: 1; padding: 25px; position: relative; }
+.top-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 30px; border-radius: 15px; margin-bottom: 25px; }
+.menu-toggle { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--blue-dark); }
+.header-right { display: flex; align-items: center; gap: 15px; text-align: right;}
+.header-labels strong { display: block; color: var(--blue-dark); font-size: 1rem; }
+.header-labels span { color: var(--orange-senac); font-size: 0.85rem; }
+.mini-logo { height: 40px; border: 1px solid #eee; border-radius: 8px; padding: 2px;}
+
+/* DASHBOARD TOP */
+.dashboard-top { display: flex; gap: 20px; margin-bottom: 30px; align-items: stretch;}
+
+.course-card { flex: 1; background: var(--blue-dark); color: white; padding: 35px; border-radius: 25px; }
+.badge-limit { background: rgba(235, 128, 36, 0.2); color: var(--orange-senac); padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; float: right;}
+.hours-main h1 { font-size: 3.5rem; margin: 15px 0; }
+.hours-main h1 span { font-size: 1.4rem; opacity: 0.6; }
+.progress-section { margin-top: 25px; font-size: 0.8rem; }
+.progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: white; }
+.max-info { opacity: 0.7; float: right;}
+
+.stats-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.stat-card { background: var(--bg-card); border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+
+.icon-circle { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+.approved .icon-circle svg { stroke: var(--green-status); }
+.pending .icon-circle svg { stroke: var(--orange-status); }
+.denied .icon-circle svg { stroke: #dc3545; }
+
+.stat-card h2 { font-size: 2.2rem; margin-bottom: 5px; color: #333; }
+.stat-card p { color: var(--text-gray); font-size: 0.9rem; }
+
+/* ATIVIDADES */
+.activities-section { background: var(--bg-card); border-radius: 25px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.ver-todas { color: #007bff; text-decoration: none; font-size: 0.95rem; }
+.ver-todas:hover { text-decoration: underline; }
+.activity-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #f1f1f1; }
+.activity-info { display: flex; gap: 18px; align-items: center; }
+.doc-icon { font-size: 1.4rem; color: #aaa; }
+.activity-info h4 { font-size: 1rem; color: #333; }
+.activity-info p { font-size: 0.85rem; color: var(--text-gray); }
+.activity-meta { display: flex; align-items: center; gap: 25px; font-size: 0.9rem;}
+.status-pill { padding: 6px 18px; border-radius: 20px; border: 1px solid; font-size: 0.8rem; }
+.status-pill.aprovado { border-color: #d4edda; color: #155724; background: #e2f3e7; }
+.status-pill.pendente { border-color: #ffeeba; color: #856404; background: #fff3cd; }
+
+.fab-plus {
+  position: fixed;
+  right: 30px; bottom: 30px;
+  width: 60px; height: 60px;
+  background: var(--blue-dark);
+  color: white;
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 5px 15px rgba(0,40,85,0.3);
+  cursor: pointer; z-index: 90;
 }
 
-
-
-/* ... outros estilos acima (entrega-container, etc) ... */
-
-.entrega-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 40px;
-  border-bottom: 1px solid #e5e4e7;
-  background-color: #ffffff;
+@media (max-width: 1024px) {
+  .dashboard-top { flex-direction: column; }
 }
-
-/* Contêiner principal da logo e texto juntos */
-.logo-group {
-  display: flex;
-  align-items: center; /* Alinha tudo verticalmente ao centro */
-  gap: 15px; /* Espaço entre a logo com borda e os textos */
 }
-
-/* O contêiner com a BORDA AZUL */
-.logo-container {
-  border: 2px solid #004587; /* Cor azul oficial do Senac */
-  border-radius: 12px; /* Cantos arredondados */
-  padding: 8px; /* Espaço interno */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff;
-}
-
-/* A imagem dentro do contêiner com borda */
-.logo-img {
-  height: 35px; /* Ajuste para caber bem */
-  width: auto;
-  display: block;
-}
-
-/* Novo contêiner para os textos (Senac e Complementares) */
-.logo-text-wrapper {
-  display: flex;
-  flex-direction: column; /* Um texto embaixo do outro */
-  line-height: 1.2;
-  text-align: left; /* Garante alinhamento à esquerda */
-}
-
-/* Texto "Senac" - Forçando cor escura */
-.senac-text {
-  color: #004c94 !important; /* Azul Senac */
-  font-weight: 800;
-  font-size: 16px;
-}
-
-/* Texto "Complementares" - Forçando cor azul clara */
-.complementares-text {
-  color: #004c94 !important;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* ... restante dos estilos abaixo (header-nav, etc) ... */  
-
