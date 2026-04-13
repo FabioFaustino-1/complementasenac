@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/login/App";
-import Aluno from "./pages/aluno/Aluno";
+import Login from "./pages/login/Login";
+import Aluno from "./pages/main/Aluno/Aluno_entrega";
+import Coordenador from "./pages/main/coordenador/Coordenador";
+import GestaoAlunos from "./pages/main/Administrador/Gestaoalunos";
 
 function App() {
   return (
@@ -8,9 +10,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/aluno" element={<Aluno />} />
+        <Route path="/coordenador" element={<Coordenador />} />
+        <Route path="/GestaoAlunos" element={<GestaoAlunos />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default App;
+export default App; 

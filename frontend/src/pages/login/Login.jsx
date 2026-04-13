@@ -74,113 +74,90 @@ const enviarParaBackend = async (token) => {
 };
 
   return (
-    <div className="body-wrapper">
-      
-      <button 
-        onClick={testarBackend}
-        className="w-full bg-[#154284] hover:bg-[#00337C] text-white font-bold py-4 rounded-xl"
-      >
-        Testar Backend
-      </button>
-      {/* Elementos Decorativos de Fundo */}
-      <div className="bg-circle-1" />
-      <div className="bg-circle-2" />
-
-      <div className="main-container">
-        
-        {/* Lado Esquerdo: Texto */}
-        <div className="hero-section">
-          <div className="icon-box">
-            <GraduationCap size={28} />
-          </div>
-          <h1>
-            Atividades <br /> Complementares
-          </h1>
-          <p>
-            Sua evolução acadêmica, simplificada. Envie, acompanhe e valide suas horas em um único lugar.
-          </p>
-        </div>
-
-        {/* Lado Direito: Card de Login */}
-        <div className="login-card">
-          <div className="bg-white rounded-3xl p-10 w-full max-w-md shadow-2xl text-slate-800">
-            <h2>Entrar</h2>
-            <p className="subtitle">Acesse sua conta para continuar.</p>
-
-            <form className="space-y-6">
-              {/* Seletor de Perfil */}
-              <div>
-                <label className="profile-label">Perfil de Acesso</label>
-                <div className="profile-grid">
-                  <button type="button"
-                    className={`profile-option ${perfilAtivo === 'aluno' ? 'active' : ''}`}
-                    onClick={() => setPerfilAtivo('aluno')}
-                    >
-                    <span>Aluno <br /></span>
-                    <span>Submeter atividades</span>
-                    
-                  </button>
-                  <button type="button"
-                    className={`profile-option ${perfilAtivo === 'Coordenador' ? 'active' : ''}`}
-                    onClick={() => setPerfilAtivo('Coordenador')}>
-                    <span>Coordenador <br /></span>
-                    <span>Validar atividades</span>
-                  </button>
-                  <button type="button"
-                    className={`profile-option ${perfilAtivo === 'admin' ? 'active' : ''}`}
-                    onClick={() => setPerfilAtivo('admin')}>
-                    <span>Administrador <br /></span>
-                    <span>Gerenciar cursos</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Input E-mail */}
-              <div className="form-group">
-                <label>E-mail</label>
-                <div className="input-wrapper">
-                  <Mail className="icon" size={18} />
-                  <input 
-                    type="email" 
-                    placeholder="demo@edu.pe.senac.br"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}            
-                  />
-                </div>
-              </div>
-
-              {/* Input Senha */}
-              <div className="form-group">
-                <label>Senha</label>
-                <div className="input-wrapper">
-                  <Lock className="icon" size={18} />
-                  <input 
-                    type="password" 
-                    placeholder="••••••"
-                    value={senha}
-                    onChange={(e) => setSenha(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Botão Entrar */}
-              <button
-                type="button"
-                onClick={handleLogin}
-                className="btn-submit">
-                Entrar <ArrowRight size={18} />
-              </button>
-              
-            </form>
-          </div>  
-        </div>
+<div className="login-page">
+    {/* Lado Esquerdo - Hero */}
+    <div className="hero-side">
+      <div className="logo-box">S+</div>
+      <div className="hero-content">
+        <h1>Complementa+</h1>
+        <p>
+          Sua evolução acadêmica, simplificada. Envie, <br />
+          acompanhe e valide suas horas em um único lugar.
+        </p>
       </div>
+      <div className="footer-text">2026 Senac Pernambuco</div>
+    </div>
 
-      {/* Footer */}
-      <div className="absolute bottom-6 left-10 text-white/40 text-sm">
-        © 2026 Senac Pernambuco
+    {/* Lado Direito - Formulário */}
+    <div className="form-side">
+      <div className="login-card">
+        <h2>Entrar</h2>
+        <p className="subtitle">Acesse sua conta para continuar</p>
+
+        <div className="profile-selection">
+          <label>Perfil de Acesso</label>
+          <div className="profile-grid">
+            <button 
+              className={`profile-btn ${perfilAtivo === 'aluno' ? 'active' : ''}`}
+              onClick={() => setPerfilAtivo('aluno')}
+            >
+              <GraduationCap size={24} />
+              <div className="btn-text">
+                <strong>Aluno</strong>
+                <span>Submeter atividades complementares</span>
+              </div>
+            </button>
+
+            <button 
+              className={`profile-btn ${perfilAtivo === 'Coordenador' ? 'active' : ''}`}
+              onClick={() => setPerfilAtivo('Coordenador')}
+            >
+              <div className="icon-placeholder">👤</div> {/* Use ícone de usuários aqui */}
+              <div className="btn-text">
+                <strong>Coordenador</strong>
+                <span>Validar atividades dos alunos</span>
+              </div>
+            </button>
+
+            <button 
+              className={`profile-btn ${perfilAtivo === 'admin' ? 'active' : ''}`}
+              onClick={() => setPerfilAtivo('admin')}
+            >
+              <div className="icon-placeholder">⚙️</div> {/* Use ícone de engrenagem aqui */}
+              <div className="btn-text">
+                <strong>Administrador</strong>
+                <span>Gerenciar cursos e parâmetros</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="input-group">
+          <label>E-mail</label>
+          <input 
+            type="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="styled-input"
+          />
+        </div>
+
+        <div className="input-group">
+          <label>Senha</label>
+          <input 
+            type="password" 
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="styled-input"
+          />
+        </div>
+
+        <button onClick={handleLogin} className="main-submit-btn">
+          Entrar →
+        </button>
       </div>
     </div>
+  </div>
   );
 }
 

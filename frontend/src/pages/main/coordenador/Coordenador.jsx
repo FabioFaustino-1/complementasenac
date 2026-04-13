@@ -1,106 +1,151 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { ClipboardCheck, User, Users, BarChart3, LogOut } from "lucide-react";
 import './Coordenador.css';
 
-const ActivityCard = ({ title, student, hours, date, confidence, type }) => {
+const ActivityCard = ({ id, title, student, hours, date, confidence, type, onAction }) => {
+  const [isExiting, setIsExiting] = useState(false);
   const isDivergent = confidence < 50;
+
+  const handleAction = () => {
+    setIsExiting(true);
+    // Tempo para a animação de saída completar antes de remover do estado
+    setTimeout(() => onAction(id), 400);
+  };
+
   return (
-    <div style={{
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      padding: '12px 16px',
-      marginBottom: '8px',
-      boxShadow: '0 1px 2px hsl(0, 0%, 100%)',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      border: '1px solid #E2E8F0',
-      width: '100%'
-    }}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h3 style={{ margin: 0, color: '#003366', fontSize: '13px', fontWeight: 'bold' }}>{title}</h3>
-          {isDivergent && (
-            <span style={{ backgroundColor: '#FFEBEB', color: '#FF4D4D', padding: '1px 5px', borderRadius: '3px', fontSize: '8px', fontWeight: 'bold' }}>
-              DIVERGÊNCIA IA
-            </span>
-          )}
+    <div className={`activity-card ${isExiting ? "exit-animation" : ""}`}>
+      <div style={{ flex: 1, textAlign: 'left' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+          <h3 style={{ margin: 0, color: '#1e293b', fontSize: '15px', fontWeight: '600' }}>{title}</h3>
+          {isDivergent && <span className="badge-divergence">DIVERGÊNCIA IA</span>}
         </div>
-        <p style={{ margin: '2px 0', color: '#64748B', fontSize: '10px' }}>
-          {student} • ADS • {type} • {date}
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
-          <span style={{ fontWeight: 'bold', color: '#1E293B', fontSize: '13px' }}>{hours}h</span>
-          <span style={{ 
-            backgroundColor: isDivergent ? '#FFF4E5' : '#E6F7F0', 
-            color: isDivergent ? '#FF9900' : '#10B981', 
-            padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '600'
-          }}>
+        <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{student} • ADS • {type} • {date}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+          <span style={{ fontWeight: '700', color: '#0f172a', fontSize: '14px' }}>{hours}h</span>
+          <span className={isDivergent ? "badge-ia-warning" : "badge-ia-success"}>
             IA: {confidence}% confiança
           </span>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '6px' }}>
-        <button style={{ padding: '6px 14px', border: '1px solid #FF4D4D', borderRadius: '5px', backgroundColor: 'transparent', color: '#FF4D4D', cursor: 'pointer', fontWeight: '600', fontSize: '11px' }}>✕ Indeferir</button>
-        <button style={{ padding: '6px 14px', border: 'none', borderRadius: '5px', backgroundColor: '#004587', color: 'white', cursor: 'pointer', fontWeight: '600', fontSize: '11px' }}>✓ Aprovar</button>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button className="btn-secondary" onClick={handleAction}>Indeferir</button>
+        <button className="btn-primary" onClick={handleAction}>Aprovar</button>
       </div>
     </div>
   );
 };
 
 const Coordenador = () => {
-  const [activeTab, setActiveTab] = useState("queue");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("Painel de Validação");
+  
+  const [activities, setActivities] = useState([
+    { id: 1, title: "Workshop de React Avançado", student: "Maria Silva", hours: "8", date: "12/03/2026", confidence: 95, type: "Workshop" },
+    { id: 2, title: "Palestra sobre IA Generativa", student: "João Santos", hours: "4", date: "08/03/2026", confidence: 88, type: "Palestra" },
+    { id: 3, title: "Curso de Excel Avançado", student: "Ana Costa", hours: "20", date: "01/03/2026", confidence: 42, type: "Curso Online" },
+    { id: 4, title: "Hackathon Senac 2026", student: "Pedro Lima", hours: "12", date: "28/02/2026", confidence: 91, type: "Congresso" },
+  ]);
+
+  const removeActivity = (id) => {
+    setActivities(prev => prev.filter(act => act.id !== id));
+  };
+
+  const navItems = [
+    { name: "Meu Perfil", icon: <User size={20} color="white" /> },
+    { name: "Painel de Validação", icon: <ClipboardCheck size={20} color="white" /> },
+    { name: "Lista de Alunos", icon: <Users size={20} color="white" /> },
+    { name: "Relatórios", icon: <BarChart3 size={20} color="white" /> },
+  ];
 
   return (
-    /* CORREÇÃO: Envolvendo tudo na div container-coord */
-    <div className="container-coord">
-      <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'white' }}>
-        {/* Header Compacto */}
-        <header style={{ 
-          padding: '0 5%', height: '55px', display: 'flex', justifyContent: 'space-between', 
-          alignItems: 'center', borderBottom: '1px solid #F1F5F9', flexShrink: 0 
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '25px', height: '25px', backgroundColor: '#004587', borderRadius: '5px' }}></div>
-              <div>
-                <div style={{ fontWeight: 'bold', color: '#003366', fontSize: '15px' }}>Senac</div>
-                <div style={{ fontSize: '8px', color: '#94A3B8', marginTop: '-3px' }}>Complementares</div>
+    <div className="app-viewport">
+      {/* Overlay para fechar o menu mobile ao clicar fora */}
+      {isMenuOpen && <div className="overlay" onClick={() => setIsMenuOpen(false)} />}
+
+      {/* Sidebar com classe dinâmica corrigida */}
+      <div className={`sidebar ${isMenuOpen ? "open" : ""}`}>
+        <div className="sidebar-content">
+          <div className="sidebar-top">
+            <div className="sidebar-logo-section">
+              <div className="sidebar-logo-text">
+                <div className="senac-txt">Senac</div>
+                <div className="comp-txt">Complementares</div>
               </div>
             </div>
-            <nav style={{ display: 'flex', gap: '5px' }}>
-              {["queue", "history"].map(tab => (
-                <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab)} 
-                  style={{ 
-                    padding: '6px 15px', borderRadius: '15px', border: 'none', 
-                    backgroundColor: activeTab === tab ? '#004587' : 'transparent', 
-                    color: activeTab === tab ? 'white' : '#64748B', 
-                    cursor: 'pointer', fontWeight: '600', fontSize: '11px'
-                  }}>
-                  {tab === "queue" ? "Fila de Validação" : "Histórico"}
-                </button>
-              ))}
+
+            <nav className="nav-list">
+              {navItems.map((item) => {
+                const isSelected = activeTab === item.name;
+                return (
+                  <div 
+                    key={item.name} 
+                    className={`nav-item ${isSelected ? "active" : ""}`} 
+                    onClick={() => {
+                      setActiveTab(item.name); 
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <div className={`nav-icon-circle ${isSelected ? "active-border" : ""}`}>
+                      {item.icon}
+                    </div>
+                    <span>{item.name}</span>
+                  </div>
+                );
+              })}
             </nav>
           </div>
-          <div style={{ backgroundColor: '#F1F5F9', padding: '5px 12px', borderRadius: '15px', color: '#475569', fontSize: '11px', fontWeight: '600' }}>
-            👤 Coordenador
+
+          <div className="sidebar-footer">
+            <div className="btn-logout" onClick={() => setIsMenuOpen(false)}>
+              <div className="nav-icon-circle">
+                <LogOut size={20} color="white" />
+              </div>
+              <span>Sair da Conta</span>
+            </div>
+            <div className="footer-user-info">
+              <div className="user-name-bold">Fabio Faustino</div>
+              <div className="user-email">fabio.faustino@senac.pe.br</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Área Principal */}
+      <div className="header-container">
+        <header className="header-bar">
+          <div onClick={() => setIsMenuOpen(true)} className="burger-menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </div>
+          
+          <div className="header-right-logo">
+            <div className="logo-senac-container">
+               <img src="/logo-senac.png" alt="Senac Logo" className="senac-icon-img" />
+            </div>
+            <div className="text-right">
+              <div className="senac-bold">Senac</div>
+              <div className="comp-bold-orange">Complementares</div>
+            </div>
           </div>
         </header>
-
-        {/* Área de Conteúdo */}
-        <main style={{ padding: '20px 5%', flexGrow: 1, overflow: 'hidden' }}>
-          <h1 style={{ color: '#003366', fontSize: '24px', fontWeight: '800', marginBottom: '2px' }}>Fila de Validação</h1>
-          <p style={{ color: '#94A3B8', fontSize: '12px', marginBottom: '20px' }}>4 atividades aguardando análise.</p>
-
-          <div style={{ width: '100%', maxWidth: '1100px' }}>
-            <ActivityCard title="Workshop de React Avançado" student="Maria Silva" hours="8" date="12/03/2026" confidence={95} type="Workshop" />
-            <ActivityCard title="Palestra sobre IA Generativa" student="João Santos" hours="4" date="08/03/2026" confidence={88} type="Palestra" />
-            <ActivityCard title="Curso de Excel Avançado" student="Ana Costa" hours="20" date="01/03/2026" confidence={42} type="Curso Online" />
-            <ActivityCard title="Hackathon Senac 2026" student="Pedro Lima" hours="12" date="28/02/2026" confidence={91} type="Congresso" />
-          </div>
-        </main>
       </div>
+
+      <main className="main-content">
+        <div className="page-title-section">
+          <h1>Fila de Validação</h1>
+          <p className="subtitle-small">{activities.length} atividades aguardando análise.</p>
+        </div>
+
+        <div className="list-wrapper">
+          {activities.map(activity => (
+            <ActivityCard key={activity.id} {...activity} onAction={removeActivity} />
+          ))}
+          {activities.length === 0 && (
+            <p className="empty-msg">Nenhuma atividade pendente.</p>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
