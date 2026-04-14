@@ -1,0 +1,138 @@
+:root {
+  --blue-senac: #003366;
+  --orange-senac: #f37021;
+  --bg-gray: #f5f6f8;
+  --text-gray: #6b7280;
+}
+
+.submission-root-container {
+  background-color: var(--bg-gray);
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  font-family: 'Inter', sans-serif;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.submission-page-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.submission-top-header {
+  padding: 15px 30px;
+}
+
+.header-inner {
+  background: white;
+  padding: 10px 25px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+}
+
+/* Menu Hambúrguer Manual (Sem ícone) */
+.hamburguer-manual {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hamburguer-manual .bar {
+  width: 22px;
+  height: 3px;
+  background-color: var(--blue-senac);
+  border-radius: 2px;
+}
+
+.header-right-group { display: flex; align-items: center; gap: 12px; }
+.text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
+.complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
+.s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+
+/* CONTEÚDO */
+.submission-main-content {
+  padding: 0 30px 30px 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.submission-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.submission-title { color: #1f2937; font-size: 28px; font-weight: 800; margin-bottom: 5px; }
+.submission-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 25px; }
+
+.submission-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.submission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 50px;
+}
+
+/* UPLOAD (Símbolo manual) */
+.upload-dropzone {
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.upload-placeholder-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.upload-text { color: #374151; font-weight: 600; font-size: 14px; }
+.upload-subtext { color: #9ca3af; font-size: 11px; }
+
+/* FORMULÁRIO */
+.form-section { display: flex; flex-direction: column; gap: 20px; }
+.input-label { font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; display: block; }
+.input-group input, .input-group select { width: 100%; padding: 14px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; color: #374151; }
+.form-row-double { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.submit-btn {
+  background-color: var(--blue-senac);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .submission-grid { grid-template-columns: 1fr; }
+}
