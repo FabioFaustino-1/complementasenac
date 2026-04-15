@@ -63,10 +63,11 @@ const Aluno_entrega = () => {
               </div>
               <div className="progress-section">
                 <span>80% concluído</span>
+                <span className="max-info">Máx. 20h por tipo de atividade</span>
                 <div className="progress-bar">
                   <div className="progress-fill" style={{ width: '80%' }}></div>
                 </div>
-                <span className="max-info">Máx. 20h por tipo de atividade</span>
+                
               </div>
             </div>
 

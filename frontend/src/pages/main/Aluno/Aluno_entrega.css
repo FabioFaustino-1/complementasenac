@@ -9,17 +9,18 @@
 .container-aluno .s-plus-box { background: #003366; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
 .container-aluno .dashboard-content { max-width: 1100px; margin: 0 auto; }
 .container-aluno .dashboard-top { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
-.container-aluno .course-card, .container-aluno .activities-section, .container-aluno .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; }
-.container-aluno .course-card { padding: 20px; }
+.container-aluno .course-card, .container-aluno .activities-section, .container-aluno .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; height: 90%; }
+.container-aluno .course-card { padding: 20px; background: #003366; color: #fff; position: relative; padding: 2%; height: 80%; }
+.container-aluno .course-info { display: flex; gap: 20%; align-items: center; height: 10%; margin-top: 3%;}
 .container-aluno .badge-limit { background: #fff7ed; color: #c2410c; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
-.container-aluno .hours-main h1 { margin: 10px 0 4px; font-size: 40px; color: #0f172a; }
-.container-aluno .hours-main h1 span { font-size: 18px; color: #64748b; }
-.container-aluno .progress-section span { font-size: 12px; color: #64748b; }
-.container-aluno .progress-bar { margin-top: 8px; height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-.container-aluno .progress-fill { height: 100%; background: #003e7e; }
-.container-aluno .max-info { display: inline-block; margin-top: 6px; }
-.container-aluno .stats-grid { display: grid; gap: 14px; }
-.container-aluno .stat-card { padding: 16px; text-align: center; }
+.container-aluno .hours-main h1 { margin: 10px 0 4px; font-size: 40px; color: #fff; }
+.container-aluno .hours-main h1 span { font-size: 18px; color: #64748b;}
+.container-aluno .progress-section span { font-size: 12px; color: #64748b;}
+.container-aluno .progress-bar { margin-top: 8px; height: 10px; background: #1d548b; border-radius: 999px; overflow: hidden; }
+.container-aluno .progress-fill { height: 100%; background: #fff  ; }
+.container-aluno .max-info { display: inline-block; margin-top: 6px;margin-left: 60%;}
+.container-aluno .stats-grid { display: grid; gap: 14px; grid-auto-flow: column; }
+.container-aluno .stat-card { padding: 16px; text-align: center; height: 80%; width: 70%;}
 .container-aluno .activities-section { margin-top: 20px; padding: 20px; }
 .container-aluno .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .container-aluno .ver-todas { border: none; background: none; color: #003e7e; font-weight: 700; cursor: pointer; }

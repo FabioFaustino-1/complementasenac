@@ -6,6 +6,8 @@ import NovaSubmissao from "./pages/main/Aluno/NovaSubmissao";
 import Historico from "./pages/main/Aluno/Historico";
 import Coordenador from "./pages/main/coordenador/Coordenador";
 import GestaoAlunos from "./pages/main/Administrador/Gestaoalunos";
+import Admin from "./pages/main/Administrador/Admin"; 
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <Route path="/aluno/historico" element={<Historico />} />
         <Route path="/coordenador" element={<Coordenador />} />
         <Route path="/gestaoAlunos" element={<GestaoAlunos />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );
