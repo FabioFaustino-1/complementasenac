@@ -17,7 +17,7 @@ function App() {
         <Route path="/aluno/submissao" element={<NovaSubmissao />} />
         <Route path="/aluno/historico" element={<Historico />} />
         <Route path="/coordenador" element={<Coordenador />} />
-        <Route path="/gestao-alunos" element={<GestaoAlunos />} />
+        <Route path="/gestaoAlunos" element={<GestaoAlunos />} />
       </Routes>
     </BrowserRouter>
   );

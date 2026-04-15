@@ -28,7 +28,7 @@
 }
 
 .hero-content h1 {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin-bottom: 20px;
   font-weight: 700;
 }
@@ -77,11 +77,13 @@
 .profile-grid {
   display: flex;
   flex-direction: column;
+  flex-direction: row;
   gap: 12px;
   margin: 15px 0 30px;
 }
 
 .profile-btn {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -92,6 +94,8 @@
   cursor: pointer;
   transition: all 0.3s;
   text-align: left;
+  justify-content: center;
+  text-align: center;
 }
 
 .profile-btn.active {

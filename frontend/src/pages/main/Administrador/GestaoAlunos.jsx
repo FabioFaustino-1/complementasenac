@@ -144,8 +144,8 @@ const GestaoAlunos = () => {
                   <p className="student-details">{student.matricula} • {student.curso}</p>
                 </div>
                 <div className="student-actions">
-                  <button className="btn-icon edit"><Pencil size={18} /></button>
-                  <button className="btn-icon delete"><Trash2 size={18} /></button>
+                  <button className="btn-icon-edit"><Pencil size={18} /></button>
+                  <button className="btn-icon-delete"><Trash2 size={18} /></button>
                 </div>
               </div>
             ))}
