@@ -28,7 +28,7 @@
   padding: 15px 30px;
 }
 
-.header-inner {
+.perfil-root-container .header-inner {
   background: white;
   padding: 10px 25px;
   border-radius: 12px;
@@ -40,11 +40,11 @@
 
 .hamburguer-icon { font-size: 26px; cursor: pointer; color: var(--blue-senac); }
 
-.header-right-group { display: flex; align-items: center; gap: 12px; }
-.text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
-.senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
-.complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
-.s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+.perfil-root-container .header-right-group { display: flex; align-items: center; gap: 12px; }
+.perfil-root-container .text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.perfil-root-container .senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
+.perfil-root-container .complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
+.perfil-root-container .s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
 
 /* LAYOUT CONTEÚDO */
 .perfil-main-content {
@@ -105,10 +105,10 @@
   color: #000000 !important;
 }
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.field label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; margin-bottom: 8px; text-align: left; }
-.field input { width: 100%; padding: 14px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; color: #374151; }
-.field.full { grid-column: span 2; }
+.perfil-root-container .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.perfil-root-container .field label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; margin-bottom: 8px; text-align: left; }
+.perfil-root-container .field input { width: 100%; padding: 14px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; color: #374151; }
+.perfil-root-container .field.full { grid-column: span 2; }
 
 @media (max-width: 1100px) {
   .perfil-grid-layout { flex-direction: column; }

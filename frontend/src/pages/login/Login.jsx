@@ -1,76 +1,41 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../services/firebase";
-import { Mail, Lock, ArrowRight, GraduationCap } from 'lucide-react';
+import { GraduationCap, UserCog, ShieldCheck } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import './Login.css';
-
-const testarBackend = async () => {
-  try {
-    const resposta = await fetch("http://localhost:8080/api/usuario");
-    const texto = await resposta.text();
-    alert(texto);
-  } catch (erro) {
-    alert("Erro ao conectar com backend");
-  }
-};
+import { autenticarUsuario } from "../../services/auth";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [perfilAtivo, setPerfilAtivo] = useState("aluno");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); 
   
 const handleLogin = async () => {
-    try {
-      // mock momentaneo
-    /*const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-    
-    const token = await user.getIdToken();
-    
-    const resposta = await fetch("http://localhost:8080/api/usuario", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    console.log("TOKEN:", token);
-    const dados = await resposta.json();
-    console.log("DADOS BACKEND:", dados);
-    console.log(dados); 
-    
-    
-    // ✅ REDIRECIONAMENTO CERTO
-    if (dados.perfil === "aluno") {
+  if (!email || !senha) {
+    alert("Preencha e-mail e senha.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    const { perfil } = await autenticarUsuario(email, senha);
+    const perfilBackend = perfil?.perfil ?? perfilAtivo;
+
+    if (perfilBackend === "aluno") {
       navigate("/aluno");
+    } else if (perfilBackend === "coordenador") {
+      navigate("/coordenador");
+    } else if (perfilBackend === "admin") {
+      navigate("/gestao-alunos");
+    } else {
+      alert("Perfil sem rota configurada.");
     }
-    console.log("TOKEN:", token);
-*/
-  console.log("Login simulado");
-  if (perfilAtivo === "aluno") {
-  navigate("/aluno");
-  }else if (perfilAtivo === "Coordenador") {
-    navigate ("/Coordenador");
-    alert("Login para coordenador ainda não implementado");
-  }else if (perfilAtivo === "admin") {
-    navigate ("/admin");
-    alert("Login para administrador ainda não implementado");
-  }
   } catch (erro) {
-    alert("Erro: " + erro.message);
+    alert("Erro no login: " + erro.message);
+  } finally {
+    setLoading(false);
   }
-};
-
-const enviarParaBackend = async (token) => {
-  const resposta = await fetch("http://localhost:8080/api/usuario", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  const texto = await resposta.text();
-  console.log(texto);
 };
 
   return (
@@ -109,10 +74,10 @@ const enviarParaBackend = async (token) => {
             </button>
 
             <button 
-              className={`profile-btn ${perfilAtivo === 'Coordenador' ? 'active' : ''}`}
-              onClick={() => setPerfilAtivo('Coordenador')}
+              className={`profile-btn ${perfilAtivo === 'coordenador' ? 'active' : ''}`}
+              onClick={() => setPerfilAtivo('coordenador')}
             >
-              <div className="icon-placeholder">👤</div> {/* Use ícone de usuários aqui */}
+              <UserCog size={24} />
               <div className="btn-text">
                 <strong>Coordenador</strong>
                 <span>Validar atividades dos alunos</span>
@@ -123,7 +88,7 @@ const enviarParaBackend = async (token) => {
               className={`profile-btn ${perfilAtivo === 'admin' ? 'active' : ''}`}
               onClick={() => setPerfilAtivo('admin')}
             >
-              <div className="icon-placeholder">⚙️</div> {/* Use ícone de engrenagem aqui */}
+              <ShieldCheck size={24} />
               <div className="btn-text">
                 <strong>Administrador</strong>
                 <span>Gerenciar cursos e parâmetros</span>
@@ -152,8 +117,8 @@ const enviarParaBackend = async (token) => {
           />
         </div>
 
-        <button onClick={handleLogin} className="main-submit-btn">
-          Entrar →
+        <button onClick={handleLogin} className="main-submit-btn" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar →"}
         </button>
       </div>
     </div>

@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../../../assets/Sidebar'; // Certifique-se que o arquivo Sidebar.jsx está nesta pasta
-import logoSenac from '../../../assets/logo-senac.png'; 
 import './Aluno_entrega.css';
+import { useNavigate } from 'react-router-dom';
+import { createAlunoMenu } from '../menuConfig';
 
 // Ícone do botão flutuante (Plus)
 const IconPlus = () => (
@@ -13,7 +14,8 @@ const IconPlus = () => (
 
 const Aluno_entrega = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+  const menuItems = createAlunoMenu(navigate);
 
   const activities = [
     { id: 1, title: 'Workshop de React Avançado', type: 'Workshop', date: '12/03/2026', hours: '8h', status: 'Aprovado' },
@@ -21,45 +23,29 @@ const Aluno_entrega = () => {
     { id: 3, title: 'Curso de Python para Dados', type: 'Curso Online', date: '15/02/2026', hours: '8h', status: 'Aprovado' },
   ];
 
-  const handleFabClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      alert(`Arquivo selecionado: ${file.name}`);
-    }
-  };
+  const handleFabClick = () => navigate("/aluno/submissao");
 
   return (
     <div className="container-aluno">
-      {/* Input de Arquivo Oculto */}
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        style={{ display: 'none' }} 
-        accept=".pdf,image/*" 
-        onChange={handleFileChange}
-      />
-
-      {/* COMPONENTE DE SIDEBAR UNIFICADO */}
       <Sidebar 
         isOpen={sidebarOpen} 
         setIsOpen={setSidebarOpen} 
         activePage="horas" 
+        menuItems={menuItems}
+        userName="Fabio Faustao"
+        userEmail="fabio.faustao@edu.pe.senac.br"
       />
 
       <main className="main-content">
         {/* Cabeçalho Superior */}
         <header className="top-header">
           <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>☰</button>
-          <div className="header-right">
-            <div className="header-labels">
-              <strong>Senac</strong>
-              <span>Complementares</span>
+          <div className="header-right-group">
+            <div className="text-right-aligned">
+              <span className="senac-txt">Senac</span>
+              <span className="complementares-txt">Complementares</span>
             </div>
-            {logoSenac && <img src={logoSenac} alt="Logo" className="mini-logo" />}
+            <div className="s-plus-box">S+</div>
           </div>
         </header>
 
@@ -126,7 +112,7 @@ const Aluno_entrega = () => {
           <section className="activities-section">
             <div className="section-header">
               <h3>Atividades Recentes</h3>
-              <a href="#" className="ver-todas">Ver todas</a>
+              <button type="button" className="ver-todas" onClick={() => navigate("/aluno/historico")}>Ver todas</button>
             </div>
             <div className="activities-list">
               {activities.map((act) => (

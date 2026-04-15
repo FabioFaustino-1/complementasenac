@@ -26,14 +26,14 @@
 
 /* HEADER PADRÃO */
 .history-top-header { padding: 15px 30px; }
-.header-inner { background: white; padding: 10px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
-.hamburguer-manual { cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
-.hamburguer-manual .bar { width: 22px; height: 3px; background-color: var(--blue-senac); border-radius: 2px; }
-.header-right-group { display: flex; align-items: center; gap: 12px; }
-.text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
-.senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
-.complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
-.s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+.history-root-container .header-inner { background: white; padding: 10px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+.history-root-container .hamburguer-manual { cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.history-root-container .hamburguer-manual .bar { width: 22px; height: 3px; background-color: var(--blue-senac); border-radius: 2px; }
+.history-root-container .header-right-group { display: flex; align-items: center; gap: 12px; }
+.history-root-container .text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.history-root-container .senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
+.history-root-container .complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
+.history-root-container .s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
 
 /* CONTEÚDO */
 .history-main-content { padding: 0 30px 30px 30px; display: flex; justify-content: center; }
@@ -52,7 +52,7 @@
   box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
 
-.activity-item {
+.history-root-container .activity-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -60,10 +60,10 @@
   border-bottom: 1px solid #f3f4f6;
 }
 
-.activity-item:last-child { border-bottom: none; }
+.history-root-container .activity-item:last-child { border-bottom: none; }
 
-.activity-left { display: flex; align-items: center; gap: 15px; }
-.doc-icon-box {
+.history-root-container .activity-left { display: flex; align-items: center; gap: 15px; }
+.history-root-container .doc-icon-box {
   width: 45px;
   height: 45px;
   background-color: #f8fafc;
@@ -75,15 +75,15 @@
   font-size: 20px;
 }
 
-.activity-info { display: flex; flex-direction: column; }
-.activity-name { color: #374151; font-weight: 700; font-size: 15px; margin-bottom: 3px; }
-.activity-details { color: var(--text-gray); font-size: 12px; }
+.history-root-container .activity-info { display: flex; flex-direction: column; }
+.history-root-container .activity-name { color: #374151; font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+.history-root-container .activity-details { color: var(--text-gray); font-size: 12px; }
 
-.activity-right { display: flex; align-items: center; gap: 40px; }
-.activity-hours { color: #1f2937; font-weight: 800; font-size: 15px; min-width: 40px; text-align: right; }
+.history-root-container .activity-right { display: flex; align-items: center; gap: 40px; }
+.history-root-container .activity-hours { color: #1f2937; font-weight: 800; font-size: 15px; min-width: 40px; text-align: right; }
 
 /* STATUS BADGES */
-.status-badge {
+.history-root-container .status-badge {
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 13px;
@@ -95,13 +95,13 @@
   justify-content: center;
 }
 
-.status-badge.aprovado {
+.history-root-container .status-badge.aprovado {
   background-color: #f0fdf4;
   color: var(--green-success);
   border: 1px solid #bbf7d0;
 }
 
-.status-badge.indeferida {
+.history-root-container .status-badge.indeferida {
   background-color: #fef2f2;
   color: var(--red-error);
   border: 1px solid #fecaca;

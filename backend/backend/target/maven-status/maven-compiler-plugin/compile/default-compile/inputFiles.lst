@@ -1,0 +1,15 @@
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\BackendApplication.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\config\CorsConfig.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\config\FilterConfig.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\config\FirebaseAuthFilter.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\config\FirebaseConfig.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\controller\AdminAlunoController.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\controller\AlunoController.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\controller\AuthController.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\controller\CoordenadorController.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\model\AlunoAdminModel.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\model\AtividadeCoordenadorModel.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\model\UsuarioModel.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\service\AdminAlunoService.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\service\CoordenadorService.java
+C:\Users\aluno\Documents\vsfabio\complementasenac\backend\backend\src\main\java\com\complementasenac\backend\service\PerfilService.java

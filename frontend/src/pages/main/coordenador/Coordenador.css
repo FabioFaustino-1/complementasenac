@@ -1,5 +1,5 @@
 /* --- Proporções e Layout Geral --- */
-.app-viewport { 
+.coordenador-page { 
   min-height: 100vh; 
   width: 100%; 
   background-color: #f8fafc; 
@@ -7,7 +7,7 @@
   overflow-x: hidden;
 }
 
-.overlay { 
+.coordenador-overlay { 
   position: fixed; 
   top: 0; 
   left: 0; 
@@ -18,7 +18,7 @@
 }
 
 /* --- Sidebar --- */
-.sidebar {
+.coordenador-sidebar {
   position: fixed; 
   top: 0; 
   left: -280px; 
@@ -30,9 +30,9 @@
   transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 10px 0 15px rgba(0,0,0,0.1);
 }
-.sidebar.open { left: 0; }
+.coordenador-sidebar.open { left: 0; }
 
-.sidebar-content {
+.coordenador-sidebar-content {
   display: flex; 
   flex-direction: column; 
   height: 100%; 
@@ -40,25 +40,25 @@
 }
 
 /* --- Logo Sidebar (Logo removida conforme solicitado) --- */
-.sidebar-logo-section { 
+.coordenador-sidebar-logo-section { 
   display: flex;
   align-items: center;
   margin-bottom: 50px;
 }
 
-.sidebar-logo-text {
+.coordenador-sidebar-logo-text {
   display: flex;
   flex-direction: column;
 }
 
-.senac-txt { 
+.coordenador-senac-txt { 
   font-weight: 800; 
   font-size: 24px; 
   line-height: 1; 
   color: white;
 }
 
-.comp-txt { 
+.coordenador-comp-txt { 
   font-size: 14px; 
   color: #ff8c00; 
   font-weight: 600;
@@ -66,9 +66,9 @@
 }
 
 /* --- Navegação e Itens (Efeito Hover e Active circulado em preto) --- */
-.nav-list { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.coordenador-nav-list { display: flex; flex-direction: column; gap: 12px; flex: 1; }
 
-.nav-item {
+.coordenador-nav-item {
   display: flex; 
   align-items: center; 
   gap: 16px;
@@ -82,18 +82,18 @@
 }
 
 /* Efeito Hover: clareia quando o mouse passa em cima */
-.nav-item:hover {
+.coordenador-nav-item:hover {
   background: rgba(255, 255, 255, 0.08);
   opacity: 0.8;
 }
 
 /* Estado Selecionado: Volta a ficar totalmente visível e com fundo destacado */
-.nav-item.active { 
+.coordenador-nav-item.active { 
   background: rgba(255, 255, 255, 0.12); 
   opacity: 1;
 }
 
-.nav-icon-circle {
+.coordenador-nav-icon-circle {
   width: 42px; 
   height: 42px;
   background: rgba(255, 255, 255, 0.08); 
@@ -104,16 +104,16 @@
   border: 2px solid transparent;
   transition: border-color 0.3s ease;
 }
-.active-border { border-color: #ff8c00; }
+.coordenador-active-border { border-color: #ff8c00; }
 
 /* --- Footer Sidebar --- */
-.sidebar-footer {
+.coordenador-sidebar-footer {
   margin-top: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 24px;
 }
 
-.btn-logout {
+.coordenador-btn-logout {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -121,79 +121,84 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.btn-logout:hover { opacity: 0.7; }
+.coordenador-btn-logout:hover { opacity: 0.7; }
 
-.footer-user-info .user-name-bold { font-weight: 700; font-size: 15px; }
-.footer-user-info .user-email { font-size: 13px; opacity: 0.7; }
+.coordenador-footer-user-info .coordenador-user-name-bold { font-weight: 700; font-size: 15px; }
+.coordenador-footer-user-info .coordenador-user-email { font-size: 13px; opacity: 0.7; }
 
 /* --- Header Corrigido --- */
-.header-container { 
-  background: white; 
-  border-bottom: 1px solid #e2e8f0; 
-  position: sticky; 
-  top: 0; 
-  z-index: 10; 
+.coordenador-header-container { 
+  padding: 15px 24px 0;
 }
 
-.header-bar { 
-  height: 80px; 
-  padding: 0 24px; 
+.coordenador-header-bar { 
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+  height: 62px;
+  padding: 0 16px; 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
 }
 
-.header-right-logo {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.logo-senac-container { 
-  width: 48px; 
-  height: 48px; 
-  background-color: #f1f5f9;
-  border-radius: 12px;
+.coordenador-burger-menu {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  color: #003366;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  cursor: pointer;
 }
 
-.senac-icon-img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: contain; 
+.coordenador-header-right-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.senac-bold { 
+.coordenador-text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+
+.coordenador-senac-bold { 
   font-weight: 800; 
   color: #003366; 
-  font-size: 20px; 
+  font-size: 14px; 
   line-height: 1; 
 }
 
-.comp-bold-orange { 
-  font-size: 11px; 
+.coordenador-comp-bold-orange { 
+  font-size: 11px;
   color: #ff8c00; 
-  text-transform: uppercase; 
-  font-weight: 700; 
-  margin-top: 2px;
+  font-weight: 700;
+  margin-top: 1px;
 }
 
-/* --- Outros Estilos --- */
-.main-content { padding: 32px 24px; max-width: 900px; margin: 0 auto; }
-.subtitle-small { color: #64748b; font-size: 13px; margin-top: 5px; margin-bottom: 24px; }
+.coordenador-s-plus-box { background: #003366; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
 
-.activity-card {
+/* --- Outros Estilos --- */
+.coordenador-main-content { padding: 32px 24px; max-width: 900px; margin: 0 auto; }
+.coordenador-subtitle-small { color: #64748b; font-size: 13px; margin-top: 5px; margin-bottom: 24px; }
+
+.coordenador-activity-card {
   background: white; border-radius: 12px; padding: 18px 24px; margin-bottom: 12px;
   border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
 }
 
-.badge-ia-success { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-.badge-ia-warning { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.coordenador-badge-divergence {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
 
-.exit-animation {
+.coordenador-badge-ia-success { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.coordenador-badge-ia-warning { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+.coordenador-exit-animation {
   animation: slideOut 0.4s forwards;
   pointer-events: none;
 }
@@ -206,5 +211,5 @@
   }
 }
 
-.btn-primary { padding: 10px 20px; border: none; border-radius: 8px; background: #003e7e; color: white; cursor: pointer; font-weight: 600; }
-.btn-secondary { padding: 10px 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #ef4444; cursor: pointer; font-weight: 600; }
+.coordenador-btn-primary { padding: 10px 20px; border: none; border-radius: 8px; background: #003e7e; color: white; cursor: pointer; font-weight: 600; }
+.coordenador-btn-secondary { padding: 10px 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #ef4444; cursor: pointer; font-weight: 600; }

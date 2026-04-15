@@ -27,7 +27,7 @@
   padding: 15px 30px;
 }
 
-.header-inner {
+.submission-root-container .header-inner {
   background: white;
   padding: 10px 25px;
   border-radius: 12px;
@@ -38,25 +38,25 @@
 }
 
 /* Menu Hambúrguer Manual (Sem ícone) */
-.hamburguer-manual {
+.submission-root-container .hamburguer-manual {
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.hamburguer-manual .bar {
+.submission-root-container .hamburguer-manual .bar {
   width: 22px;
   height: 3px;
   background-color: var(--blue-senac);
   border-radius: 2px;
 }
 
-.header-right-group { display: flex; align-items: center; gap: 12px; }
-.text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
-.senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
-.complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
-.s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+.submission-root-container .header-right-group { display: flex; align-items: center; gap: 12px; }
+.submission-root-container .text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.submission-root-container .senac-txt { color: var(--blue-senac); font-weight: 800; font-size: 14px; margin-right: 2px; }
+.submission-root-container .complementares-txt { color: var(--orange-senac); font-weight: 700; font-size: 11px; }
+.submission-root-container .s-plus-box { background: var(--blue-senac); color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
 
 /* CONTEÚDO */
 .submission-main-content {
@@ -117,8 +117,8 @@
 
 /* FORMULÁRIO */
 .form-section { display: flex; flex-direction: column; gap: 20px; }
-.input-label { font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; display: block; }
-.input-group input, .input-group select { width: 100%; padding: 14px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; color: #374151; }
+.submission-root-container .input-label { font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; display: block; }
+.submission-root-container .input-group input, .submission-root-container .input-group select { width: 100%; padding: 14px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; color: #374151; }
 .form-row-double { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
 .submit-btn {

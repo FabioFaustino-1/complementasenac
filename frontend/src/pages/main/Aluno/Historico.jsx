@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import './Historico.css';
 import Sidebar from '../../../assets/Sidebar';
-import { User, Clock, UploadCloud, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createAlunoMenu } from '../menuConfig';
 
 const Historico = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // Itens da Sidebar conforme a ordem do seu print anterior
-  const menuItems = [
-    { id: 'perfil', name: 'Meu Perfil', icon: <User size={20} />, onClick: () => console.log('Perfil') },
-    { id: 'horas', name: 'Minhas Horas', icon: <Clock size={20} />, onClick: () => console.log('Horas') },
-    { id: 'submissao', name: 'Nova Submissão', icon: <UploadCloud size={20} />, onClick: () => console.log('Submissão') },
-    { id: 'historico', name: 'Histórico', icon: <FileText size={20} />, onClick: () => console.log('Já estou aqui') },
-  ];
+  const navigate = useNavigate();
+  const menuItems = createAlunoMenu(navigate);
 
   // Dados mockados para simular a sua imagem
   const atividades = [

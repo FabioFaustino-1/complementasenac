@@ -1,0 +1,34 @@
+.rep-main-viewport { min-height: calc(100vh - 130px); width: 100%; background-color: #f8fafc; color: #1e293b; }
+.rep-content-wrapper { padding: 24px; max-width: 1100px; margin: 0 auto; }
+.rep-page-header { margin-bottom: 20px; }
+.rep-page-header h1 { font-size: 28px; font-weight: 700; margin: 0 0 6px; color: #0f172a; }
+.rep-page-header p { font-size: 14px; color: #64748b; margin: 0; }
+.rep-stats-container { display: flex; gap: 16px; margin-bottom: 24px; }
+.rep-card { flex: 1; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid #e2e8f0; }
+.rep-card-active { background-color: #003e7e; color: #fff; border-color: #003e7e; }
+.rep-card-passive { background-color: #fff; }
+.rep-card-icon-frame { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background-color: rgba(255, 255, 255, 0.08); }
+.rep-card-passive .cp-success { background-color: #dcfce7; }
+.rep-card-passive .cp-danger { background-color: #fee2e2; }
+.rep-card-passive .cp-warning { background-color: #fff7ed; }
+.rep-card-number { font-size: 28px; font-weight: 700; line-height: 1; }
+.rep-card-label { font-size: 13px; }
+.rep-details-grid { display: flex; gap: 20px; align-items: flex-start; }
+.rep-panel { background-color: #fff; border-radius: 12px; border: 1px solid #e2e8f0; }
+.rep-panel-table { flex: 1.6; padding: 24px; }
+.rep-panel-charts { flex: 1; padding: 24px; }
+.rep-search-container { position: relative; margin-bottom: 20px; }
+.rep-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+.rep-search-container input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; background-color: #f1f5f9; }
+.rep-student-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #e2e8f0; gap: 14px; }
+.rep-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+.rep-student-main-info { flex: 1; display: flex; flex-direction: column; }
+.rep-student-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+.rep-student-course { font-size: 11px; color: #64748b; }
+.rep-type-tag { font-size: 10px; color: #64748b; background-color: #f1f5f9; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; font-weight: 600; }
+.rep-hours-display { font-size: 13px; font-weight: 600; color: #1e293b; width: 35px; text-align: right; }
+.rep-action-btn { background: none; border: none; cursor: pointer; color: #94a3b8; }
+.rep-approval-metric { font-size: 26px; font-weight: 700; color: #166534; }
+.rep-bar-background { width: 100%; height: 5px; background-color: #f1f5f9; border-radius: 2.5px; overflow: hidden; }
+.rep-bar-fill { height: 100%; background-color: #22c55e; border-radius: 2.5px; }
+.rep-comparison-text { font-size: 11px; color: #16a34a; margin: 8px 0 0; }

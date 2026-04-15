@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './PerfilAluno.css';
-import { FiMenu, FiEdit3, FiBookOpen } from 'react-icons/fi';
+import { Menu, Pencil, BookOpen } from 'lucide-react';
+import Sidebar from '../../../assets/Sidebar';
+import { useNavigate } from 'react-router-dom';
+import { createAlunoMenu } from '../menuConfig';
 
-const PerfilAluno = ({ toggleSidebar }) => {
+const PerfilAluno = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const menuItems = createAlunoMenu(navigate);
+
   return (
     <div className="perfil-root-container">
+      <Sidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        activePage="perfil"
+        menuItems={menuItems}
+        userName="Fabio Faustao"
+        userEmail="fabio.faustao@edu.pe.senac.br"
+      />
       <div className="perfil-page-wrapper">
         
         {/* HEADER */}
         <header className="perfil-top-header">
           <div className="header-inner">
             {/* O clique aqui vai abrir a sidebar que você criar separada */}
-            <FiMenu className="hamburguer-icon" onClick={toggleSidebar} />
+            <Menu className="hamburguer-icon" onClick={() => setIsSidebarOpen(true)} />
             <div className="header-right-group">
                 <div className="text-right-aligned">
                     <span className="senac-txt">Senac</span>
@@ -32,7 +47,7 @@ const PerfilAluno = ({ toggleSidebar }) => {
                 <div className="big-avatar">FF</div>
                 <h2 className="dark-blue-title">Fabio Faustão</h2>
                 <p className="gray-sub">fabio.faustao@edu.pe.senac.br</p>
-                <div className="aluno-badge"><FiBookOpen size={12}/> ALUNO</div>
+                <div className="aluno-badge"><BookOpen size={12}/> ALUNO</div>
                 
                 <div className="progresso-container">
                   <div className="labels">
@@ -57,7 +72,7 @@ const PerfilAluno = ({ toggleSidebar }) => {
                 <div className="card-header">
                   <h3>INFORMAÇÕES PESSOAIS</h3>
                   <button className="edit-btn">
-                    <FiEdit3 /> Editar
+                    <Pencil /> Editar
                   </button>
                 </div>
 

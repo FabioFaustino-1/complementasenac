@@ -1,39 +1,13 @@
 import React, { useState } from 'react';
 import './NovaSubmissao.css';
 import Sidebar from '../../../assets/Sidebar';
-// Importando ícones para a navegação da Sidebar
-import { User, Clock, UploadCloud, FileText, ClipboardList, Users, BarChart, PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createAlunoMenu } from '../menuConfig';
 
 const NovaSubmissao = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // Configuração dos itens do menu para a sua Sidebar dinâmica
-  const menuItems = [
-  { 
-    id: 'perfil', 
-    name: 'Meu Perfil', 
-    icon: <User size={20} />, 
-    onClick: () => console.log('Navegar para Perfil') 
-  },
-  { 
-    id: 'horas', 
-    name: 'Minhas Horas', 
-    icon: <Clock size={20} />, 
-    onClick: () => console.log('Navegar para Minhas Horas') 
-  },
-  { 
-    id: 'submissao', 
-    name: 'Nova Submissão', 
-    icon: <UploadCloud size={20} />, 
-    onClick: () => console.log('Já estou aqui') 
-  },
-  { 
-    id: 'historico', 
-    name: 'Histórico', 
-    icon: <FileText size={20} />, 
-    onClick: () => console.log('Navegar para Histórico') 
-  },
-];
+  const navigate = useNavigate();
+  const menuItems = createAlunoMenu(navigate);
 
   return (
     <div className="submission-root-container">

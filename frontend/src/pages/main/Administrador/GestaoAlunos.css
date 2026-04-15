@@ -1,10 +1,45 @@
+.app-viewport {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.main-content-gestao {
+  flex: 1;
+  padding: 20px;
+}
+
+.gestao-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.gestao-header .burger-menu {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  color: #003366;
+  cursor: pointer;
+}
+
+.gestao-header .header-right-group { display: flex; align-items: center; gap: 12px; }
+.gestao-header .text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.gestao-header .senac-txt { color: #003366; font-weight: 800; font-size: 14px; }
+.gestao-header .complementares-txt { color: #f37021; font-weight: 700; font-size: 11px; }
+.gestao-header .s-plus-box { background: #003366; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+
 .gestao-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.title-row {
+.gestao-container .title-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,7 +47,7 @@
 }
 
 /* Card do Formulário (Imagem 1) */
-.add-student-card {
+.gestao-container .add-student-card {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
@@ -21,28 +56,28 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.form-grid {
+.gestao-container .gestao-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin: 20px 0;
 }
 
-.form-grid input {
+.gestao-container .gestao-form-grid input {
   padding: 12px 16px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   background: #fdfdfd;
 }
 
-.form-actions {
+.gestao-container .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
   align-items: center;
 }
 
-.btn-save {
+.gestao-container .btn-save {
   background: #ff8c00;
   color: white;
   border: none;
@@ -53,7 +88,7 @@
 }
 
 /* Lista de Alunos (Cards Brancos) */
-.student-item-card {
+.gestao-container .student-item-card {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 16px;

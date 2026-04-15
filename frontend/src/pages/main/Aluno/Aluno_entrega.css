@@ -1,339 +1,39 @@
-/* Fonte do sistema aplicada globalmente */
-* {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  box-sizing: border-box;
-}
+.container-aluno { min-height: 100vh; background: #f8fafc; }
+.container-aluno .main-content { padding: 20px 24px 40px; margin-left: 0; }
+.container-aluno .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: #fff; border-radius: 12px; padding: 10px 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+.container-aluno .menu-toggle { border: none; background: transparent; width: 32px; height: 32px; cursor: pointer; font-size: 24px; color: #003366; }
+.container-aluno .header-right-group { display: flex; align-items: center; gap: 12px; }
+.container-aluno .text-right-aligned { display: flex; flex-direction: column; text-align: right; line-height: 1.1; }
+.container-aluno .senac-txt { color: #003366; font-weight: 800; font-size: 14px; }
+.container-aluno .complementares-txt { color: #f37021; font-weight: 700; font-size: 11px; }
+.container-aluno .s-plus-box { background: #003366; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+.container-aluno .dashboard-content { max-width: 1100px; margin: 0 auto; }
+.container-aluno .dashboard-top { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+.container-aluno .course-card, .container-aluno .activities-section, .container-aluno .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; }
+.container-aluno .course-card { padding: 20px; }
+.container-aluno .badge-limit { background: #fff7ed; color: #c2410c; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+.container-aluno .hours-main h1 { margin: 10px 0 4px; font-size: 40px; color: #0f172a; }
+.container-aluno .hours-main h1 span { font-size: 18px; color: #64748b; }
+.container-aluno .progress-section span { font-size: 12px; color: #64748b; }
+.container-aluno .progress-bar { margin-top: 8px; height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.container-aluno .progress-fill { height: 100%; background: #003e7e; }
+.container-aluno .max-info { display: inline-block; margin-top: 6px; }
+.container-aluno .stats-grid { display: grid; gap: 14px; }
+.container-aluno .stat-card { padding: 16px; text-align: center; }
+.container-aluno .activities-section { margin-top: 20px; padding: 20px; }
+.container-aluno .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.container-aluno .ver-todas { border: none; background: none; color: #003e7e; font-weight: 700; cursor: pointer; }
+.container-aluno .activity-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+.container-aluno .activity-info { display: flex; gap: 10px; align-items: center; }
+.container-aluno .activity-info h4 { margin: 0; }
+.container-aluno .activity-info p { margin: 2px 0 0; color: #64748b; font-size: 13px; }
+.container-aluno .activity-meta { display: flex; align-items: center; gap: 10px; }
+.container-aluno .hours-tag { font-weight: 700; color: #0f172a; }
+.container-aluno .status-pill { border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.container-aluno .status-pill.aprovado { background: #dcfce7; color: #166534; }
+.container-aluno .status-pill.pendente { background: #fef9c3; color: #854d0e; }
+.container-aluno .fab-plus { position: fixed; right: 20px; bottom: 20px; border: none; background: #003e7e; color: #fff; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 62, 126, 0.3); }
 
-.app-viewport {
-  display: flex;
-  min-height: 100vh;
-  background: #f8fafc;
-}
-
-.main-content-gestao {
-  flex: 1;
-  padding: 20px;
-  overflow-x: auto;
-  width: 100%;
-}
-
-/* Header */
-.gestao-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.burger-menu {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-}
-
-.burger-menu:hover {
-  background: #f1f5f9;
-}
-
-.header-right-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-badge {
-  width: 40px;
-  height: 40px;
-  background: #ff8c00;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.text-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.senac-bold {
-  font-weight: 800;
-  font-size: 20px;
-  color: #1e293b;
-}
-
-.comp-orange {
-  font-weight: 500;
-  color: #ff8c00;
-  font-size: 14px;
-}
-
-/* Container Principal */
-.gestao-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.title-row h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-}
-
-/* Botão Adicionar Aluno */
-.btn-add-student {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #ff8c00;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.btn-add-student:hover {
-  background: #e67700;
-  transform: translateY(-1px);
-}
-
-/* Card do Formulário */
-.add-student-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 30px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.add-student-card h3 {
-  margin: 0 0 20px 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.form-grid input {
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #fdfdfd;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.form-grid input:focus {
-  outline: none;
-  border-color: #ff8c00;
-  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  align-items: center;
-}
-
-.btn-cancel {
-  background: #f1f5f9;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-cancel:hover {
-  background: #e2e8f0;
-}
-
-.btn-save {
-  background: #ff8c00;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-save:hover {
-  background: #e67700;
-}
-
-/* Barra de Busca */
-.search-bar-container {
-  position: relative;
-  max-width: 400px;
-  margin-bottom: 30px;
-}
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  pointer-events: none;
-}
-
-.search-bar-container input {
-  width: 100%;
-  padding: 14px 16px 14px 48px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: white;
-  font-size: 14px;
-}
-
-.search-bar-container input:focus {
-  outline: none;
-  border-color: #ff8c00;
-  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
-}
-
-/* Lista de Alunos */
-.students-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.student-item-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.student-item-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.student-info {
-  flex: 1;
-}
-
-.student-info h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.student-email {
-  margin: 0 0 4px 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.student-details {
-  margin: 0;
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.student-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-icon {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.btn-icon:hover {
-  background: #ff8c00;
-  border-color: #ff8c00;
-}
-
-.btn-icon.edit svg {
-  color: #3b82f6;
-}
-
-.btn-icon.delete svg {
-  color: #ef4444;
-}
-
-.btn-icon:hover svg {
-  color: white !important;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .main-content-gestao {
-    padding: 16px;
-  }
-  
-  .gestao-container {
-    padding: 16px;
-  }
-  
-  .title-row {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .student-item-card {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  
-  .student-actions {
-    justify-content: flex-end;
-  }
+@media (max-width: 900px) {
+  .container-aluno .dashboard-top { grid-template-columns: 1fr; }
 }

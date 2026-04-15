@@ -68,7 +68,7 @@
   margin-bottom: 5px;
 }
 
-.subtitle {
+.login-card .subtitle {
   color: #6c757d;
   margin-bottom: 40px;
 }
@@ -99,23 +99,23 @@
   background-color: #f0f7ff;
 }
 
-.btn-text strong {
+.login-page .btn-text strong {
   display: block;
   font-size: 0.9rem;
   color: #004282;
 }
 
-.btn-text span {
+.login-page .btn-text span {
   font-size: 0.75rem;
   color: #6c757d;
 }
 
 /* INPUTS */
-.input-group {
+.login-page .input-group {
   margin-bottom: 20px;
 }
 
-.input-group label {
+.login-page .input-group label {
   display: block;
   font-weight: 600;
   color: #004282;
