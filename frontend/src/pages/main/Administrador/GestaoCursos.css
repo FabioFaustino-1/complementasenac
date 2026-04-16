@@ -1,0 +1,165 @@
+.container-cursos {
+  --blue-primary: #003a70;
+  --blue-dark: #002855;
+  --orange-senac: #eb8024;
+  --bg-gray: #f8fafc;
+  --border-color: #e2e8f0;
+
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-gray);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  .main-content {
+    flex: 1;
+    padding: 2rem 4rem;
+    width: 100%;
+  }
+
+  .top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 0.8rem 2rem;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    
+    .menu-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    
+    .user-profile-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .avatar {
+        background: var(--blue-dark);
+        color: white;
+        width: 38px; height: 38px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold;
+      }
+      .header-labels {
+        text-align: right;
+        strong { display: block; font-size: 0.9rem; color: var(--blue-dark); }
+        span { font-size: 0.75rem; color: var(--orange-senac); }
+      }
+    }
+  }
+
+  .dashboard-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    h1 { color: #1e293b; font-size: 1.8rem; font-weight: 800; }
+    p { color: #64748b; font-size: 0.95rem; }
+  }
+
+  .btn-primary {
+    background: var(--blue-dark);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.4rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    &:hover { background: var(--blue-primary); }
+  }
+
+  /* GRID DE CURSOS */
+  .cursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .curso-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+    
+    &:hover { transform: translateY(-3px); }
+
+    .curso-header {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+      
+      .curso-icon {
+        background: #f1f5f9;
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .curso-title-area {
+        h3 { font-size: 1rem; color: #1e293b; font-weight: 700; margin-bottom: 2px; }
+        span { font-size: 0.8rem; color: #94a3b8; }
+      }
+    }
+  }
+
+  .curso-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    .stat-box {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 15px;
+      text-align: center;
+      
+      .stat-num { display: block; font-size: 1.2rem; font-weight: 800; color: #1e293b; }
+      .stat-label { font-size: 0.65rem; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em; }
+    }
+  }
+
+  /* MODAL STYLES */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+  }
+
+  .modal-content {
+    background: white;
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    border-radius: 20px;
+    
+    h2 { margin-bottom: 1.5rem; font-size: 1.4rem; color: var(--blue-dark); }
+    
+    .form-group {
+      margin-bottom: 1.2rem;
+      label { display: block; font-size: 0.9rem; margin-bottom: 6px; font-weight: 600; }
+      input {
+        width: 100%; padding: 0.8rem; border: 1px solid var(--border-color);
+        border-radius: 10px; outline: none;
+        &:focus { border-color: var(--blue-primary); }
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex; gap: 10px; margin-top: 2rem;
+    button { flex: 1; }
+    .btn-cancel {
+      background: #f1f5f9; border: none; padding: 0.8rem; border-radius: 10px;
+      font-weight: 600; cursor: pointer;
+    }
+  }
+}

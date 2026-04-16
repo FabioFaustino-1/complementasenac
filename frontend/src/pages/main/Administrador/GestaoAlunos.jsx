@@ -74,10 +74,10 @@ const GestaoAlunos = () => {
   };
 
   const itensMenuAdmin = [
-  { id: 'coordenadores', name: 'Gestao de Coordenadores', icon: <Users size={20} color="white" />, onClick: () => navigate('/coordenador') },
+  { id: 'coordenadores', name: 'Gestao de Coordenadores', icon: <Users size={20} color="white" />, onClick: () => navigate('/GestaoCoord') },
   { id: 'alunos', name: 'Adicionar Aluno', icon: <ClipboardCheck size={20} color="white" /> },
-  { id: 'cursos', name: 'Gerenciamento de Cursos', icon: <Users size={20} color="white" />, onClick: () => navigate('/gestao-alunos') },
-  { id: 'logs', name: 'Logs', icon: <BarChart3 size={20} color="white" />, onClick: () => navigate('/gestao-alunos') },
+  { id: 'cursos', name: 'Gerenciamento de Cursos', icon: <Users size={20} color="white" />, onClick: () => navigate('/gestaocursos') },
+  { id: 'logs', name: 'Logs', icon: <BarChart3 size={20} color="white" />, onClick: () => navigate('/admin') },
 ];
 
 

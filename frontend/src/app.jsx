@@ -5,9 +5,10 @@ import PerfilAluno from "./pages/main/Aluno/PerfilAluno";
 import NovaSubmissao from "./pages/main/Aluno/NovaSubmissao";
 import Historico from "./pages/main/Aluno/Historico";
 import Coordenador from "./pages/main/coordenador/Coordenador";
-import GestaoAlunos from "./pages/main/Administrador/Gestaoalunos";
+import GestaoAlunos from "./pages/main/Administrador/GestaoAlunos";
 import Admin from "./pages/main/Administrador/Admin"; 
-
+import GestaoCoord from "./pages/main/Administrador/GestaoCoord"
+import GestaoCursos from "./pages/main/Administrador/GestaoCursos";
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path="/coordenador" element={<Coordenador />} />
         <Route path="/gestaoAlunos" element={<GestaoAlunos />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/GestaoCoord" element={<GestaoCoord />} />
+        <Route path="/GestaoCursos" element={<GestaoCursos />} />
       </Routes>
     </BrowserRouter>
   );
