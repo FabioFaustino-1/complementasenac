@@ -1,8 +1,8 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import app from "./firebase";
+import { API_BASE } from "./api";
 
 const auth = getAuth(app);
-const API_BASE = "http://localhost:8080";
 
 export function cadastrarUsuario(email, senha) {
   return createUserWithEmailAndPassword(auth, email, senha);

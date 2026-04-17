@@ -1,48 +1,66 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
+
 const AuthContext = createContext(undefined);
-const mockUsers = {
-    aluno: {
-        id: "1",
-        name: "Fabio Faustão",
-        email: "fabio.faustao@edu.pe.senac.br",
-        role: "aluno",
-        course: "Análise e Desenvolvimento de Sistemas",
-        department: "Tecnologia da Informação",
-        phone: "(81) 99728-1233",
-        matricula: "2024.1.12.12345",
-        ingresso: "Fevereiro 2024",
-    },
-    coordenador: {
-        id: "2",
-        name: "Maria Silva",
-        email: "maria.silva@senac.pe.br",
-        role: "coordenador",
-        department: "Tecnologia da Informação",
-    },
-    admin: {
-        id: "3",
-        name: "Super Admin",
-        email: "admin@senac.pe.br",
-        role: "admin",
-    },
-};
-export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const login = (email, _password, role) => {
-        if (email && _password) {
-            setUser(mockUsers[role]);
-            return true;
-        }
-        return false;
-    };
-    const logout = () => setUser(null);
-    return (<AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
-      {children}
-    </AuthContext.Provider>);
+
+const STORAGE_KEY = "complementa.auth";
+
+function readStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
+
+function writeStorage(payload) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function clearStorage() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+export function AuthProvider({ children }) {
+  const initial = readStorage();
+  const [auth, setAuth] = useState(
+    initial ?? { user: null, role: null, token: null }
+  );
+
+  const loginWithBackend = ({ token, perfil, email }) => {
+    const role = perfil?.perfil ?? "aluno";
+    const user = {
+      uid: perfil?.uid ?? null,
+      email: perfil?.email ?? email ?? null,
+      role,
+    };
+    const next = { user, role, token };
+    setAuth(next);
+    writeStorage(next);
+  };
+
+  const logout = () => {
+    setAuth({ user: null, role: null, token: null });
+    clearStorage();
+  };
+
+  const value = useMemo(
+    () => ({
+      user: auth.user,
+      role: auth.role,
+      token: auth.token,
+      isAuthenticated: !!auth.token,
+      loginWithBackend,
+      logout,
+    }),
+    [auth]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
 export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context)
-        throw new Error("useAuth must be used within AuthProvider");
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
 }

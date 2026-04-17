@@ -3,6 +3,7 @@ import { GraduationCap, UserCog, ShieldCheck } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import './Login.css';
 import { autenticarUsuario } from "../../services/auth";
+import { useAuth } from "../../assets/contexts/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ function Login() {
   const [perfilAtivo, setPerfilAtivo] = useState("aluno");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); 
+  const { loginWithBackend } = useAuth();
   
 const handleLogin = async () => {
   if (!email || !senha) {
@@ -19,15 +21,21 @@ const handleLogin = async () => {
 
   try {
     setLoading(true);
-    const { perfil } = await autenticarUsuario(email, senha);
+    const { perfil, token } = await autenticarUsuario(email, senha);
     const perfilBackend = perfil?.perfil ?? perfilAtivo;
+
+    if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
+      throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema.`);
+    }
+
+    loginWithBackend({ token, perfil, email });
 
     if (perfilBackend === "aluno") {
       navigate("/aluno");
     } else if (perfilBackend === "coordenador") {
       navigate("/coordenador");
     } else if (perfilBackend === "admin") {
-      navigate("/gestao-alunos");
+      navigate("/gestaoAlunos");
     } else {
       alert("Perfil sem rota configurada.");
     }

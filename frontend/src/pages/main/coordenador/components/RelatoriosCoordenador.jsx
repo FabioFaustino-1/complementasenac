@@ -25,7 +25,7 @@ const RelatoriosCoordenador = ({ stats, activities, taxa }) => (
         </div>
         <div className="rep-card rep-card-passive">
           <div className="rep-card-icon-frame cp-warning"><Users size={20} color="#f97316" /></div>
-          <div className="rep-card-data"><span className="rep-card-number">40</span><span className="rep-card-label">Alunos Ativos</span></div>
+          <div className="rep-card-data"><span className="rep-card-number">{stats.alunosAtivos ?? 0}</span><span className="rep-card-label">Alunos Ativos</span></div>
         </div>
       </div>
 
@@ -42,7 +42,9 @@ const RelatoriosCoordenador = ({ stats, activities, taxa }) => (
           <div className="rep-table-body">
             {activities.map((student) => (
               <div key={student.id} className="rep-student-row">
-                <div className="rep-avatar" style={{ backgroundColor: student.color, color: student.textColor }}>{student.avatar}</div>
+                <div className="rep-avatar">
+                  {student.student.split(" ").map((item) => item[0]).join("").slice(0, 2).toUpperCase()}
+                </div>
                 <div className="rep-student-main-info">
                   <span className="rep-student-name">{student.student}</span>
                   <span className="rep-student-course">{student.title}</span>

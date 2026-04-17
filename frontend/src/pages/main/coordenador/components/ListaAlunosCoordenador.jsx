@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./ListaAlunosCoordenador.css";
+import { useAuth } from "../../../../assets/contexts/AuthContext";
+import { obterAlunosCoordenador } from "../../../../services/coordenador";
 
 const ListaAlunosCoordenador = () => {
-  const alunos = [
-    { id: 1, nome: "GABRIEL FELICIANO", curso: "Analise e Desenv. de Sistemas", matricula: "2024.1.00512", status: "Ativo" },
-    { id: 2, nome: "RHUAN PIETRO", curso: "Analise e Desenv. de Sistemas", matricula: "2023.2.00890", status: "Ativo" },
-    { id: 3, nome: "FABIO FAUSTAO", curso: "Analise e Desenv. de Sistemas", matricula: "2024.1.00042", status: "Ativo" },
-    { id: 4, nome: "ANGELO MASCARENHAS", curso: "Analise e Desenv. de Sistemas", matricula: "2024.1.00977", status: "Pendente" },
-  ];
+  const { token } = useAuth();
+  const [alunos, setAlunos] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await obterAlunosCoordenador(token);
+        setAlunos(data);
+      } catch (error) {
+        alert(`Erro ao carregar lista de alunos: ${error.message}`);
+      }
+    };
+    load();
+  }, [token]);
 
   return (
     <div className="rep-main-viewport">
@@ -34,7 +44,7 @@ const ListaAlunosCoordenador = () => {
                   <td>{aluno.curso}</td>
                   <td className="text-mono">{aluno.matricula}</td>
                   <td className="text-center">
-                    <span className={`status-badge ${aluno.status.toLowerCase()}`}>{aluno.status}</span>
+                    <span className="status-badge ativo">Ativo</span>
                   </td>
                 </tr>
               ))}

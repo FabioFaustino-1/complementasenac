@@ -1,8 +1,19 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen, setIsOpen, activePage, menuItems = [], userName, userEmail }) => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigate("/");
+  };
+
   return (
     <>
       {/* Overlay para fechar no mobile ao clicar fora */}
@@ -44,7 +55,7 @@ const Sidebar = ({ isOpen, setIsOpen, activePage, menuItems = [], userName, user
 
           {/* Rodapé da Sidebar */}
           <div className="sidebar-footer">
-            <div className="btn-logout" onClick={() => setIsOpen(false)}>
+            <div className="btn-logout" onClick={handleLogout}>
               <div className="nav-icon-circle">
                 <LogOut size={20} color="white" />
               </div>

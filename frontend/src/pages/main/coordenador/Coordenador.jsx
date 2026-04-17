@@ -1,19 +1,23 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Sidebar from "../../../assets/Sidebar";
 import { createCoordenadorMenu } from "../menuConfig";
 import PerfilCoordenador from "./components/PerfilCoordenador";
 import ListaAlunosCoordenador from "./components/ListaAlunosCoordenador";
 import RelatoriosCoordenador from "./components/RelatoriosCoordenador";
+import { useAuth } from "../../../assets/contexts/AuthContext";
+import { decidirAtividadeCoordenador, obterPendentes, obterResumoCoordenador } from "../../../services/coordenador";
 import "./Coordenador.css";
 
-const ActivityCard = ({ id, title, student, hours, date, confidence, type, onAction }) => {
+const ActivityCard = ({ id, title, student, hours, date, confidence, type, onApprove, onReject }) => {
   const [isExiting, setIsExiting] = useState(false);
   const isDivergent = confidence < 50;
 
-  const handleAction = () => {
+  const handleAction = (status) => {
     setIsExiting(true);
-    // Tempo para a animação de saída completar antes de remover do estado
-    setTimeout(() => onAction(id), 400);
+    setTimeout(() => {
+      if (status === "APROVADO") onApprove(id);
+      else onReject(id);
+    }, 400);
   };
 
   return (
@@ -32,8 +36,8 @@ const ActivityCard = ({ id, title, student, hours, date, confidence, type, onAct
         </div>
       </div>
       <div style={{ display: 'flex', gap: '10px' }}>
-        <button className="coordenador-btn-secondary" onClick={handleAction}>Indeferir</button>
-        <button className="coordenador-btn-primary" onClick={handleAction}>Aprovar</button>
+        <button className="coordenador-btn-secondary" onClick={() => handleAction("INDEFERIDO")}>Indeferir</button>
+        <button className="coordenador-btn-primary" onClick={() => handleAction("APROVADO")}>Aprovar</button>
       </div>
     </div>
   );
@@ -42,23 +46,60 @@ const ActivityCard = ({ id, title, student, hours, date, confidence, type, onAct
 const Coordenador = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("validacao");
-  
-  const [activities, setActivities] = useState([
-    { id: 1, title: "Workshop de React Avancado", student: "Maria Silva", hours: "8", date: "12/03/2026", confidence: 95, type: "Workshop", avatar: "MS", color: "#dbeafe", textColor: "#1e40af" },
-    { id: 2, title: "Palestra sobre IA Generativa", student: "Joao Santos", hours: "4", date: "08/03/2026", confidence: 88, type: "Palestra", avatar: "JS", color: "#fee2e2", textColor: "#991b1b" },
-    { id: 3, title: "Curso de Excel Avancado", student: "Ana Costa", hours: "20", date: "01/03/2026", confidence: 42, type: "Curso Online", avatar: "AC", color: "#d1fae5", textColor: "#065f46" },
-    { id: 4, title: "Hackathon Senac 2026", student: "Pedro Lima", hours: "12", date: "28/02/2026", confidence: 91, type: "Congresso", avatar: "PL", color: "#fef3c7", textColor: "#92400e" },
-  ]);
+  const [activities, setActivities] = useState([]);
+  const [resumo, setResumo] = useState(null);
+  const { token, user } = useAuth();
 
-  const removeActivity = (id) => {
-    setActivities(prev => prev.filter(act => act.id !== id));
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [pendentes, resumoApi] = await Promise.all([
+          obterPendentes(token),
+          obterResumoCoordenador(token),
+        ]);
+        setActivities(
+          pendentes.map((item) => ({
+            id: item.id,
+            title: item.titulo,
+            student: item.aluno,
+            hours: String(item.horas),
+            date: item.data,
+            confidence: item.confiancaIa,
+            type: item.tipo,
+          }))
+        );
+        setResumo(resumoApi);
+      } catch (error) {
+        alert(`Erro ao carregar painel do coordenador: ${error.message}`);
+      }
+    };
+    load();
+  }, [token]);
+
+  const decidir = async (id, status) => {
+    try {
+      await decidirAtividadeCoordenador(token, id, status);
+      setActivities((prev) => prev.filter((act) => act.id !== id));
+      if (resumo) {
+        setResumo((prev) => ({
+          ...prev,
+          pendentes: Math.max(0, prev.pendentes - 1),
+          aprovadasNoMes: status === "APROVADO" ? prev.aprovadasNoMes + 1 : prev.aprovadasNoMes,
+          rejeitadasNoMes: status === "INDEFERIDO" ? prev.rejeitadasNoMes + 1 : prev.rejeitadasNoMes,
+        }));
+      }
+    } catch (error) {
+      alert(`Erro ao decidir atividade: ${error.message}`);
+    }
   };
 
-  const stats = useMemo(
-    () => ({ aprovadas: 25, rejeitadas: 5, totalHistorico: 30 }),
-    []
-  );
-  const taxa = Math.round((stats.aprovadas / stats.totalHistorico) * 100);
+  const stats = useMemo(() => ({
+    aprovadas: resumo?.aprovadasNoMes ?? 0,
+    rejeitadas: resumo?.rejeitadasNoMes ?? 0,
+    totalHistorico: (resumo?.aprovadasNoMes ?? 0) + (resumo?.rejeitadasNoMes ?? 0),
+    alunosAtivos: resumo?.alunosAtivos ?? 0,
+  }), [resumo]);
+  const taxa = resumo?.taxaAprovacao ?? 0;
   const menuItems = createCoordenadorMenu(setActiveTab);
 
   const renderContent = () => {
@@ -72,7 +113,14 @@ const Coordenador = () => {
           <p className="coordenador-subtitle-small">{activities.length} atividades aguardando analise.</p>
         </div>
         <div className="list-wrapper">
-          {activities.map((activity) => <ActivityCard key={activity.id} {...activity} onAction={removeActivity} />)}
+          {activities.map((activity) => (
+            <ActivityCard
+              key={activity.id}
+              {...activity}
+              onApprove={(id) => decidir(id, "APROVADO")}
+              onReject={(id) => decidir(id, "INDEFERIDO")}
+            />
+          ))}
           {activities.length === 0 && <p className="empty-msg">Nenhuma atividade pendente.</p>}
         </div>
       </main>
@@ -86,8 +134,8 @@ const Coordenador = () => {
         setIsOpen={setIsMenuOpen}
         activePage={activeTab}
         menuItems={menuItems}
-        userName="Fabio Faustino"
-        userEmail="fabio.faustino@senac.pe.br"
+        userName={user?.email?.split("@")[0] ?? "Coordenador"}
+        userEmail={user?.email ?? "coordenador@senac.pe.br"}
       />
       <div className="coordenador-header-container">
         <header className="coordenador-header-bar">

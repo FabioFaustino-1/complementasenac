@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit2, Save, X } from "lucide-react";
 import "./PerfilCoordenador.css";
+import { useAuth } from "../../../../assets/contexts/AuthContext";
+import { obterPerfilCoordenador } from "../../../../services/coordenador";
 
 const PerfilCoordenador = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const { token } = useAuth();
   const [userData, setUserData] = useState({
     nome: "Fabio Faustino",
     email: "fabio.faustino@senac.pe.br",
@@ -13,6 +16,26 @@ const PerfilCoordenador = () => {
     matricula: "2024.1.00042",
     departamento: "Tecnologia da Informacao (ADS)",
   });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const perfil = await obterPerfilCoordenador(token);
+        setUserData({
+          nome: perfil.nome,
+          email: perfil.email,
+          cpf: perfil.cpf,
+          telefone: perfil.telefone,
+          ingresso: perfil.ingresso,
+          matricula: perfil.matricula,
+          departamento: perfil.departamento,
+        });
+      } catch (error) {
+        alert(`Erro ao carregar perfil do coordenador: ${error.message}`);
+      }
+    };
+    load();
+  }, [token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

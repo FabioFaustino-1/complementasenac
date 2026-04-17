@@ -23,14 +23,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
     }
 
-    // 2. Captura erros de lógica ou dados não encontrados (Erro 404/400)
-    // Se você buscar um aluno no Firebase e ele não existir, você lança uma RuntimeException.
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StandardError> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
+        StandardError err = new StandardError(
+                System.currentTimeMillis(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Dados invalidos",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
+    // 2. Captura erros de lógica de negócio (Erro 404)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<StandardError> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
         StandardError err = new StandardError(
                 System.currentTimeMillis(),
                 HttpStatus.NOT_FOUND.value(),
-                "Recurso não encontrado",
+                "Recurso nao encontrado",
                 e.getMessage(),
                 request.getRequestURI()
         );

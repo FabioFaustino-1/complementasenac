@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class FirebaseAuthFilter implements Filter {
@@ -13,6 +14,7 @@ public class FirebaseAuthFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         String header = httpRequest.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
@@ -25,8 +27,21 @@ public class FirebaseAuthFilter implements Filter {
                 request.setAttribute("email", decodedToken.getEmail());
 
             } catch (Exception e) {
-                System.out.println("Erro ao validar token: " + e.getMessage());
+                if (httpRequest.getRequestURI().startsWith("/api/auth/")) {
+                    httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    httpResponse.setContentType("application/json");
+                    httpResponse.getWriter().write("{\"error\":\"Token invalido\"}");
+                    return;
+                }
             }
+        }
+
+        if (httpRequest.getRequestURI().startsWith("/api/auth/")
+                && request.getAttribute("uid") == null) {
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.setContentType("application/json");
+            httpResponse.getWriter().write("{\"error\":\"Token ausente\"}");
+            return;
         }
 
         chain.doFilter(request, response);
