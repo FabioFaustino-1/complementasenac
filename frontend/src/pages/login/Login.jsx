@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GraduationCap, UserCog, ShieldCheck } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import './Login.css';
@@ -11,7 +11,14 @@ function Login() {
   const [perfilAtivo, setPerfilAtivo] = useState("aluno");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); 
-  const { loginWithBackend } = useAuth();
+  const { loginWithBackend, isAuthenticated, role } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (role === "aluno") navigate("/aluno", { replace: true });
+    else if (role === "coordenador") navigate("/coordenador", { replace: true });
+    else if (role === "admin") navigate("/gestaoAlunos", { replace: true });
+  }, [isAuthenticated, role, navigate]);
   
 const handleLogin = async () => {
   if (!email || !senha) {

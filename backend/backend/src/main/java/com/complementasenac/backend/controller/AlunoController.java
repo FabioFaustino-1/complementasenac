@@ -50,23 +50,27 @@ public class AlunoController {
     }
 
     @GetMapping("/api/aluno/resumo")
-    public AlunoResumoModel getResumoAluno() {
-        return alunoService.buscarResumo();
+    public AlunoResumoModel getResumoAluno(HttpServletRequest request) {
+        return alunoService.buscarResumo(lerEmail(request));
     }
 
     @GetMapping("/api/aluno/atividades/recentes")
-    public List<AlunoAtividadeModel> listarRecentes() {
-        return alunoService.listarRecentes(3);
+    public List<AlunoAtividadeModel> listarRecentes(HttpServletRequest request) {
+        return alunoService.listarRecentes(3, lerEmail(request));
     }
 
     @GetMapping("/api/aluno/atividades")
-    public List<AlunoAtividadeModel> listarHistorico() {
-        return alunoService.listarHistorico();
+    public List<AlunoAtividadeModel> listarHistorico(HttpServletRequest request) {
+        return alunoService.listarHistorico(lerEmail(request));
     }
 
     @PostMapping("/api/aluno/atividades")
-    public ResponseEntity<AlunoAtividadeModel> submeterAtividade(@RequestBody AlunoSubmissaoRequestModel payload) {
-        AlunoAtividadeModel atividadeCriada = alunoService.submeterAtividade(payload);
+    public ResponseEntity<AlunoAtividadeModel> submeterAtividade(
+            HttpServletRequest request,
+            @RequestBody AlunoSubmissaoRequestModel payload) {
+        String uid = lerUid(request);
+        String email = lerEmail(request);
+        AlunoAtividadeModel atividadeCriada = alunoService.submeterAtividade(payload, uid, email);
         return ResponseEntity.status(HttpStatus.CREATED).body(atividadeCriada);
     }
 
@@ -81,7 +85,7 @@ public class AlunoController {
     private String lerEmail(HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
         if (email == null || email.isBlank()) {
-            return "aluno@edu.pe.senac.br";
+            return "fabio.faustao@edu.pe.senac.br";
         }
         return email;
     }

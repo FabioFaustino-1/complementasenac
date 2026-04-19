@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../services/firebase";
 
 const AuthContext = createContext(undefined);
 
@@ -39,7 +41,12 @@ export function AuthProvider({ children }) {
     writeStorage(next);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch {
+      // sessão local ainda é limpa
+    }
     setAuth({ user: null, role: null, token: null });
     clearStorage();
   };

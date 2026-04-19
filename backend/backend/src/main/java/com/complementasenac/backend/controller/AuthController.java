@@ -2,8 +2,7 @@ package com.complementasenac.backend.controller;
 
 import com.complementasenac.backend.service.PerfilService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +14,11 @@ public class AuthController {
 
     public AuthController(PerfilService perfilService) {
         this.perfilService = perfilService;
+    }
+
+    // 🔥 preflight (pode remover depois se quiser)
+    @RequestMapping(value = "/api/auth/me", method = RequestMethod.OPTIONS)
+    public void corsHeaders() {
     }
 
     @GetMapping("/api/auth/me")

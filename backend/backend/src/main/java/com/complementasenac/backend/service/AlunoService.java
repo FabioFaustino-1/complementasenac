@@ -6,24 +6,16 @@ import com.complementasenac.backend.model.AlunoResumoModel;
 import com.complementasenac.backend.model.AlunoSubmissaoRequestModel;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class AlunoService {
 
     private static final int HORAS_NECESSARIAS = 40;
-    private final AtomicLong idGenerator = new AtomicLong(1);
-    private final List<AlunoAtividadeModel> atividades = new ArrayList<>();
+    private final AtividadeComplementarRepository repository;
 
-    public AlunoService() {
-        atividades.add(criarAtividade("Workshop de React Avancado", "Workshop", "12/03/2026", 8, "APROVADO"));
-        atividades.add(criarAtividade("Palestra sobre IA Generativa", "Palestra", "08/03/2026", 4, "PENDENTE"));
-        atividades.add(criarAtividade("Curso de Python para Dados", "Curso Online", "15/02/2026", 8, "APROVADO"));
-        atividades.add(criarAtividade("Monitoria de Banco de Dados", "Monitoria", "10/02/2026", 10, "APROVADO"));
-        atividades.add(criarAtividade("Hackathon Senac 2026", "Congresso", "01/03/2026", 15, "INDEFERIDO"));
+    public AlunoService(AtividadeComplementarRepository repository) {
+        this.repository = repository;
     }
 
     public AlunoPerfilModel buscarPerfil(String uid, String email) {
@@ -39,7 +31,8 @@ public class AlunoService {
         return perfil;
     }
 
-    public AlunoResumoModel buscarResumo() {
+    public AlunoResumoModel buscarResumo(String alunoEmail) {
+        List<AlunoAtividadeModel> atividades = filtrarDoAluno(alunoEmail);
         int aprovadas = (int) atividades.stream().filter(a -> "APROVADO".equals(a.getStatus())).count();
         int pendentes = (int) atividades.stream().filter(a -> "PENDENTE".equals(a.getStatus())).count();
         int indeferidas = (int) atividades.stream().filter(a -> "INDEFERIDO".equals(a.getStatus())).count();
@@ -52,7 +45,8 @@ public class AlunoService {
         resumo.setCurso("Analise e Desenvolvimento de Sistemas");
         resumo.setHorasConcluidas(horasConcluidas);
         resumo.setHorasNecessarias(HORAS_NECESSARIAS);
-        resumo.setPercentualConcluido(Math.min(100, (horasConcluidas * 100) / HORAS_NECESSARIAS));
+        resumo.setPercentualConcluido(HORAS_NECESSARIAS == 0 ? 0
+                : Math.min(100, (horasConcluidas * 100) / HORAS_NECESSARIAS));
         resumo.setAprovadas(aprovadas);
         resumo.setPendentes(pendentes);
         resumo.setIndeferidas(indeferidas);
@@ -60,28 +54,40 @@ public class AlunoService {
         return resumo;
     }
 
-    public List<AlunoAtividadeModel> listarHistorico() {
-        return atividades.stream()
-                .sorted(Comparator.comparing(AlunoAtividadeModel::getId).reversed())
+    public List<AlunoAtividadeModel> listarHistorico(String alunoEmail) {
+        return filtrarDoAluno(alunoEmail).stream()
+                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
                 .toList();
     }
 
-    public List<AlunoAtividadeModel> listarRecentes(int limite) {
-        return listarHistorico().stream().limit(limite).toList();
+    public List<AlunoAtividadeModel> listarRecentes(int limite, String alunoEmail) {
+        return listarHistorico(alunoEmail).stream().limit(limite).toList();
     }
 
-    public AlunoAtividadeModel submeterAtividade(AlunoSubmissaoRequestModel payload) {
+    public AlunoAtividadeModel submeterAtividade(AlunoSubmissaoRequestModel payload, String uid, String email) {
         validarSubmissao(payload);
+        String nomeAluno = buscarPerfil(uid, email).getNome();
         AlunoAtividadeModel atividade = criarAtividade(
                 payload.getTitulo(),
+                nomeAluno,
+                email,
                 payload.getTipo(),
                 payload.getData(),
                 payload.getHoras(),
                 "PENDENTE"
         );
         atividade.setComprovanteUrl(payload.getComprovanteUrl());
-        atividades.add(atividade);
-        return atividade;
+        return repository.persistir(atividade);
+    }
+
+    private List<AlunoAtividadeModel> filtrarDoAluno(String alunoEmail) {
+        if (alunoEmail == null || alunoEmail.isBlank()) {
+            return List.of();
+        }
+        String e = alunoEmail.trim().toLowerCase();
+        return repository.todas().stream()
+                .filter(a -> a.getAlunoEmail() != null && e.equals(a.getAlunoEmail().toLowerCase()))
+                .toList();
     }
 
     private void validarSubmissao(AlunoSubmissaoRequestModel payload) {
@@ -96,10 +102,12 @@ public class AlunoService {
         }
     }
 
-    private AlunoAtividadeModel criarAtividade(String titulo, String tipo, String data, int horas, String status) {
+    private AlunoAtividadeModel criarAtividade(
+            String titulo, String alunoNome, String alunoEmail, String tipo, String data, int horas, String status) {
         AlunoAtividadeModel atividade = new AlunoAtividadeModel();
-        atividade.setId(idGenerator.getAndIncrement());
         atividade.setTitulo(titulo);
+        atividade.setAlunoNome(alunoNome);
+        atividade.setAlunoEmail(alunoEmail != null ? alunoEmail.trim() : null);
         atividade.setTipo(tipo);
         atividade.setData(data);
         atividade.setHoras(horas);

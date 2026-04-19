@@ -2,20 +2,30 @@ package com.complementasenac.backend.config;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
-public class FirebaseAuthFilter implements Filter {
+@Component
+public class FirebaseAuthFilter extends OncePerRequestFilter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
+            throws ServletException, IOException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        String header = httpRequest.getHeader("Authorization");
+        // 🔥 LIBERA PREFLIGHT (CRUCIAL)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.replace("Bearer ", "");
@@ -27,23 +37,33 @@ public class FirebaseAuthFilter implements Filter {
                 request.setAttribute("email", decodedToken.getEmail());
 
             } catch (Exception e) {
-                if (httpRequest.getRequestURI().startsWith("/api/auth/")) {
-                    httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    httpResponse.setContentType("application/json");
-                    httpResponse.getWriter().write("{\"error\":\"Token invalido\"}");
+                if (request.getRequestURI().startsWith("/api/auth/")) {
+                    corsHeaders(request, response);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"error\":\"Token invalido\"}");
                     return;
                 }
             }
         }
 
-        if (httpRequest.getRequestURI().startsWith("/api/auth/")
+        if (request.getRequestURI().startsWith("/api/auth/")
                 && request.getAttribute("uid") == null) {
-            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.setContentType("application/json");
-            httpResponse.getWriter().write("{\"error\":\"Token ausente\"}");
+            corsHeaders(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\":\"Token ausente\"}");
             return;
         }
 
         chain.doFilter(request, response);
+    }
+
+    private void corsHeaders(HttpServletRequest request, HttpServletResponse response) {
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+        }
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
     }
 }

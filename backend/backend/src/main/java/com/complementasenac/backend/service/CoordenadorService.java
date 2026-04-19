@@ -1,55 +1,52 @@
 package com.complementasenac.backend.service;
 
+import com.complementasenac.backend.model.AlunoAtividadeModel;
 import com.complementasenac.backend.model.AtividadeCoordenadorModel;
 import com.complementasenac.backend.model.CoordenadorPerfilModel;
 import com.complementasenac.backend.model.CoordenadorResumoModel;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class CoordenadorService {
-    private final List<AtividadeCoordenadorModel> atividades = new ArrayList<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
 
-    public CoordenadorService() {
-        atividades.add(novaAtividade("Workshop de React Avancado", "Maria Silva", "Workshop", "12/03/2026", 8, 95));
-        atividades.add(novaAtividade("Palestra sobre IA Generativa", "Joao Santos", "Palestra", "08/03/2026", 4, 88));
-        atividades.add(novaAtividade("Curso de Excel Avancado", "Ana Costa", "Curso Online", "01/03/2026", 20, 42));
+    private final AtividadeComplementarRepository repository;
+
+    public CoordenadorService(AtividadeComplementarRepository repository) {
+        this.repository = repository;
     }
 
     public List<AtividadeCoordenadorModel> listarPendentes() {
-        return atividades.stream()
+        return repository.todas().stream()
                 .filter(a -> "PENDENTE".equals(a.getStatus()))
-                .sorted(Comparator.comparing(AtividadeCoordenadorModel::getId))
+                .sorted(Comparator.comparing(AlunoAtividadeModel::getId))
+                .map(this::paraCoordenador)
                 .toList();
     }
 
     public List<AtividadeCoordenadorModel> listarTodas() {
-        return atividades.stream()
-                .sorted(Comparator.comparing(AtividadeCoordenadorModel::getId).reversed())
+        return repository.todas().stream()
+                .sorted(Comparator.comparing(AlunoAtividadeModel::getId).reversed())
+                .map(this::paraCoordenador)
                 .toList();
     }
 
     public Optional<AtividadeCoordenadorModel> decidir(Long id, String status) {
         validarStatus(status);
-        for (AtividadeCoordenadorModel atividade : atividades) {
-            if (atividade.getId().equals(id)) {
-                atividade.setStatus(status);
-                return Optional.of(atividade);
-            }
-        }
-        return Optional.empty();
+        return repository.porId(id).map(a -> {
+            a.setStatus(status);
+            return paraCoordenador(a);
+        });
     }
 
     public CoordenadorResumoModel resumo() {
-        int pendentes = (int) atividades.stream().filter(a -> "PENDENTE".equals(a.getStatus())).count();
-        int aprovadasNoMes = (int) atividades.stream().filter(a -> "APROVADO".equals(a.getStatus())).count();
-        int rejeitadasNoMes = (int) atividades.stream().filter(a -> "INDEFERIDO".equals(a.getStatus())).count();
+        List<AlunoAtividadeModel> todas = repository.todas();
+        int pendentes = (int) todas.stream().filter(a -> "PENDENTE".equals(a.getStatus())).count();
+        int aprovadasNoMes = (int) todas.stream().filter(a -> "APROVADO".equals(a.getStatus())).count();
+        int rejeitadasNoMes = (int) todas.stream().filter(a -> "INDEFERIDO".equals(a.getStatus())).count();
         int totalDecididas = aprovadasNoMes + rejeitadasNoMes;
         int taxa = totalDecididas == 0 ? 0 : (aprovadasNoMes * 100) / totalDecididas;
 
@@ -81,16 +78,16 @@ public class CoordenadorService {
         }
     }
 
-    private AtividadeCoordenadorModel novaAtividade(String titulo, String aluno, String tipo, String data, int horas, int confiancaIa) {
+    private AtividadeCoordenadorModel paraCoordenador(AlunoAtividadeModel a) {
         AtividadeCoordenadorModel atividade = new AtividadeCoordenadorModel();
-        atividade.setId(idGenerator.getAndIncrement());
-        atividade.setTitulo(titulo);
-        atividade.setAluno(aluno);
-        atividade.setTipo(tipo);
-        atividade.setData(data);
-        atividade.setHoras(horas);
-        atividade.setConfiancaIa(confiancaIa);
-        atividade.setStatus("PENDENTE");
+        atividade.setId(a.getId());
+        atividade.setTitulo(a.getTitulo());
+        atividade.setAluno(a.getAlunoNome() != null ? a.getAlunoNome() : "Aluno");
+        atividade.setTipo(a.getTipo());
+        atividade.setData(a.getData());
+        atividade.setHoras(a.getHoras());
+        atividade.setConfiancaIa(50 + (int) (a.getId() != null ? a.getId() % 50 : 0));
+        atividade.setStatus(a.getStatus());
         return atividade;
     }
 }

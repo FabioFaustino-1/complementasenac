@@ -8,6 +8,10 @@ public class AlunoAtividadeModel {
     private int horas;
     private String status;
     private String comprovanteUrl;
+    /** Nome do aluno (visível na fila do coordenador). */
+    private String alunoNome;
+    /** E-mail do aluno (filtro de histórico / resumo). */
+    private String alunoEmail;
 
     public Long getId() {
         return id;
@@ -63,5 +67,21 @@ public class AlunoAtividadeModel {
 
     public void setComprovanteUrl(String comprovanteUrl) {
         this.comprovanteUrl = comprovanteUrl;
+    }
+
+    public String getAlunoNome() {
+        return alunoNome;
+    }
+
+    public void setAlunoNome(String alunoNome) {
+        this.alunoNome = alunoNome;
+    }
+
+    public String getAlunoEmail() {
+        return alunoEmail;
+    }
+
+    public void setAlunoEmail(String alunoEmail) {
+        this.alunoEmail = alunoEmail;
     }
 }
