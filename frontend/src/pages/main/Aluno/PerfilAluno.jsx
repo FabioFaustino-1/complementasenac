@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import './PerfilAluno.css';
-import { Menu, Pencil, BookOpen } from 'lucide-react';
-import Sidebar from '../../../assets/Sidebar';
-import { useNavigate } from 'react-router-dom';
-import { createAlunoMenu } from '../menuConfig';
-import { useAuth } from '../../../assets/contexts/AuthContext';
-import { fetchPerfilAluno, fetchResumoAluno } from '../../../services/aluno';
+import React, { useEffect, useState } from "react";
+import { BookOpen, Menu, Pencil, Sparkles, UserRound } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import "./PerfilAluno.css";
+import Sidebar from "../../../assets/Sidebar";
+import { createAlunoMenu } from "../menuConfig";
+import { useAuth } from "../../../assets/contexts/AuthContext";
+import { fetchPerfilAluno, fetchResumoAluno } from "../../../services/aluno";
 
 function iniciais(nome) {
-  if (!nome || !nome.trim()) return 'AL';
+  if (!nome || !nome.trim()) return "AL";
   const parts = nome.trim().split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -16,151 +16,216 @@ function iniciais(nome) {
 
 const PerfilAluno = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate();
-  const { token } = useAuth();
-  const menuItems = createAlunoMenu(navigate);
-
   const [perfil, setPerfil] = useState(null);
   const [resumo, setResumo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
-    if (!token) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const [p, r] = await Promise.all([fetchPerfilAluno(token), fetchResumoAluno(token)]);
-      setPerfil(p);
-      setResumo(r);
-    } catch (e) {
-      setError(e.message || 'Não foi possível carregar o perfil.');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+  const navigate = useNavigate();
+  const { token } = useAuth();
+  const menuItems = createAlunoMenu(navigate);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!token) return;
 
-  const pct = resumo?.percentualConcluido ?? 0;
-  const horasOk = resumo?.horasConcluidas ?? 0;
-  const horasNec = resumo?.horasNecessarias ?? 40;
+    let active = true;
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [perfilData, resumoData] = await Promise.all([
+          fetchPerfilAluno(token),
+          fetchResumoAluno(token),
+        ]);
+
+        if (!active) return;
+        setPerfil(perfilData);
+        setResumo(resumoData);
+      } catch (e) {
+        if (!active) return;
+        setError(e.message || "Nao foi possivel carregar o perfil.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
+
+  const percentual = resumo?.percentualConcluido ?? 0;
+  const horasConcluidas = resumo?.horasConcluidas ?? 0;
+  const horasNecessarias = resumo?.horasNecessarias ?? 40;
 
   return (
-    <div className="perfil-root-container">
+    <div className="profile-shell">
       <Sidebar
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         activePage="perfil"
         menuItems={menuItems}
-        userName={perfil?.nome || 'Aluno'}
-        userEmail={perfil?.email || ''}
+        userName={perfil?.nome || "Aluno"}
+        userEmail={perfil?.email || ""}
+        variant="student-dark"
       />
-      <div className="perfil-page-wrapper">
-        <header className="perfil-top-header">
-          <div className="header-inner">
-            <Menu className="hamburguer-icon" onClick={() => setIsSidebarOpen(true)} />
-            <div className="header-right-group">
-              <div className="text-right-aligned">
-                <span className="senac-txt">Senac</span>
-                <span className="complementares-txt">Complementares</span>
-              </div>
-              <div className="s-plus-box">S+</div>
+
+      <main className="profile-main">
+        <header className="profile-topbar">
+          <button
+            type="button"
+            className="profile-menu-toggle"
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu size={18} />
+          </button>
+
+          <div className="profile-topbar__content">
+            <span className="profile-eyebrow">
+              <Sparkles size={14} />
+              Area pessoal do aluno
+            </span>
+            <h1>Meu perfil</h1>
+            <p>Identidade, progresso academico e dados institucionais em uma interface unificada.</p>
+
+            <div className="profile-tabs">
+              <button type="button" onClick={() => navigate("/aluno")}>Overview</button>
+              <button type="button" onClick={() => navigate("/aluno/historico")}>Historico</button>
+              <button type="button" className="active">Perfil</button>
             </div>
           </div>
         </header>
 
         {error && (
-          <p style={{ padding: '0 24px', color: '#b91c1c' }}>
-            {error}{' '}
-            <button type="button" onClick={load} style={{ fontWeight: 700, border: 'none', background: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-              Tentar novamente
+          <div className="profile-alert">
+            <span>{error}</span>
+            <button type="button" onClick={() => window.location.reload()}>
+              Recarregar
             </button>
-          </p>
+          </div>
         )}
 
-        <main className="perfil-main-content">
-          <div className="perfil-grid-layout">
-            <aside className="left-profile-column">
-              <div className="white-card text-center">
-                <div className="big-avatar">{loading ? '…' : iniciais(perfil?.nome)}</div>
-                <h2 className="dark-blue-title">{loading ? '…' : perfil?.nome}</h2>
-                <p className="gray-sub">{loading ? '…' : perfil?.email}</p>
-                <div className="aluno-badge">
-                  <BookOpen size={12} /> ALUNO
+        <section className="profile-layout">
+          <aside className="profile-sidebar-column">
+            <article className="profile-card">
+              <div className="profile-avatar">{loading ? "..." : iniciais(perfil?.nome)}</div>
+              <h2>{loading ? "Carregando..." : perfil?.nome || "Aluno Senac"}</h2>
+              <p>{loading ? "..." : perfil?.email || "Sem email cadastrado"}</p>
+
+              <div className="profile-role-chip">
+                <BookOpen size={14} />
+                Aluno
+              </div>
+
+              <div className="profile-progress">
+                <div className="profile-progress__meta">
+                  <span>Progresso de horas</span>
+                  <strong>{loading ? "..." : `${horasConcluidas}/${horasNecessarias}h`}</strong>
+                </div>
+                <div className="profile-progress__track">
+                  <div
+                    className="profile-progress__fill"
+                    style={{ width: `${Math.min(percentual, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="profile-mini-stats">
+                <div>
+                  <strong>{loading ? "..." : resumo?.totalAtividades ?? 0}</strong>
+                  <span>Atividades</span>
+                </div>
+                <div>
+                  <strong>{loading ? "..." : resumo?.aprovadas ?? 0}</strong>
+                  <span>Aprovadas</span>
+                </div>
+              </div>
+            </article>
+          </aside>
+
+          <section className="profile-content-column">
+            <article className="profile-form-card">
+              <div className="profile-form-card__header">
+                <div>
+                  <h3>Informacoes pessoais</h3>
+                  <p>Dados institucionais exibidos no mesmo design system do dashboard.</p>
                 </div>
 
-                <div className="progresso-container">
-                  <div className="labels">
-                    <span>PROGRESSO DE HORAS</span>
-                    <span>
-                      {loading ? '—' : `${horasOk}/${horasNec}H`}
-                    </span>
-                  </div>
-                  <div className="bar-bg">
-                    <div className="bar-fill" style={{ width: `${Math.min(100, pct)}%` }}></div>
+                <button type="button" className="profile-edit-btn" disabled title="Edicao em breve">
+                  <Pencil size={15} />
+                  Editar
+                </button>
+              </div>
+
+              <div className="profile-form-grid">
+                <div className="profile-field">
+                  <label>Nome completo</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.nome || ""} readOnly disabled />
                   </div>
                 </div>
 
-                <div className="stats-row">
-                  <div className="stat-item">
-                    <strong>{loading ? '—' : resumo?.totalAtividades ?? 0}</strong>
-                    <small>ATIVIDADES</small>
+                <div className="profile-field">
+                  <label>E-mail</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.email || ""} readOnly disabled />
                   </div>
-                  <div className="stat-item">
-                    <strong className="green">{loading ? '—' : resumo?.aprovadas ?? 0}</strong>
-                    <small>APROVADAS</small>
+                </div>
+
+                <div className="profile-field">
+                  <label>Telefone</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.telefone || ""} readOnly disabled />
+                  </div>
+                </div>
+
+                <div className="profile-field">
+                  <label>Ingresso</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.ingresso || ""} readOnly disabled />
+                  </div>
+                </div>
+
+                <div className="profile-field">
+                  <label>Curso</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.curso || ""} readOnly disabled />
+                  </div>
+                </div>
+
+                <div className="profile-field">
+                  <label>Departamento</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.departamento || ""} readOnly disabled />
+                  </div>
+                </div>
+
+                <div className="profile-field profile-field--full">
+                  <label>Matricula / Registro</label>
+                  <div className="profile-input-shell">
+                    <input type="text" value={perfil?.matricula || ""} readOnly disabled />
                   </div>
                 </div>
               </div>
-            </aside>
+            </article>
 
-            <section className="right-info-column">
-              <div className="white-card">
-                <div className="card-header">
-                  <h3>INFORMAÇÕES PESSOAIS</h3>
-                  <button type="button" className="edit-btn" disabled title="Edição em breve">
-                    <Pencil /> Editar
-                  </button>
-                </div>
-
-                <div className="form-grid">
-                  <div className="field">
-                    <label>Nome Completo</label>
-                    <input type="text" value={perfil?.nome || ''} readOnly disabled />
-                  </div>
-                  <div className="field">
-                    <label>E-mail</label>
-                    <input type="text" value={perfil?.email || ''} readOnly disabled />
-                  </div>
-                  <div className="field">
-                    <label>Telefone</label>
-                    <input type="text" value={perfil?.telefone || ''} readOnly disabled />
-                  </div>
-                  <div className="field">
-                    <label>Ingresso</label>
-                    <input type="text" value={perfil?.ingresso || ''} readOnly disabled />
-                  </div>
-                  <div className="field">
-                    <label>Curso</label>
-                    <input type="text" value={perfil?.curso || ''} readOnly disabled />
-                  </div>
-                  <div className="field">
-                    <label>Departamento</label>
-                    <input type="text" value={perfil?.departamento || ''} readOnly disabled />
-                  </div>
-                  <div className="field full">
-                    <label>Matrícula / Registro</label>
-                    <input type="text" value={perfil?.matricula || ''} readOnly disabled />
-                  </div>
-                </div>
+            <article className="profile-note-card">
+              <div className="profile-note-card__icon">
+                <UserRound size={16} />
               </div>
-            </section>
-          </div>
-        </main>
-      </div>
+              <div>
+                <strong>Painel coerente com o dashboard</strong>
+                <p>Mesma atmosfera escura, cards modulares, bordas suaves e acentos violetas.</p>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
     </div>
   );
 };

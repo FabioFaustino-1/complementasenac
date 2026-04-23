@@ -52,7 +52,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.75rem;
     h1 { color: #1e293b; font-size: 1.8rem; font-weight: 800; }
     p { color: #64748b; font-size: 0.95rem; }
   }
@@ -76,7 +76,7 @@
   .cursos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .curso-card {
@@ -161,5 +161,19 @@
       background: #f1f5f9; border: none; padding: 0.8rem; border-radius: 10px;
       font-weight: 600; cursor: pointer;
     }
+  }
+
+  @media (max-width: 1024px) {
+    .main-content { padding: 1.5rem; }
+  }
+
+  @media (max-width: 720px) {
+    .main-content { padding: 1rem; }
+    .top-header,
+    .dashboard-intro { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .cursos-grid { grid-template-columns: 1fr; }
+    .btn-primary { width: 100%; justify-content: center; }
+    .modal-content { padding: 1.2rem; }
+    .modal-actions { flex-direction: column; }
   }
 }

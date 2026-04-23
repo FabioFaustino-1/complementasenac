@@ -1,12 +1,34 @@
-import React from 'react';
-import { LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import './Sidebar.css';
+import React, { useEffect, useRef } from "react";
+import { LogOut, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import "./Sidebar.css";
 
-const Sidebar = ({ isOpen, setIsOpen, activePage, menuItems = [], userName, userEmail }) => {
+const Sidebar = ({
+  isOpen,
+  setIsOpen,
+  activePage,
+  menuItems = [],
+  userName,
+  userEmail,
+  variant = "default",
+}) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, setIsOpen]);
 
   const handleLogout = () => {
     logout();
@@ -16,28 +38,41 @@ const Sidebar = ({ isOpen, setIsOpen, activePage, menuItems = [], userName, user
 
   return (
     <>
-      {/* Overlay para fechar no mobile ao clicar fora */}
-      {isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />}
+      {isOpen ? <div className="sidebar-overlay" onClick={() => setIsOpen(false)} /> : null}
 
-      <div className={`sidebar ${isOpen ? "open" : ""}`}>
+      <div
+        ref={modalRef}
+        className={`sidebar ${variant === "student-dark" ? "sidebar--student-dark" : ""} ${isOpen ? "open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!isOpen}
+      >
         <div className="sidebar-content">
           <div className="sidebar-top">
-            {/* Logo Section */}
             <div className="sidebar-logo-section">
               <div className="sidebar-logo-text">
                 <div className="senac-txt">Senac</div>
                 <div className="comp-txt">Complementares</div>
               </div>
+              <button
+                type="button"
+                className="sidebar-close-btn"
+                onClick={() => setIsOpen(false)}
+                aria-label="Fechar menu"
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            {/* Lista de Navegação Dinâmica via Props */}
             <nav className="nav-list">
               {menuItems.map((item) => {
                 const isSelected = activePage === item.id;
+
                 return (
-                  <div 
-                    key={item.id} 
-                    className={`nav-item ${isSelected ? "active" : ""}`} 
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`nav-item ${isSelected ? "active" : ""}`}
                     onClick={() => {
                       if (item.onClick) item.onClick();
                       setIsOpen(false);
@@ -47,22 +82,21 @@ const Sidebar = ({ isOpen, setIsOpen, activePage, menuItems = [], userName, user
                       {item.icon}
                     </div>
                     <span>{item.name}</span>
-                  </div>
+                  </button>
                 );
               })}
             </nav>
           </div>
 
-          {/* Rodapé da Sidebar */}
           <div className="sidebar-footer">
-            <div className="btn-logout" onClick={handleLogout}>
+            <button type="button" className="btn-logout" onClick={handleLogout}>
               <div className="nav-icon-circle">
-                <LogOut size={20} color="white" />
+                <LogOut size={20} color="currentColor" />
               </div>
               <span>Sair da Conta</span>
-            </div>
+            </button>
             <div className="footer-user-info">
-              <div className="user-name-bold">{userName || "Usuário"}</div>
+              <div className="user-name-bold">{userName || "Usuario"}</div>
               <div className="user-email">{userEmail || "email@exemplo.com"}</div>
             </div>
           </div>

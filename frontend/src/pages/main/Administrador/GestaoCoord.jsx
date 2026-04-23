@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 1. Importação necessária para navegação
 import './GestaoCoord.css';
 import Sidebar from '../../../assets/Sidebar';
+import { useAuth } from '../../../assets/contexts/AuthContext';
+import { buildGreeting, deriveDisplayName } from '../../../utils/userDisplay';
 import { 
   Pencil, 
   Trash2, 
@@ -13,6 +15,12 @@ import {
 const GestaoCoord = () => {
   // Inicializa o navigate
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const nomeUsuario = deriveDisplayName({
+    name: user?.name,
+    email: user?.email,
+    fallback: "Administrador",
+  });
 
   // ESTADOS DA LISTA
   const [coordenadores, setCoordenadores] = useState([
@@ -82,8 +90,8 @@ const GestaoCoord = () => {
         setIsOpen={setSidebarOpen} 
         activePage="coordenadores" 
         menuItems={itensMenuAdmin}
-        userName="Fabio Faustino"
-        userEmail="fabio.faustino@edu.pe.senac.br"
+        userName={nomeUsuario}
+        userEmail={user?.email || "admin@senac.pe.br"}
       />
 
       <div className="coord-page-wrapper">
@@ -110,7 +118,7 @@ const GestaoCoord = () => {
           <div className="coord-container">
             <div className="coord-header-action">
               <div className="title-info">
-                <h1 className="coord-title">Coordenadores</h1>
+                <h1 className="coord-title">{buildGreeting(nomeUsuario)}</h1>
                 <p className="coord-subtitle">Cadastre e gerencie os coordenadores do sistema</p>
               </div>
               <button className="new-coord-btn" onClick={() => setIsModalOpen(true)}>

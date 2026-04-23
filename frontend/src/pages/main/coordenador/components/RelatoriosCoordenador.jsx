@@ -1,12 +1,13 @@
 import React from "react";
 import { FileText, Users, Search, User } from "lucide-react";
 import "./RelatoriosCoordenador.css";
+import { buildGreeting } from "../../../../utils/userDisplay";
 
-const RelatoriosCoordenador = ({ stats, activities, taxa }) => (
+const RelatoriosCoordenador = ({ stats, activities, taxa, nomeUsuario }) => (
   <div className="rep-main-viewport">
     <div className="rep-content-wrapper">
       <div className="rep-page-header">
-        <h1>Painel do Coordenador</h1>
+        <h1>{buildGreeting(nomeUsuario)}</h1>
         <p>Gerencie e valide as atividades complementares dos alunos</p>
       </div>
 

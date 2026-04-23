@@ -35,7 +35,7 @@
 
 /* CONTEÚDO */
 .coord-main-content { padding: 0 30px 30px 30px; display: flex; justify-content: center; }
-.coord-container { width: 100%; max-width: 1250px; }
+.coord-container { width: 100%; max-width: none; }
 .coord-header-action { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
 .coord-title { font-size: 26px; font-weight: 800; color: #1f2937; margin-bottom: 5px; }
 .coord-subtitle { font-size: 14px; color: var(--text-gray); }
@@ -125,3 +125,56 @@
 .modal-btns button { padding: 10px 20px; border-radius: 6px; cursor: pointer; border: none; }
 
 .btn-save { background: var(--blue-senac); color: white; }
+
+@media (max-width: 900px) {
+  .coord-top-header,
+  .coord-main-content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .coord-header-action {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .new-coord-btn {
+    position: static;
+    top: auto;
+  }
+
+  .search-input-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .coord-root-container {
+    position: static;
+    width: 100%;
+  }
+
+  .coord-top-header,
+  .coord-main-content {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .header-inner {
+    padding: 10px 14px;
+  }
+
+  .table-card {
+    overflow-x: auto;
+  }
+
+  .coord-table {
+    min-width: 720px;
+  }
+
+  .modal-content {
+    width: calc(100vw - 28px);
+    max-width: 400px;
+    padding: 20px;
+  }
+}

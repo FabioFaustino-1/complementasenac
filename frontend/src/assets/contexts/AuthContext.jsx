@@ -33,6 +33,7 @@ export function AuthProvider({ children }) {
     const role = perfil?.perfil ?? "aluno";
     const user = {
       uid: perfil?.uid ?? null,
+      name: perfil?.nome ?? null,
       email: perfil?.email ?? email ?? null,
       role,
     };

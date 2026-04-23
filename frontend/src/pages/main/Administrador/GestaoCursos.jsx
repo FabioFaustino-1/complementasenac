@@ -2,12 +2,20 @@ import React, { useState } from 'react';
 import { Users, ClipboardCheck, BarChart3, BookOpen, Plus } from 'lucide-react';
 import Sidebar from '../../../assets/Sidebar';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../assets/contexts/AuthContext';
+import { buildGreeting, deriveDisplayName } from '../../../utils/userDisplay';
 import './GestaoCursos.css';
 
 const GestaoCursos = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate()
+  const { user } = useAuth();
+  const nomeUsuario = deriveDisplayName({
+    name: user?.name,
+    email: user?.email,
+    fallback: 'Administrador',
+  });
 
 
   // Estado para a lista de cursos (exemplo inicial baseado na imagem)
@@ -48,8 +56,8 @@ const GestaoCursos = () => {
         setIsOpen={setSidebarOpen} 
         activePage="cursos" 
         menuItems={itensMenuAdmin}
-        userName="Fabio Faustino"
-        userEmail="fabio.faustino@edu.pe.senac.br"
+        userName={nomeUsuario}
+        userEmail={user?.email || 'admin@senac.pe.br'}
       />
 
       <main className="main-content">
@@ -66,7 +74,7 @@ const GestaoCursos = () => {
 
         <section className="dashboard-intro">
           <div>
-            <h1>Cursos</h1>
+            <h1>{buildGreeting(nomeUsuario)}</h1>
             <p>Gerencie os cursos e parâmetros de horas complementares</p>
           </div>
           <button className="btn-primary" onClick={() => setIsModalOpen(true)}>

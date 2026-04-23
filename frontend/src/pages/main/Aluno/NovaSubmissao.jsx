@@ -1,230 +1,321 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import './NovaSubmissao.css';
-import Sidebar from '../../../assets/Sidebar';
-import { useNavigate } from 'react-router-dom';
-import { createAlunoMenu } from '../menuConfig';
-import { useAuth } from '../../../assets/contexts/AuthContext';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  CalendarDays,
+  Clock3,
+  FileUp,
+  Menu,
+  Send,
+  Sparkles,
+  UploadCloud,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import "./NovaSubmissao.css";
+import Sidebar from "../../../assets/Sidebar";
+import { createAlunoMenu } from "../menuConfig";
+import { useAuth } from "../../../assets/contexts/AuthContext";
 import {
   fetchPerfilAluno,
   formatDateBrFromInput,
   submeterNovaAtividade,
-} from '../../../services/aluno';
+} from "../../../services/aluno";
 
 const MAX_FILE_BYTES = 800 * 1024;
 
+const tipoOptions = [
+  "Curso Online",
+  "Palestra / Workshop",
+  "Trabalho Voluntario",
+  "Congresso / Seminario",
+  "Monitoria",
+  "Outro",
+];
+
 const NovaSubmissao = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [perfil, setPerfil] = useState(null);
+  const [titulo, setTitulo] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [horas, setHoras] = useState("");
+  const [dataEvento, setDataEvento] = useState("");
+  const [comprovanteUrl, setComprovanteUrl] = useState("");
+  const [arquivoNome, setArquivoNome] = useState("");
+  const [loadingPerfil, setLoadingPerfil] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [erro, setErro] = useState(null);
+
   const navigate = useNavigate();
   const { token } = useAuth();
   const menuItems = createAlunoMenu(navigate);
   const fileInputRef = useRef(null);
 
-  const [perfil, setPerfil] = useState(null);
-  const [titulo, setTitulo] = useState('');
-  const [tipo, setTipo] = useState('');
-  const [horas, setHoras] = useState('');
-  const [dataEvento, setDataEvento] = useState('');
-  const [comprovanteUrl, setComprovanteUrl] = useState('');
-  const [arquivoNome, setArquivoNome] = useState('');
-  const [loadingPerfil, setLoadingPerfil] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [erro, setErro] = useState(null);
-
-  const loadPerfil = useCallback(async () => {
-    if (!token) return;
-    setLoadingPerfil(true);
-    try {
-      const p = await fetchPerfilAluno(token);
-      setPerfil(p);
-    } catch {
-      setPerfil(null);
-    } finally {
-      setLoadingPerfil(false);
-    }
-  }, [token]);
-
   useEffect(() => {
+    if (!token) return;
+
+    let active = true;
+
+    const loadPerfil = async () => {
+      setLoadingPerfil(true);
+      try {
+        const perfilData = await fetchPerfilAluno(token);
+        if (active) setPerfil(perfilData);
+      } catch {
+        if (active) setPerfil(null);
+      } finally {
+        if (active) setLoadingPerfil(false);
+      }
+    };
+
     loadPerfil();
-  }, [loadPerfil]);
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
 
   const handleFile = (file) => {
     if (!file) {
-      setComprovanteUrl('');
-      setArquivoNome('');
+      setComprovanteUrl("");
+      setArquivoNome("");
       return;
     }
+
     if (file.size > MAX_FILE_BYTES) {
-      setErro(`Arquivo muito grande (máx. ${MAX_FILE_BYTES / 1024} KB para envio direto).`);
-      setComprovanteUrl('');
-      setArquivoNome('');
+      setErro(`Arquivo muito grande (max. ${MAX_FILE_BYTES / 1024} KB para envio direto).`);
+      setComprovanteUrl("");
+      setArquivoNome("");
       return;
     }
+
     setErro(null);
     setArquivoNome(file.name);
     const reader = new FileReader();
     reader.onload = () => {
-      setComprovanteUrl(typeof reader.result === 'string' ? reader.result : '');
+      setComprovanteUrl(typeof reader.result === "string" ? reader.result : "");
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setErro(null);
-    const h = parseInt(horas, 10);
-    if (!titulo.trim() || !tipo || !dataEvento || Number.isNaN(h) || h <= 0) {
-      setErro('Preencha título, tipo, data e horas válidas.');
+
+    const horasInt = parseInt(horas, 10);
+    if (!titulo.trim() || !tipo || !dataEvento || Number.isNaN(horasInt) || horasInt <= 0) {
+      setErro("Preencha titulo, tipo, data e horas validas.");
       return;
     }
+
     const dataBr = formatDateBrFromInput(dataEvento);
     setSubmitting(true);
+
     try {
       await submeterNovaAtividade(token, {
         titulo: titulo.trim(),
         tipo,
         data: dataBr,
-        horas: h,
+        horas: horasInt,
         comprovanteUrl: comprovanteUrl || undefined,
       });
-      navigate('/aluno');
+      navigate("/aluno");
     } catch (err) {
-      setErro(err.message || 'Não foi possível enviar a atividade.');
+      setErro(err.message || "Nao foi possivel enviar a atividade.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="submission-root-container">
+    <div className="submission-shell">
       <Sidebar
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         activePage="submissao"
         menuItems={menuItems}
-        userName={perfil?.nome || 'Aluno'}
-        userEmail={perfil?.email || ''}
+        userName={perfil?.nome || "Aluno"}
+        userEmail={perfil?.email || ""}
+        variant="student-dark"
       />
 
-      <div className="submission-page-wrapper">
-        <header className="submission-top-header">
-          <div className="header-inner">
-            <div className="hamburguer-manual" onClick={() => setIsSidebarOpen(true)}>
-              <div className="bar"></div>
-              <div className="bar"></div>
-              <div className="bar"></div>
-            </div>
+      <main className="submission-main">
+        <header className="submission-topbar">
+          <button
+            type="button"
+            className="submission-menu-toggle"
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu size={18} />
+          </button>
 
-            <div className="header-right-group">
-              <div className="text-right-aligned">
-                <span className="senac-txt">Senac</span>
-                <span className="complementares-txt">Complementares</span>
-              </div>
-              <div className="s-plus-box">S+</div>
+          <div className="submission-topbar__content">
+            <span className="submission-eyebrow">
+              <Sparkles size={14} />
+              Envio de atividade complementar
+            </span>
+            <h1>Nova submissao</h1>
+            <p>
+              Registre uma nova atividade em um fluxo mais claro, com upload destacado
+              e formulario no mesmo design system das outras telas do aluno.
+            </p>
+
+            <div className="submission-tabs">
+              <button type="button" onClick={() => navigate("/aluno")}>Overview</button>
+              <button type="button" onClick={() => navigate("/aluno/historico")}>Historico</button>
+              <button type="button" className="active">Submissao</button>
             </div>
           </div>
         </header>
 
-        <main className="submission-main-content">
-          <div className="submission-container">
-            <div className="submission-title-section">
-              <h1 className="submission-title">Nova Submissão</h1>
-              <p className="submission-subtitle">
-                Preencha os dados da atividade e anexe o comprovante (opcional). O coordenador ou administrador irá analisar.
-              </p>
+        {erro && (
+          <div className="submission-alert">
+            <span>{erro}</span>
+            <button type="button" onClick={() => setErro(null)}>
+              Fechar
+            </button>
+          </div>
+        )}
+
+        <section className="submission-layout">
+          <aside className="submission-side-card">
+            <div className="submission-side-card__header">
+              <h2>Checklist rapido</h2>
+              <p>Antes de enviar, confirme se o comprovante e os dados estao corretos.</p>
             </div>
 
-            {erro && (
-              <div style={{ marginBottom: 16, padding: 12, background: '#fef2f2', color: '#991b1b', borderRadius: 8 }}>
-                {erro}
+            <div className="submission-check-list">
+              <div className="submission-check-item">
+                <Clock3 size={16} />
+                <span>Informe a carga horaria real da atividade.</span>
               </div>
-            )}
+              <div className="submission-check-item">
+                <CalendarDays size={16} />
+                <span>Use a data oficial do evento ou certificado.</span>
+              </div>
+              <div className="submission-check-item">
+                <FileUp size={16} />
+                <span>Anexe PDF ou imagem ate 800 KB para agilizar a validacao.</span>
+              </div>
+            </div>
 
-            <form className="submission-card" onSubmit={handleSubmit}>
-              <div className="submission-grid">
-                <div className="upload-section">
-                  <label className="input-label">Comprovante (opcional)</label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="application/pdf,image/*"
-                    style={{ display: 'none' }}
-                    onChange={(ev) => handleFile(ev.target.files?.[0])}
-                  />
-                  <div
-                    className="upload-dropzone"
-                    onClick={() => fileInputRef.current?.click()}
-                    onKeyDown={(k) => k.key === 'Enter' && fileInputRef.current?.click()}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      handleFile(e.dataTransfer.files?.[0]);
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="upload-placeholder-circle">↑</div>
-                    <p className="upload-text">{arquivoNome || 'Clique ou arraste o arquivo aqui'}</p>
-                    <span className="upload-subtext">PDF ou imagem (máx. {MAX_FILE_BYTES / 1024} KB)</span>
+            <div className="submission-side-highlight">
+              <strong>{loadingPerfil ? "..." : perfil?.nome || "Aluno Senac"}</strong>
+              <span>{loadingPerfil ? "..." : perfil?.email || "Sem email cadastrado"}</span>
+            </div>
+          </aside>
+
+          <form className="submission-form-card" onSubmit={handleSubmit}>
+            <div className="submission-form-card__header">
+              <div>
+                <h2>Dados da atividade</h2>
+                <p>Preencha as informacoes principais e anexe o comprovante, se houver.</p>
+              </div>
+              <span className="submission-pill">Fluxo guiado</span>
+            </div>
+
+            <div className="submission-grid">
+              <div className="upload-panel">
+                <label className="submission-label">Comprovante</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf,image/*"
+                  className="submission-hidden-input"
+                  onChange={(event) => handleFile(event.target.files?.[0])}
+                />
+
+                <div
+                  className="submission-dropzone"
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(event) => event.key === "Enter" && fileInputRef.current?.click()}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    handleFile(event.dataTransfer.files?.[0]);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="submission-dropzone__icon">
+                    <UploadCloud size={22} />
                   </div>
+                  <strong>{arquivoNome || "Clique ou arraste o arquivo aqui"}</strong>
+                  <span>PDF ou imagem com ate {MAX_FILE_BYTES / 1024} KB</span>
                 </div>
+              </div>
 
-                <div className="form-section">
-                  <div className="input-group">
-                    <label className="input-label">Nome da Atividade</label>
+              <div className="submission-fields">
+                <div className="submission-field">
+                  <label className="submission-label">Nome da atividade</label>
+                  <div className="submission-input-shell">
                     <input
                       type="text"
-                      placeholder="Ex: Workshop de React Avançado"
+                      placeholder="Ex: Workshop de React Avancado"
                       value={titulo}
-                      onChange={(e) => setTitulo(e.target.value)}
+                      onChange={(event) => setTitulo(event.target.value)}
                       disabled={loadingPerfil}
                     />
                   </div>
+                </div>
 
-                  <div className="input-group">
-                    <label className="input-label">Tipo de Atividade</label>
-                    <select value={tipo} onChange={(e) => setTipo(e.target.value)} disabled={loadingPerfil}>
+                <div className="submission-field">
+                  <label className="submission-label">Tipo de atividade</label>
+                  <div className="submission-input-shell">
+                    <select
+                      value={tipo}
+                      onChange={(event) => setTipo(event.target.value)}
+                      disabled={loadingPerfil}
+                    >
                       <option value="">Selecione o tipo</option>
-                      <option value="Curso Online">Curso Online</option>
-                      <option value="Palestra / Workshop">Palestra / Workshop</option>
-                      <option value="Trabalho Voluntário">Trabalho Voluntário</option>
-                      <option value="Congresso / Seminário">Congresso / Seminário</option>
-                      <option value="Monitoria">Monitoria</option>
-                      <option value="Outro">Outro</option>
+                      {tipoOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
                     </select>
                   </div>
+                </div>
 
-                  <div className="form-row-double">
-                    <div className="input-group">
-                      <label className="input-label">Horas</label>
+                <div className="submission-row">
+                  <div className="submission-field">
+                    <label className="submission-label">Horas</label>
+                    <div className="submission-input-shell">
                       <input
                         type="number"
                         min={1}
                         placeholder="8"
                         value={horas}
-                        onChange={(e) => setHoras(e.target.value)}
-                        disabled={loadingPerfil}
-                      />
-                    </div>
-                    <div className="input-group">
-                      <label className="input-label">Data do Evento</label>
-                      <input
-                        type="date"
-                        value={dataEvento}
-                        onChange={(e) => setDataEvento(e.target.value)}
+                        onChange={(event) => setHoras(event.target.value)}
                         disabled={loadingPerfil}
                       />
                     </div>
                   </div>
 
-                  <button type="submit" className="submit-btn" disabled={submitting || loadingPerfil}>
-                    {submitting ? 'Enviando…' : 'Enviar para Validação'}
-                  </button>
+                  <div className="submission-field">
+                    <label className="submission-label">Data do evento</label>
+                    <div className="submission-input-shell">
+                      <input
+                        type="date"
+                        value={dataEvento}
+                        onChange={(event) => setDataEvento(event.target.value)}
+                        disabled={loadingPerfil}
+                      />
+                    </div>
+                  </div>
                 </div>
+
+                <button
+                  type="submit"
+                  className="submission-submit-btn"
+                  disabled={submitting || loadingPerfil}
+                >
+                  <span>{submitting ? "Enviando..." : "Enviar para validacao"}</span>
+                  <Send size={16} />
+                </button>
               </div>
-            </form>
-          </div>
-        </main>
-      </div>
+            </div>
+          </form>
+        </section>
+      </main>
     </div>
   );
 };

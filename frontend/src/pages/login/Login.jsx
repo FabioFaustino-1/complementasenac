@@ -1,16 +1,47 @@
-import { useState, useEffect } from "react";
-import { GraduationCap, UserCog, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from "react";
+import {
+  ArrowRight,
+  GraduationCap,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  UserCog,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import './Login.css';
+import "./Login.css";
 import { autenticarUsuario } from "../../services/auth";
 import { useAuth } from "../../assets/contexts/AuthContext";
+import loginScene from "../../assets/login-scene.png";
+
+const perfis = [
+  {
+    id: "aluno",
+    titulo: "Aluno",
+    descricao: "Submeta atividades e acompanhe validacoes.",
+    icon: GraduationCap,
+  },
+  {
+    id: "coordenador",
+    titulo: "Coordenador",
+    descricao: "Analise horas, pendencias e aprovacoes.",
+    icon: UserCog,
+  },
+  {
+    id: "admin",
+    titulo: "Administrador",
+    descricao: "Gerencie cursos, regras e parametros.",
+    icon: ShieldCheck,
+  },
+];
 
 function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [perfilAtivo, setPerfilAtivo] = useState("aluno");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); 
+  const [erroLogin, setErroLogin] = useState("");
+  const navigate = useNavigate();
   const { loginWithBackend, isAuthenticated, role } = useAuth();
 
   useEffect(() => {
@@ -19,125 +50,181 @@ function Login() {
     else if (role === "coordenador") navigate("/coordenador", { replace: true });
     else if (role === "admin") navigate("/gestaoAlunos", { replace: true });
   }, [isAuthenticated, role, navigate]);
-  
-const handleLogin = async () => {
-  if (!email || !senha) {
-    alert("Preencha e-mail e senha.");
-    return;
-  }
 
-  try {
-    setLoading(true);
-    const { perfil, token } = await autenticarUsuario(email, senha);
-    const perfilBackend = perfil?.perfil ?? perfilAtivo;
+  const perfilSelecionado =
+    perfis.find((perfil) => perfil.id === perfilAtivo) ?? perfis[0];
 
-    if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
-      throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema.`);
+  const handleLogin = async (event) => {
+    event?.preventDefault();
+
+    const emailNormalizado = email.trim();
+    if (!emailNormalizado || !senha) {
+      setErroLogin("Preencha e-mail e senha.");
+      return;
     }
 
-    loginWithBackend({ token, perfil, email });
+    try {
+      setErroLogin("");
+      setLoading(true);
+      const { perfil, token } = await autenticarUsuario(emailNormalizado, senha);
+      const perfilBackend = perfil?.perfil ?? perfilAtivo;
 
-    if (perfilBackend === "aluno") {
-      navigate("/aluno");
-    } else if (perfilBackend === "coordenador") {
-      navigate("/coordenador");
-    } else if (perfilBackend === "admin") {
-      navigate("/gestaoAlunos");
-    } else {
-      alert("Perfil sem rota configurada.");
+      if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
+        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema.`);
+      }
+
+      loginWithBackend({ token, perfil, email: emailNormalizado });
+
+      if (perfilBackend === "aluno") {
+        navigate("/aluno");
+      } else if (perfilBackend === "coordenador") {
+        navigate("/coordenador");
+      } else if (perfilBackend === "admin") {
+        navigate("/gestaoAlunos");
+      } else {
+        setErroLogin("Perfil sem rota configurada.");
+      }
+    } catch (erro) {
+      const mensagem = erro?.message || "";
+      if (
+        mensagem.includes("auth/invalid-credential") ||
+        mensagem.includes("auth/invalid-login-credentials") ||
+        mensagem.includes("auth/wrong-password") ||
+        mensagem.includes("auth/user-not-found")
+      ) {
+        setErroLogin("Login ou senha incorretos.");
+      } else {
+        setErroLogin(mensagem ? `Erro no login: ${mensagem}` : "Nao foi possivel entrar.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (erro) {
-    alert("Erro no login: " + erro.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-<div className="login-page">
-    {/* Lado Esquerdo - Hero */}
-    <div className="hero-side">
-      <div className="logo-box">S+</div>
-      <div className="hero-content">
-        <h1>Complementa+</h1>
-        <p>
-          Sua evolução acadêmica, simplificada. Envie, <br />
-          acompanhe e valide suas horas em um único lugar.
-        </p>
-      </div>
-      <div className="footer-text">2026 Senac Pernambuco</div>
-    </div>
+    <div className="login-page">
+      <div className="login-page__glow login-page__glow--warm" />
+      <div className="login-page__glow login-page__glow--soft" />
 
-    {/* Lado Direito - Formulário */}
-    <div className="form-side">
-      <div className="login-card">
-        <h2>Entrar</h2>
-        <p className="subtitle">Acesse sua conta para continuar</p>
+      <section className="hero-panel" aria-label="Apresentacao da plataforma">
+        <div className="brand-mark">
+          <span className="brand-mark__text">S+</span>
+          <span className="brand-mark__badge">Senac</span>
+        </div>
 
-        <div className="profile-selection">
-          <label>Perfil de Acesso</label>
-          <div className="profile-grid">
-            <button 
-              className={`profile-btn ${perfilAtivo === 'aluno' ? 'active' : ''}`}
-              onClick={() => setPerfilAtivo('aluno')}
-            >
-              <GraduationCap size={24} />
-              <div className="btn-text">
-                <strong>Aluno</strong>
-                <span>Submeter atividades complementares</span>
-              </div>
-            </button>
+        <div className="scene-card">
+          <img
+            className="scene-card__image"
+            src={loginScene}
+            alt="Estudantes do Senac em sala de aula"
+          />
+          <p className="scene-card__caption">
+            Bem-vindo ao Complementa+, a plataforma de atividades complementares do
+            Senac. Aqui, voce pode submeter atividades, acompanhar o progresso e
+            garantir que suas horas sejam validadas com rapidez e seguranca.
+          </p>
+        </div>
+      </section>
 
-            <button 
-              className={`profile-btn ${perfilAtivo === 'coordenador' ? 'active' : ''}`}
-              onClick={() => setPerfilAtivo('coordenador')}
-            >
-              <UserCog size={24} />
-              <div className="btn-text">
-                <strong>Coordenador</strong>
-                <span>Validar atividades dos alunos</span>
-              </div>
-            </button>
+      <section className="auth-panel">
+        <div className="auth-copy">
+          <span className="auth-copy__eyebrow">
+            <Sparkles size={14} />
+            Plataforma Complementa+
+          </span>
+          <h1>Complementa +.</h1>
+          <p>
+            Sua evolucao academica comeca aqui. Acesse, submeta atividades e acompanhe
+            seu progresso de forma simples e intuitiva. Temos as ferramentas certas
+            para voce.
+          </p>
+        </div>
 
-            <button 
-              className={`profile-btn ${perfilAtivo === 'admin' ? 'active' : ''}`}
-              onClick={() => setPerfilAtivo('admin')}
-            >
-              <ShieldCheck size={24} />
-              <div className="btn-text">
-                <strong>Administrador</strong>
-                <span>Gerenciar cursos e parâmetros</span>
-              </div>
-            </button>
+        <form className="auth-card" onSubmit={handleLogin}>
+          <div className="auth-card__header">
+            <div>
+              <span className="auth-card__kicker">Acesso</span>
+              <h2>Entre na sua conta</h2>
+            </div>
+            <div className="auth-card__status">
+              <span className="auth-card__status-dot" />
+              {perfilSelecionado.titulo}
+            </div>
           </div>
-        </div>
 
-        <div className="input-group">
-          <label>E-mail</label>
-          <input 
-            type="email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="styled-input"
-          />
-        </div>
+          {erroLogin ? <p className="auth-card__error">{erroLogin}</p> : null}
 
-        <div className="input-group">
-          <label>Senha</label>
-          <input 
-            type="password" 
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            className="styled-input"
-          />
-        </div>
+          <div className="profile-grid" role="tablist" aria-label="Selecione o perfil">
+            {perfis.map((perfil) => {
+              const Icon = perfil.icon;
+              const ativo = perfil.id === perfilAtivo;
 
-        <button onClick={handleLogin} className="main-submit-btn" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar →"}
-        </button>
-      </div>
+              return (
+                <button
+                  key={perfil.id}
+                  type="button"
+                  className={`profile-btn ${ativo ? "active" : ""}`}
+                  onClick={() => setPerfilAtivo(perfil.id)}
+                  aria-pressed={ativo}
+                >
+                  <span className="profile-btn__icon">
+                    <Icon size={18} />
+                  </span>
+                  <span className="btn-text">
+                    <strong>{perfil.titulo}</strong>
+                    <span>{perfil.descricao}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="email">E-mail</label>
+            <div className="input-shell">
+              <Mail size={16} />
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="styled-input"
+                placeholder="email@edu.pe.senac.br"
+              />
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="senha">Senha</label>
+            <div className="input-shell">
+              <LockKeyhole size={16} />
+              <input
+                id="senha"
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                className="styled-input"
+                placeholder="Digite sua senha"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="main-submit-btn"
+            disabled={loading || !email.trim() || !senha}
+          >
+            <span>{loading ? "Entrando..." : `Continuar como ${perfilSelecionado.titulo}`}</span>
+            <ArrowRight size={18} />
+          </button>
+
+          <p className="auth-card__terms">
+            Ao continuar, voce confirma o uso seguro da plataforma Complementa+ e
+            concorda com as diretrizes institucionais de acesso.
+          </p>
+        </form>
+      </section>
     </div>
-  </div>
   );
 }
 
