@@ -34,8 +34,9 @@
 .gestao-header .s-plus-box { background: #003366; color: #fff; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
 
 .gestao-container {
-  max-width: 1000px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: 20px;
 }
 
@@ -171,4 +172,54 @@
 
 .student-actions .btn-icon-edit svg {
   color: #666;
+}
+
+@media (max-width: 820px) {
+  .gestao-container {
+    padding: 12px;
+  }
+
+  .gestao-container .title-row,
+  .gestao-container .student-item-card,
+  .gestao-container .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gestao-container .gestao-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gestao-container .search-bar-container {
+    justify-content: stretch;
+  }
+
+  .student-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .main-content-gestao {
+    padding: 14px;
+  }
+
+  .gestao-header {
+    padding: 10px 12px;
+  }
+
+  .gestao-header .header-right-group {
+    gap: 8px;
+  }
+
+  .gestao-container .add-student-card,
+  .gestao-container .student-item-card {
+    padding: 14px;
+  }
+
+  .gestao-container .btn-add-student,
+  .gestao-container .btn-save,
+  .gestao-container .btn-cancel {
+    width: 100%;
+  }
 }

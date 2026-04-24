@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Sidebar from '../../../assets/Sidebar';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../assets/contexts/AuthContext';
+import { buildGreeting, deriveDisplayName } from '../../../utils/userDisplay';
 
 import { 
   UserPlus, 
@@ -25,6 +27,12 @@ const GestaoAlunos = () => {
     curso: "",
   });
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const nomeUsuario = deriveDisplayName({
+    name: user?.name,
+    email: user?.email,
+    fallback: "Administrador",
+  });
   const API_URL = "http://localhost:8080/api/admin/alunos";
 
   React.useEffect(() => {
@@ -88,8 +96,8 @@ const GestaoAlunos = () => {
       setIsOpen={setSidebarOpen} 
       activePage="alunos" 
       menuItems={itensMenuAdmin}
-      userName="Fabio Faustino"
-      userEmail="fabio.faustino@edu.pe.senac.br"
+      userName={nomeUsuario}
+      userEmail={user?.email || "admin@senac.pe.br"}
       />
 
       <main className="main-content-gestao">
@@ -106,7 +114,7 @@ const GestaoAlunos = () => {
 
         <section className="gestao-container">
           <div className="title-row">
-            <h1>Gestão de Alunos</h1>
+            <h1>{buildGreeting(nomeUsuario)}</h1>
             {!showForm && (
               <button className="btn-add-student" onClick={() => setShowForm(true)}>
                 <UserPlus size={18} /> Adicionar Aluno

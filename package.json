@@ -1,0 +1,14 @@
+{
+  "name": "complementasenac",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "install:frontend": "npm install --workspace frontend",
+    "dev": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "lint": "npm run lint --workspace frontend",
+    "preview": "npm run preview --workspace frontend"
+  }
+}

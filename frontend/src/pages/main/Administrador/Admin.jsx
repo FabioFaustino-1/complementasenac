@@ -2,11 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, ClipboardCheck, BarChart3, MoreHorizontal } from 'lucide-react';
 import Sidebar from '../../../assets/Sidebar'; // Ajuste o caminho conforme sua estrutura
+import { useAuth } from '../../../assets/contexts/AuthContext';
+import { buildGreeting, deriveDisplayName } from '../../../utils/userDisplay';
 import './Admin.css';
 
 const Admin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const nomeUsuario = deriveDisplayName({
+    name: user?.name,
+    email: user?.email,
+    fallback: 'Administrador',
+  });
 
   const itensMenuAdmin = [
     { id: 'coordenadores', name: 'Gestao de Coordenadores', icon: <Users size={20} color="white" />, onClick: () => navigate('/gestaocoord') },
@@ -36,8 +44,8 @@ const Admin = () => {
         setIsOpen={setSidebarOpen} 
         activePage="coordenadores" 
         menuItems={itensMenuAdmin}
-        userName="Fabio Faustino"
-        userEmail="fabio.faustino@edu.pe.senac.br"
+        userName={nomeUsuario}
+        userEmail={user?.email || 'admin@senac.pe.br'}
       />
 
       <main className="main-content">
@@ -54,7 +62,7 @@ const Admin = () => {
 
         <section className="dashboard-intro">
           <div>
-            <h1>Painel do Administrador</h1>
+            <h1>{buildGreeting(nomeUsuario)}</h1>
             <p>Gerencie coordenadores, cursos e parâmetros do sistema</p>
           </div>
           <button className="btn-primary">+ Novo Coordenador</button>

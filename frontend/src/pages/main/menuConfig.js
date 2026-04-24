@@ -1,7 +1,7 @@
 import React from "react";
 import { User, Clock, UploadCloud, FileText, ClipboardCheck, Users, BarChart3 } from "lucide-react";
 
-const icon = (Component) => React.createElement(Component, { size: 20, color: "white" });
+const icon = (Component) => React.createElement(Component, { size: 20, color: "currentColor" });
 
 export const createAlunoMenu = (navigate) => [
   { id: "perfil", name: "Meu Perfil", icon: icon(User), onClick: () => navigate("/aluno/perfil") },
