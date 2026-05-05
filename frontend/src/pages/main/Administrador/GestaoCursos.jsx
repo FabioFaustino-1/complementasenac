@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
 import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { criarCursoAdmin, listarCursosAdmin } from "../../../services/admin";
 import "./Admin.css";
 import "./GestaoAlunos.css";
 import "./GestaoCoord.css";
@@ -21,7 +22,7 @@ const GestaoCursos = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
   const nomeUsuario = deriveDisplayName({
@@ -30,14 +31,8 @@ const GestaoCursos = () => {
     fallback: "Administrador",
   });
 
-  const [cursos, setCursos] = useState([
-    { id: 1, nome: "Analise e Desenvolvimento de Sistemas", departamento: "Tecnologia da Informacao", alunos: 45, carga: "40h" },
-    { id: 2, nome: "Redes de Computadores", departamento: "Tecnologia da Informacao", alunos: 32, carga: "40h" },
-    { id: 3, nome: "Administracao", departamento: "Gestao", alunos: 60, carga: "50h" },
-    { id: 4, nome: "Contabilidade", departamento: "Gestao", alunos: 38, carga: "50h" },
-    { id: 5, nome: "Enfermagem", departamento: "Saude", alunos: 55, carga: "60h" },
-    { id: 6, nome: "Design Grafico", departamento: "Design", alunos: 28, carga: "40h" },
-  ]);
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const itensMenuAdmin = [
     { id: "painel", name: "Painel Admin", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
@@ -64,23 +59,46 @@ const GestaoCursos = () => {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!token) return;
+    const load = async () => {
+      try {
+        setLoading(true);
+        const data = await listarCursosAdmin(token);
+        setCursos(data);
+      } catch (error) {
+        alert(`Erro ao carregar cursos: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [token]);
+
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
 
-  const handleAddCurso = (event) => {
+  const handleAddCurso = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const novoCurso = {
-      id: Date.now(),
-      nome: formData.get("nome"),
-      departamento: formData.get("departamento"),
-      alunos: 0,
-      carga: `${formData.get("carga")}h`,
+    const payload = {
+      idCurso: String(formData.get("idCurso") || "").trim(),
+      nomeCurso: String(formData.get("nome") || "").trim(),
+      eixoTecnologico: String(formData.get("departamento") || "").trim(),
     };
-    setCursos([...cursos, novoCurso]);
-    setIsModalOpen(false);
+    if (!payload.idCurso) {
+      alert("Informe o ID do curso.");
+      return;
+    }
+    try {
+      const criado = await criarCursoAdmin(token, payload);
+      setCursos((prev) => [...prev, criado]);
+      setIsModalOpen(false);
+    } catch (error) {
+      alert(`Erro ao salvar curso: ${error.message}`);
+    }
   };
 
   return (
@@ -155,7 +173,7 @@ const GestaoCursos = () => {
             <div className="admin-section-heading">
               <div>
                 <h3>Cursos ativos</h3>
-                <p>{cursos.length} cursos configurados para atividades complementares.</p>
+                <p>{loading ? "Carregando..." : `${cursos.length} cursos configurados para atividades complementares.`}</p>
               </div>
               <button type="button" onClick={() => setIsModalOpen(true)}>
                 <Plus size={16} />
@@ -165,25 +183,21 @@ const GestaoCursos = () => {
 
             <div className="admin-courses-grid">
               {cursos.map((curso) => (
-                <article key={curso.id} className="admin-course-card">
+                <article key={curso.idCurso} className="admin-course-card">
                   <div className="admin-course-card__header">
                     <div className="admin-course-card__icon">
                       <BookOpen size={20} />
                     </div>
                     <div>
-                      <h4>{curso.nome}</h4>
-                      <p>{curso.departamento}</p>
+                      <h4>{curso.nomeCurso}</h4>
+                      <p>{curso.eixoTecnologico || "Sem eixo"}</p>
                     </div>
                   </div>
 
                   <div className="admin-course-card__stats">
                     <div>
-                      <strong>{curso.alunos}</strong>
-                      <span>Alunos</span>
-                    </div>
-                    <div>
-                      <strong>{curso.carga}</strong>
-                      <span>Carga max.</span>
+                      <strong>{curso.idCurso}</strong>
+                      <span>ID do curso</span>
                     </div>
                   </div>
                 </article>
@@ -203,9 +217,9 @@ const GestaoCursos = () => {
             <h2>Cadastrar novo curso</h2>
 
             <form className="admin-modal__form" onSubmit={handleAddCurso}>
+              <input name="idCurso" type="text" placeholder="ID do curso (ex: SADS157)" required />
               <input name="nome" type="text" placeholder="Nome do curso" required />
               <input name="departamento" type="text" placeholder="Departamento" required />
-              <input name="carga" type="number" placeholder="Carga horaria maxima" required />
               <div className="admin-form-actions">
                 <button type="button" className="admin-secondary-button" onClick={() => setIsModalOpen(false)}>Cancelar</button>
                 <button type="submit" className="admin-primary-button">Salvar curso</button>

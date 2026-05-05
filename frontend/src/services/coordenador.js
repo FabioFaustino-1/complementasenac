@@ -16,10 +16,10 @@ export function obterAlunosCoordenador(token) {
   return apiRequest("/api/coordenador/alunos", { token });
 }
 
-export function decidirAtividadeCoordenador(token, id, status) {
+export function decidirAtividadeCoordenador(token, id, status, extras = {}) {
   return apiRequest(`/api/coordenador/atividades/${id}/decisao`, {
     token,
     method: "POST",
-    body: { status },
+    body: { status, ...extras },
   });
 }

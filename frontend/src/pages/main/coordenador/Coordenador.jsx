@@ -124,7 +124,25 @@ const Coordenador = () => {
   const decidir = async (id, status) => {
     try {
       setError(null);
-      await decidirAtividadeCoordenador(token, id, status);
+      const extras = {};
+      if (status === "APROVADO") {
+        const horasPrompt = window.prompt("Horas aprovadas para esta atividade:", "0");
+        if (horasPrompt == null) return;
+        const horas = parseInt(horasPrompt, 10);
+        if (Number.isNaN(horas) || horas < 0) {
+          throw new Error("Informe um numero valido de horas aprovadas.");
+        }
+        extras.horasAprovadas = horas;
+      } else {
+        const justificativa = window.prompt("Informe o motivo da rejeicao:");
+        if (justificativa == null) return;
+        if (!justificativa.trim()) {
+          throw new Error("A justificativa da rejeicao e obrigatoria.");
+        }
+        extras.justificativa = justificativa.trim();
+      }
+
+      await decidirAtividadeCoordenador(token, id, status, extras);
       setActivities((prev) => prev.filter((act) => act.id !== id));
       if (resumo) {
         setResumo((prev) => ({

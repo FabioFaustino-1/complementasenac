@@ -15,13 +15,19 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
 import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import {
+  atualizarCoordenadorAdmin,
+  criarCoordenadorAdmin,
+  listarCoordenadoresAdmin,
+  removerCoordenadorAdmin,
+} from "../../../services/admin";
 import "./Admin.css";
 import "./GestaoAlunos.css";
 import "./GestaoCoord.css";
 
 const GestaoCoord = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
@@ -31,12 +37,8 @@ const GestaoCoord = () => {
     fallback: "Administrador",
   });
 
-  const [coordenadores, setCoordenadores] = useState([
-    { id: 1, nome: "Maria Silva", email: "maria.silva@senac.pe.br", depto: "Tecnologia da Informacao", cursos: ["ADS", "Redes"], status: "Ativo" },
-    { id: 2, nome: "Carlos Mendes", email: "carlos.mendes@senac.pe.br", depto: "Gestao", cursos: ["Administracao", "Contabilidade"], status: "Ativo" },
-    { id: 3, nome: "Ana Oliveira", email: "ana.oliveira@senac.pe.br", depto: "Saude", cursos: ["Enfermagem", "Nutricao"], status: "Inativo" },
-    { id: 4, nome: "Roberto Santos", email: "roberto.santos@senac.pe.br", depto: "Design", cursos: ["Design Grafico"], status: "Ativo" },
-  ]);
+  const [coordenadores, setCoordenadores] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [busca, setBusca] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +70,22 @@ const GestaoCoord = () => {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!token) return;
+    const load = async () => {
+      try {
+        setLoading(true);
+        const data = await listarCoordenadoresAdmin(token);
+        setCoordenadores(data);
+      } catch (error) {
+        alert(`Erro ao carregar coordenadores: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [token]);
+
   const dadosFiltrados = coordenadores.filter((coord) =>
     coord.nome.toLowerCase().includes(busca.toLowerCase()) ||
     coord.email.toLowerCase().includes(busca.toLowerCase())
@@ -79,14 +97,20 @@ const GestaoCoord = () => {
   };
 
   const handleExcluir = (id) => {
-    if (window.confirm("Deseja realmente excluir este coordenador?")) {
-      setCoordenadores(coordenadores.filter((coord) => coord.id !== id));
-    }
+    if (!window.confirm("Deseja realmente excluir este coordenador?")) return;
+    removerCoordenadorAdmin(token, id)
+      .then(() => setCoordenadores((prev) => prev.filter((coord) => coord.id !== id)))
+      .catch((error) => alert(`Erro ao excluir coordenador: ${error.message}`));
   };
 
   const handleEditar = (coord) => {
     setEditandoId(coord.id);
-    setFormData({ nome: coord.nome, email: coord.email, depto: coord.depto, status: coord.status });
+    setFormData({
+      nome: coord.nome || "",
+      email: coord.email || "",
+      depto: coord.departamento || "",
+      status: coord.status || "Ativo",
+    });
     setIsModalOpen(true);
   };
 
@@ -96,15 +120,27 @@ const GestaoCoord = () => {
     setIsModalOpen(true);
   };
 
-  const handleSalvar = (event) => {
+  const handleSalvar = async (event) => {
     event.preventDefault();
-    if (editandoId) {
-      setCoordenadores(coordenadores.map((coord) => coord.id === editandoId ? { ...coord, ...formData } : coord));
-    } else {
-      const novoCoord = { ...formData, id: Date.now(), cursos: ["Geral"] };
-      setCoordenadores([...coordenadores, novoCoord]);
+    const payload = {
+      nome: formData.nome,
+      email: formData.email,
+      departamento: formData.depto,
+      status: formData.status,
+      cursos: [],
+    };
+    try {
+      if (editandoId) {
+        const atualizado = await atualizarCoordenadorAdmin(token, editandoId, payload);
+        setCoordenadores((prev) => prev.map((coord) => (coord.id === editandoId ? atualizado : coord)));
+      } else {
+        const novo = await criarCoordenadorAdmin(token, payload);
+        setCoordenadores((prev) => [...prev, novo]);
+      }
+      fecharModal();
+    } catch (error) {
+      alert(`Erro ao salvar coordenador: ${error.message}`);
     }
-    fecharModal();
   };
 
   const fecharModal = () => {
@@ -185,7 +221,7 @@ const GestaoCoord = () => {
             <div className="admin-section-heading">
               <div>
                 <h3>Coordenadores</h3>
-                <p>{dadosFiltrados.length} registros encontrados.</p>
+                <p>{loading ? "Carregando..." : `${dadosFiltrados.length} registros encontrados.`}</p>
               </div>
               <button type="button" onClick={handleNovo}>
                 <Plus size={16} />
@@ -210,7 +246,7 @@ const GestaoCoord = () => {
                     <h4>{coord.nome}</h4>
                     <p>{coord.email}</p>
                     <div className="admin-record-tags">
-                      <span className="admin-soft-chip">{coord.depto}</span>
+                      <span className="admin-soft-chip">{coord.departamento || "Sem departamento"}</span>
                       {coord.cursos?.map((curso) => (
                         <span key={curso} className="admin-soft-chip">{curso}</span>
                       ))}

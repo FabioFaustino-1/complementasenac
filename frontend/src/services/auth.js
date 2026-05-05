@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import app from "./firebase";
 import { API_BASE } from "./api";
 
@@ -29,7 +29,15 @@ export async function autenticarUsuario(email, senha) {
   }
 
   if (!response.ok) {
-    throw new Error("Nao foi possivel validar o usuario no backend.");
+    let message = "Nao foi possivel validar o usuario no backend.";
+    try {
+      const payload = await response.json();
+      message = payload?.message || payload?.error || message;
+    } catch {
+      // no-op
+    }
+    await signOut(auth);
+    throw new Error(message);
   }
 
   const perfil = await response.json();

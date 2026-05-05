@@ -13,12 +13,17 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
 import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import {
+  listarAlunosAdmin,
+  listarCoordenadoresAdmin,
+  listarCursosAdmin,
+} from "../../../services/admin";
 import "./Admin.css";
 
 const Admin = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
   const nomeUsuario = deriveDisplayName({
@@ -35,18 +40,12 @@ const Admin = () => {
     { id: "logs", name: "Logs", icon: <Settings size={20} /> },
   ];
 
-  const stats = [
-    { label: "Coordenadores ativos", value: "3", delta: "Equipe atual", tone: "violet", accent: "bars" },
-    { label: "Alunos cadastrados", value: "245", delta: "+18 este mes", tone: "green", accent: "line" },
-    { label: "Atividades no sistema", value: "1280", delta: "128 pendentes", tone: "amber", accent: "dots" },
-  ];
-
-  const coordinators = [
-    { name: "Maria Silva", email: "maria.silva@senac.pe.br", dept: "Tecnologia da Informacao", courses: ["ADS", "Redes"], status: "Ativo" },
-    { name: "Carlos Mendes", email: "carlos.mendes@senac.pe.br", dept: "Gestao", courses: ["Administracao", "Contabilidade"], status: "Ativo" },
-    { name: "Ana Oliveira", email: "ana.oliveira@senac.pe.br", dept: "Saude", courses: ["Enfermagem", "Nutricao"], status: "Inativo" },
-    { name: "Roberto Santos", email: "roberto.santos@senac.pe.br", dept: "Design", courses: ["Design Grafico"], status: "Ativo" },
-  ];
+  const [stats, setStats] = useState([
+    { label: "Coordenadores ativos", value: "...", delta: "Equipe atual", tone: "violet", accent: "bars" },
+    { label: "Alunos cadastrados", value: "...", delta: "Base institucional", tone: "green", accent: "line" },
+    { label: "Cursos ativos", value: "...", delta: "Catalogo", tone: "amber", accent: "dots" },
+  ]);
+  const [coordinators, setCoordinators] = useState([]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -65,6 +64,28 @@ const Admin = () => {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (!token) return;
+    const load = async () => {
+      try {
+        const [coords, alunos, cursos] = await Promise.all([
+          listarCoordenadoresAdmin(token),
+          listarAlunosAdmin(token),
+          listarCursosAdmin(token),
+        ]);
+        setCoordinators(coords);
+        setStats([
+          { label: "Coordenadores ativos", value: String(coords.length), delta: "Equipe atual", tone: "violet", accent: "bars" },
+          { label: "Alunos cadastrados", value: String(alunos.length), delta: "Base institucional", tone: "green", accent: "line" },
+          { label: "Cursos ativos", value: String(cursos.length), delta: "Catalogo", tone: "amber", accent: "dots" },
+        ]);
+      } catch (error) {
+        // Mantem o painel renderizado com placeholders
+      }
+    };
+    load();
+  }, [token]);
 
   const handleLogout = async () => {
     await logout();
@@ -181,8 +202,8 @@ const Admin = () => {
 
               <div className="admin-hero-card__progress">
                 <div className="admin-hero-card__progress-meta">
-                  <span>245 alunos vinculados</span>
-                  <span>8 cursos ativos</span>
+                    <span>{stats[1]?.value} alunos vinculados</span>
+                  <span>{stats[2]?.value} cursos ativos</span>
                 </div>
                 <div className="admin-hero-card__track">
                   <div className="admin-hero-card__fill" />
@@ -203,11 +224,11 @@ const Admin = () => {
 
               <div className="admin-coordinator-list">
                 {coordinators.map((coord) => (
-                  <article key={coord.email} className="admin-coordinator-item">
+                  <article key={coord.id || coord.email} className="admin-coordinator-item">
                     <div className="admin-coordinator-item__meta">
-                      <span>{coord.dept}</span>
+                      <span>{coord.departamento || "Sem departamento"}</span>
                       <div className="admin-course-badges">
-                        {coord.courses.map((course) => (
+                        {(coord.cursos || []).map((course) => (
                           <span key={course}>{course}</span>
                         ))}
                       </div>
@@ -215,13 +236,13 @@ const Admin = () => {
 
                     <div className="admin-coordinator-item__body">
                       <div>
-                        <h4>{coord.name}</h4>
+                        <h4>{coord.nome}</h4>
                         <p>{coord.email}</p>
                         <div className="admin-coordinator-item__tags">
-                          <span className={`admin-status-chip admin-status-chip--${coord.status.toLowerCase()}`}>
-                            {coord.status}
+                          <span className={`admin-status-chip admin-status-chip--${(coord.status || "Ativo").toLowerCase()}`}>
+                            {coord.status || "Ativo"}
                           </span>
-                          <span className="admin-soft-chip">{coord.courses.length} cursos</span>
+                          <span className="admin-soft-chip">{(coord.cursos || []).length} cursos</span>
                         </div>
                       </div>
 
@@ -257,15 +278,15 @@ const Admin = () => {
               <div className="admin-side-stat-list">
                 <div className="admin-side-stat">
                   <span>Coordenadores</span>
-                  <strong>3</strong>
+                  <strong>{stats[0]?.value}</strong>
                 </div>
                 <div className="admin-side-stat">
                   <span>Cursos ativos</span>
-                  <strong>8</strong>
+                  <strong>{stats[2]?.value}</strong>
                 </div>
                 <div className="admin-side-stat">
                   <span>Atividades</span>
-                  <strong>1280</strong>
+                  <strong>{stats[1]?.value}</strong>
                 </div>
               </div>
             </section>

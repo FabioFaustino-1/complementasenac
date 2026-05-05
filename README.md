@@ -25,7 +25,7 @@ javac -version
 Se `javac` não for encontrado, aponte o `JAVA_HOME` para a pasta do JDK (não a JRE) e inclua `bin` no PATH da sessão:
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
+$env:JAVA_HOME = "C:\Users\aluno\Documents\vsfabo\jdk-17.0.12_windows-x64_bin\jdk-17.0.12"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ```
 
@@ -78,6 +78,17 @@ Build de produção:
 ```powershell
 npm run build
 ```
+
+---
+
+## Configuração de Ambiente (.env)
+
+O projeto utiliza variáveis de ambiente para chaves do Firebase. 
+1. Na pasta `frontend`, duplique o arquivo `.env.example`.
+2. Renomeie a cópia para `.env`.
+3. Preencha os valores com as suas credenciais do Firebase Console.
+
+O arquivo `.env` está no `.gitignore` e nunca deve ser versionado.
 
 ---
 
