@@ -29,9 +29,13 @@ function App() {
         <Route path="/aluno/historico" element={<PrivateRoute allowedRoles={["aluno"]}><Historico /></PrivateRoute>} />
         <Route path="/coordenador" element={<PrivateRoute allowedRoles={["coordenador"]}><Coordenador /></PrivateRoute>} />
         <Route path="/gestaoAlunos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoAlunos /></PrivateRoute>} />
+        <Route path="/gestaoalunos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoAlunos /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute allowedRoles={["admin"]}><Admin /></PrivateRoute>} />
+        <Route path="/Admin" element={<PrivateRoute allowedRoles={["admin"]}><Admin /></PrivateRoute>} />
         <Route path="/GestaoCoord" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCoord /></PrivateRoute>} />
+        <Route path="/gestaocoord" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCoord /></PrivateRoute>} />
         <Route path="/GestaoCursos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCursos /></PrivateRoute>} />
+        <Route path="/gestaocursos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCursos /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

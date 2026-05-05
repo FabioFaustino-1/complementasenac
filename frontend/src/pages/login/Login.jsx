@@ -48,7 +48,7 @@ function Login() {
     if (!isAuthenticated) return;
     if (role === "aluno") navigate("/aluno", { replace: true });
     else if (role === "coordenador") navigate("/coordenador", { replace: true });
-    else if (role === "admin") navigate("/gestaoAlunos", { replace: true });
+    else if (role === "admin") navigate("/admin", { replace: true });
   }, [isAuthenticated, role, navigate]);
 
   const perfilSelecionado =
@@ -80,7 +80,7 @@ function Login() {
       } else if (perfilBackend === "coordenador") {
         navigate("/coordenador");
       } else if (perfilBackend === "admin") {
-        navigate("/gestaoAlunos");
+        navigate("/admin");
       } else {
         setErroLogin("Perfil sem rota configurada.");
       }

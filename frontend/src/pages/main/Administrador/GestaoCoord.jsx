@@ -1,53 +1,86 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importação necessária para navegação
-import './GestaoCoord.css';
-import Sidebar from '../../../assets/Sidebar';
-import { useAuth } from '../../../assets/contexts/AuthContext';
-import { buildGreeting, deriveDisplayName } from '../../../utils/userDisplay';
-import { 
-  Pencil, 
-  Trash2, 
-  ClipboardCheck, 
-  Users, 
-  BarChart3
-} from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  BarChart3,
+  BookOpen,
+  ClipboardCheck,
+  Menu,
+  Pencil,
+  Plus,
+  Search,
+  Sparkles,
+  Trash2,
+  Users,
+  X,
+} from "lucide-react";
+import { useAuth } from "../../../assets/contexts/AuthContext";
+import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import "./Admin.css";
+import "./GestaoAlunos.css";
+import "./GestaoCoord.css";
 
 const GestaoCoord = () => {
-  // Inicializa o navigate
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
   const nomeUsuario = deriveDisplayName({
     name: user?.name,
     email: user?.email,
     fallback: "Administrador",
   });
 
-  // ESTADOS DA LISTA
   const [coordenadores, setCoordenadores] = useState([
-    { id: 1, nome: "Maria Silva", email: "maria.silva@senac.pe.br", depto: "Tecnologia da Informação", cursos: ["ADS", "Redes"], status: "Ativo" },
-    { id: 2, nome: "Carlos Mendes", email: "carlos.mendes@senac.pe.br", depto: "Gestão", cursos: ["Administração", "Contabilidade"], status: "Ativo" },
-    { id: 3, nome: "Ana Oliveira", email: "ana.oliveira@senac.pe.br", depto: "Saúde", cursos: ["Enfermagem", "Nutrição"], status: "Inativo" },
-    { id: 4, nome: "Roberto Santos", email: "roberto.santos@senac.pe.br", depto: "Design", cursos: ["Design Gráfico"], status: "Ativo" },
+    { id: 1, nome: "Maria Silva", email: "maria.silva@senac.pe.br", depto: "Tecnologia da Informacao", cursos: ["ADS", "Redes"], status: "Ativo" },
+    { id: 2, nome: "Carlos Mendes", email: "carlos.mendes@senac.pe.br", depto: "Gestao", cursos: ["Administracao", "Contabilidade"], status: "Ativo" },
+    { id: 3, nome: "Ana Oliveira", email: "ana.oliveira@senac.pe.br", depto: "Saude", cursos: ["Enfermagem", "Nutricao"], status: "Inativo" },
+    { id: 4, nome: "Roberto Santos", email: "roberto.santos@senac.pe.br", depto: "Design", cursos: ["Design Grafico"], status: "Ativo" },
   ]);
 
-  // ESTADOS DE CONTROLE
   const [busca, setBusca] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Controle unificado da sidebar
-
-  // ESTADO DO FORMULÁRIO
   const [formData, setFormData] = useState({ nome: "", email: "", depto: "", status: "Ativo" });
 
-  // FUNÇÕES DE MANIPULAÇÃO
-  const dadosFiltrados = coordenadores.filter(c => 
-    c.nome.toLowerCase().includes(busca.toLowerCase()) || 
-    c.email.toLowerCase().includes(busca.toLowerCase())
+  const itensMenuAdmin = [
+    { id: "painel", name: "Painel Admin", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
+    { id: "coordenadores", name: "Gestao de Coordenadores", icon: <Users size={20} />, onClick: () => navigate("/GestaoCoord") },
+    { id: "alunos", name: "Adicionar Aluno", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoAlunos") },
+    { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/GestaoCursos") },
+  ];
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const handleOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [menuOpen]);
+
+  const dadosFiltrados = coordenadores.filter((coord) =>
+    coord.nome.toLowerCase().includes(busca.toLowerCase()) ||
+    coord.email.toLowerCase().includes(busca.toLowerCase())
   );
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   const handleExcluir = (id) => {
-    if(window.confirm("Deseja realmente excluir este coordenador?")) {
-      setCoordenadores(coordenadores.filter(c => c.id !== id));
+    if (window.confirm("Deseja realmente excluir este coordenador?")) {
+      setCoordenadores(coordenadores.filter((coord) => coord.id !== id));
     }
   };
 
@@ -57,10 +90,16 @@ const GestaoCoord = () => {
     setIsModalOpen(true);
   };
 
-  const handleSalvar = (e) => {
-    e.preventDefault();
+  const handleNovo = () => {
+    setEditandoId(null);
+    setFormData({ nome: "", email: "", depto: "", status: "Ativo" });
+    setIsModalOpen(true);
+  };
+
+  const handleSalvar = (event) => {
+    event.preventDefault();
     if (editandoId) {
-      setCoordenadores(coordenadores.map(c => c.id === editandoId ? { ...c, ...formData } : c));
+      setCoordenadores(coordenadores.map((coord) => coord.id === editandoId ? { ...coord, ...formData } : coord));
     } else {
       const novoCoord = { ...formData, id: Date.now(), cursos: ["Geral"] };
       setCoordenadores([...coordenadores, novoCoord]);
@@ -74,134 +113,147 @@ const GestaoCoord = () => {
     setFormData({ nome: "", email: "", depto: "", status: "Ativo" });
   };
 
-  // CONFIGURAÇÃO DA SIDEBAR ADMIN
-  const itensMenuAdmin = [
-    { id: 'coordenadores', name: 'Gestão de Coordenadores', icon: <Users size={20} />, onClick: () => navigate('/Administrador') },
-    { id: 'alunos', name: 'Adicionar Aluno', icon: <ClipboardCheck size={20} />, onClick: () => navigate('/gestao-alunos') },
-    { id: 'cursos', name: 'Gerenciamento de Cursos', icon: <Users size={20} />, onClick: () => navigate('/gestao-cursos') },
-    { id: 'logs', name: 'Logs', icon: <BarChart3 size={20} />, onClick: () => console.log('Logs') },
-  ];
-
   return (
-    <div className="coord-root-container">
-      {/* SIDEBAR */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        setIsOpen={setSidebarOpen} 
-        activePage="coordenadores" 
-        menuItems={itensMenuAdmin}
-        userName={nomeUsuario}
-        userEmail={user?.email || "admin@senac.pe.br"}
-      />
+    <div className="admin-shell">
+      <main className="admin-main admin-main--full">
+        <header className="admin-topbar">
+          <div className="admin-topbar__menu-area">
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="admin-menu-toggle"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label="Abrir menu"
+            >
+              <Menu size={18} />
+            </button>
 
-      <div className="coord-page-wrapper">
-        <header className="coord-top-header">
-          <div className="header-inner">
-            {/* O clique aqui agora abre a sidebar corretamente */}
-            <div className="hamburguer-manual" onClick={() => setSidebarOpen(true)}>
-              <div className="bar"></div>
-              <div className="bar"></div>
-              <div className="bar"></div>
-            </div>
-            
-            <div className="header-right-group">
-                <div className="text-right-aligned">
-                    <span className="senac-txt">Senac</span>
-                    <span className="complementares-txt">Complementares</span>
+            {menuOpen && (
+              <div ref={menuRef} className="admin-menu-popover">
+                <div className="admin-menu-popover__header">
+                  <div>
+                    <strong>{nomeUsuario}</strong>
+                    <span>{user?.email || "admin@senac.pe.br"}</span>
+                  </div>
                 </div>
-                <div className="s-plus-box">S+</div>
+
+                <div className="admin-menu-popover__list">
+                  {itensMenuAdmin.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`admin-menu-popover__item ${item.id === "coordenadores" ? "active" : ""}`}
+                      onClick={() => {
+                        item.onClick?.();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <span className="admin-menu-popover__icon">{item.icon}</span>
+                      <span>{item.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <button type="button" className="admin-menu-popover__logout" onClick={handleLogout}>
+                  Sair da conta
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="admin-topbar__content">
+            <div>
+              <span className="admin-eyebrow">
+                <Sparkles size={14} />
+                Gestao de coordenadores
+              </span>
+              <h1>{buildGreeting(nomeUsuario)}</h1>
+              <p>Cadastre e gerencie os coordenadores do sistema.</p>
+            </div>
+
+            <div className="admin-tabs">
+              <button type="button" onClick={() => navigate("/admin")}>Overview</button>
+              <button type="button" onClick={() => navigate("/gestaoAlunos")}>Alunos</button>
+              <button type="button" className="active">Coordenadores</button>
+              <button type="button" onClick={() => navigate("/GestaoCursos")}>Cursos</button>
             </div>
           </div>
         </header>
 
-        <main className="coord-main-content">
-          <div className="coord-container">
-            <div className="coord-header-action">
-              <div className="title-info">
-                <h1 className="coord-title">{buildGreeting(nomeUsuario)}</h1>
-                <p className="coord-subtitle">Cadastre e gerencie os coordenadores do sistema</p>
+        <section className="admin-page-layout">
+          <section className="admin-agenda-card admin-page-card">
+            <div className="admin-section-heading">
+              <div>
+                <h3>Coordenadores</h3>
+                <p>{dadosFiltrados.length} registros encontrados.</p>
               </div>
-              <button className="new-coord-btn" onClick={() => setIsModalOpen(true)}>
-                <span className="plus-icon">+</span> Novo Coordenador
+              <button type="button" onClick={handleNovo}>
+                <Plus size={16} />
+                Novo coordenador
               </button>
             </div>
 
-            <div className="search-bar-container">
-              <div className="search-input-wrapper">
-                <svg className="search-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input 
-                  type="text" 
-                  placeholder="Buscar coordenador..." 
-                  className="search-input" 
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                />
-              </div>
+            <div className="admin-search-box">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Buscar coordenador..."
+                value={busca}
+                onChange={(event) => setBusca(event.target.value)}
+              />
             </div>
 
-            <div className="table-card">
-              <table className="coord-table">
-                <thead>
-                  <tr>
-                    <th>NOME</th><th>E-MAIL</th><th>DEPARTAMENTO</th><th>CURSOS</th><th>STATUS</th><th>AÇÕES</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dadosFiltrados.map((coord) => (
-                    <tr key={coord.id}>
-                      <td className="coord-name">{coord.nome}</td>
-                      <td>{coord.email}</td>
-                      <td>{coord.depto}</td>
-                      <td>
-                        <div className="badge-group">
-                          {coord.cursos?.map((curso, index) => (
-                            <span key={index} className="course-badge">{curso}</span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`status-label ${coord.status.toLowerCase()}`}>{coord.status}</span>
-                      </td>
-                      <td className="actions-cell">
-                        <button className="icon-btn-svg" onClick={() => handleEditar(coord)}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                          </svg>
-                        </button>
-                        <button className="icon-btn-svg" onClick={() => handleExcluir(coord.id)}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="admin-record-list">
+              {dadosFiltrados.map((coord) => (
+                <article key={coord.id} className="admin-record-item">
+                  <div>
+                    <h4>{coord.nome}</h4>
+                    <p>{coord.email}</p>
+                    <div className="admin-record-tags">
+                      <span className="admin-soft-chip">{coord.depto}</span>
+                      {coord.cursos?.map((curso) => (
+                        <span key={curso} className="admin-soft-chip">{curso}</span>
+                      ))}
+                      <span className={`admin-status-chip admin-status-chip--${coord.status.toLowerCase()}`}>
+                        {coord.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="admin-record-actions">
+                    <button type="button" className="admin-ghost-action" onClick={() => handleEditar(coord)} aria-label="Editar coordenador">
+                      <Pencil size={17} />
+                    </button>
+                    <button type="button" className="admin-ghost-action admin-ghost-action--danger" onClick={() => handleExcluir(coord.id)} aria-label="Excluir coordenador">
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
+                </article>
+              ))}
             </div>
-          </div>
-        </main>
-      </div>
+          </section>
+        </section>
+      </main>
 
-      {/* MODAL */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>{editandoId ? "Editar Coordenador" : "Novo Coordenador"}</h2>
-            <form onSubmit={handleSalvar}>
-              <input type="text" placeholder="Nome" required value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
-              <input type="email" placeholder="E-mail" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-              <input type="text" placeholder="Departamento" required value={formData.depto} onChange={e => setFormData({...formData, depto: e.target.value})} />
-              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+        <div className="admin-modal-overlay">
+          <div className="admin-modal" role="dialog" aria-modal="true">
+            <button type="button" className="admin-modal__close" onClick={fecharModal} aria-label="Fechar modal">
+              <X size={16} />
+            </button>
+            <span className="admin-modal__eyebrow">Coordenador</span>
+            <h2>{editandoId ? "Editar coordenador" : "Novo coordenador"}</h2>
+
+            <form className="admin-modal__form" onSubmit={handleSalvar}>
+              <input type="text" placeholder="Nome" required value={formData.nome} onChange={(event) => setFormData({ ...formData, nome: event.target.value })} />
+              <input type="email" placeholder="E-mail" required value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} />
+              <input type="text" placeholder="Departamento" required value={formData.depto} onChange={(event) => setFormData({ ...formData, depto: event.target.value })} />
+              <select value={formData.status} onChange={(event) => setFormData({ ...formData, status: event.target.value })}>
                 <option value="Ativo">Ativo</option>
                 <option value="Inativo">Inativo</option>
               </select>
-              <div className="modal-btns">
-                <button type="button" onClick={fecharModal}>Cancelar</button>
-                <button type="submit" className="btn-save">Salvar</button>
+              <div className="admin-form-actions">
+                <button type="button" className="admin-secondary-button" onClick={fecharModal}>Cancelar</button>
+                <button type="submit" className="admin-primary-button">Salvar</button>
               </div>
             </form>
           </div>
