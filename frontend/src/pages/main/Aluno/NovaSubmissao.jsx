@@ -167,7 +167,7 @@ const NovaSubmissao = () => {
         </header>
 
         {erro && (
-          <div className="submission-alert">
+          <div className="submission-alert" role="alert">
             <span>{erro}</span>
             <button type="button" onClick={() => setErro(null)}>
               Fechar
@@ -226,6 +226,8 @@ const NovaSubmissao = () => {
                 <div
                   className="submission-dropzone"
                   onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  aria-label="Área de upload de comprovante. Clique ou arraste um arquivo PDF ou Imagem."
                   onKeyDown={(event) => event.key === "Enter" && fileInputRef.current?.click()}
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={(event) => {

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Evita a indexação de rotas internas que exigem login
+Disallow: /admin

@@ -45,7 +45,7 @@ const ActivityCard = ({
   return (
     <div className={`coordenador-activity-card ${isExiting ? "coordenador-exit-animation" : ""}`}>
       <div className="coordenador-activity-card__icon">
-        <ClipboardCheck size={18} />
+        <ClipboardCheck size={18} aria-hidden="true" />
       </div>
 
       <div className="coordenador-activity-card__body">
@@ -61,10 +61,10 @@ const ActivityCard = ({
 
         <div className="coordenador-activity-card__footer">
           <span className="coordenador-soft-pill">
-            <Clock3 size={14} />
+            <Clock3 size={14} aria-hidden="true" />
             Em validacao
           </span>
-          <span className={isDivergent ? "coordenador-badge-ia-warning" : "coordenador-badge-ia-success"}>
+          <span className={isDivergent ? "coordenador-badge-ia-warning" : "coordenador-badge-ia-success"} aria-label={`Confiança da Inteligência Artificial em ${confidence} por cento`}>
             IA: {confidence}% confianca
           </span>
         </div>
@@ -253,7 +253,7 @@ const Coordenador = () => {
                 </div>
 
                 <div className="coordenador-panel__pill">
-                  <CheckCheck size={15} />
+                  <CheckCheck size={15} aria-hidden="true" />
                   <span>Fluxo de aprovacao</span>
                 </div>
               </div>
@@ -339,7 +339,7 @@ const Coordenador = () => {
               onClick={() => setIsMenuOpen(true)}
               aria-label="Abrir menu"
             >
-              <Menu size={18} />
+              <Menu size={18} aria-hidden="true" />
             </button>
 
             <div className="coordenador-topbar__content">

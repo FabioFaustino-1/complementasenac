@@ -11,8 +11,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { autenticarUsuario } from "../../services/auth";
-import { useAuth } from "../../assets/contexts/AuthContext";
-import loginScene from "../../assets/login-scene.png";
+import { useAuth } from "../../assets/contexts/AuthContext"; // Certifique-se de que o caminho para loginScene.webp está correto
+import loginScene from "../../assets/login-scene.webp";
 
 const perfis = [
   {
@@ -116,7 +116,12 @@ function Login() {
           <img
             className="scene-card__image"
             src={loginScene}
-            alt="Estudantes do Senac em sala de aula"
+            width="319"
+            height="221"
+            alt="Estudantes do Senac colaborando em um ambiente acadêmico moderno"
+            fetchPriority="high"
+            decoding="async"
+            loading="eager"
           />
           <p className="scene-card__caption">
             Bem-vindo ao Complementa+, a plataforma de atividades complementares do
