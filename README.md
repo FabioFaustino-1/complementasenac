@@ -40,7 +40,7 @@ Para persistir entre sessões: *Configurações do Windows → Variáveis de amb
 No PowerShell, entre na pasta do Maven (se já estiver em `complementasenac`, use só `cd backend\backend`):
 
 ```powershell
-cd backend\backend
+cd backend
 ./mvnw.cmd spring-boot:run
 
 Caso haja algum erro
@@ -96,7 +96,7 @@ O arquivo `.env` está no `.gitignore` e nunca deve ser versionado.
 
 | O quê           | Pasta            | Comando principal             |
 |-----------------|------------------|--------------------------------|
-| API Java        | `backend\backend`| `.\mvnw.cmd spring-boot:run`   |
+| API Java        | `backend`        | `.\mvnw.cmd spring-boot:run`   |
 | Interface React | `frontend`     | `npm run dev`                  |
 
 ---

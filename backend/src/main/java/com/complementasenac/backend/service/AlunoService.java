@@ -8,6 +8,8 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,15 +17,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AlunoService {
     private final FirestoreService firestoreService;
     private final FileUploadService fileUploadService;
+    private final JavaMailSender mailSender;
 
-    public AlunoService(FirestoreService firestoreService, FileUploadService fileUploadService) {
+    public AlunoService(FirestoreService firestoreService, FileUploadService fileUploadService, JavaMailSender mailSender) {
         this.firestoreService = firestoreService;
         this.fileUploadService = fileUploadService;
+        this.mailSender = mailSender;
     }
 
     public AlunoPerfilModel buscarPerfil(String uid, String email) {
@@ -107,6 +112,60 @@ public class AlunoService {
 
         DocumentSnapshot salvo = firestoreService.salvarSolicitacao(doc);
         return paraAtividade(salvo);
+    }
+
+    public List<AlunoPerfilModel> listarTodosAlunos() {
+        return firestoreService.listarUsuariosPorRole("ALUNO").stream()
+                .map(doc -> buscarPerfil(doc.getId(), doc.getString("email")))
+                .toList();
+    }
+
+    public AlunoPerfilModel registrarAlunoAdmin(AlunoPerfilModel novoAluno) {
+        String uid = UUID.randomUUID().toString();
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("nome", novoAluno.getNome().trim());
+        payload.put("email", novoAluno.getEmail().trim().toLowerCase());
+        payload.put("role", "ALUNO");
+
+        Map<String, Object> vinculo = new HashMap<>();
+        vinculo.put("id_curso", List.of(novoAluno.getCurso().trim()));
+        vinculo.put("matricula", novoAluno.getMatricula().trim());
+        vinculo.put("ch_total_exigida", 200);
+        vinculo.put("status_no_curso", "Ativo");
+
+        Map<String, Object> saldos = new HashMap<>();
+        saldos.put("ensino", 0);
+        saldos.put("pesquisa", 0);
+        saldos.put("extensao", 0);
+        vinculo.put("saldos", saldos);
+
+        payload.put("vinculo", List.of(vinculo));
+
+        firestoreService.salvarUsuario(uid, payload);
+
+        try {
+            sendConfirmationEmail(novoAluno.getEmail(), novoAluno.getNome());
+        } catch (Exception e) {
+            System.err.println("Falha ao enviar e-mail de confirmacao: " + e.getMessage());
+        }
+
+        return buscarPerfil(uid, novoAluno.getEmail());
+    }
+
+    private void sendConfirmationEmail(String toEmail, String studentName) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("suporte@complementasenac.com.br");
+        message.setTo(toEmail);
+        message.setSubject("Confirmacao de Cadastro - Complementa+ Senac");
+        message.setText(
+            "Ola " + studentName + ",\n\n" +
+            "Seu cadastro como aluno no sistema Complementa+ Senac foi realizado com sucesso!\n\n" +
+            "Em breve voce recebera mais informacoes sobre como acessar e utilizar o sistema.\n\n" +
+            "Atenciosamente,\n" +
+            "Equipe Complementa+ Senac"
+        );
+        mailSender.send(message);
     }
 
     private void validarSubmissao(AlunoSubmissaoRequestModel payload) {

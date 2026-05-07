@@ -71,14 +71,23 @@ const GestaoCoord = () => {
   }, [menuOpen]);
 
   useEffect(() => {
+    // Se o carregamento do auth terminou e não temos usuário ou token, volta para o login
+    if (user === null && !loading) {
+      navigate("/");
+    }
+  }, [user, token, navigate, loading]);
+
+  useEffect(() => {
     if (!token) return;
     const load = async () => {
+      console.log("Token ativo para chamadas admin:", token);
       try {
         setLoading(true);
         const data = await listarCoordenadoresAdmin(token);
         setCoordenadores(data);
-      } catch (error) {
-        alert(`Erro ao carregar coordenadores: ${error.message}`);
+      } catch (error) { // Melhoria no tratamento de erro
+        console.error("Erro ao carregar coordenadores:", error);
+        alert(`Erro ao carregar coordenadores: ${error.message || "Ocorreu um erro desconhecido ao carregar coordenadores."}`);
       } finally {
         setLoading(false);
       }
@@ -87,8 +96,8 @@ const GestaoCoord = () => {
   }, [token]);
 
   const dadosFiltrados = coordenadores.filter((coord) =>
-    coord.nome.toLowerCase().includes(busca.toLowerCase()) ||
-    coord.email.toLowerCase().includes(busca.toLowerCase())
+    (coord.nome || "").toLowerCase().includes(busca.toLowerCase()) ||
+    (coord.email || "").toLowerCase().includes(busca.toLowerCase())
   );
 
   const handleLogout = async () => {
@@ -100,7 +109,10 @@ const GestaoCoord = () => {
     if (!window.confirm("Deseja realmente excluir este coordenador?")) return;
     removerCoordenadorAdmin(token, id)
       .then(() => setCoordenadores((prev) => prev.filter((coord) => coord.id !== id)))
-      .catch((error) => alert(`Erro ao excluir coordenador: ${error.message}`));
+      .catch((error) => { // Melhoria no tratamento de erro
+        console.error("Erro ao excluir coordenador:", error);
+        alert(`Erro ao excluir coordenador: ${error.message || "Ocorreu um erro desconhecido ao excluir coordenador."}`);
+      });
   };
 
   const handleEditar = (coord) => {
@@ -139,7 +151,8 @@ const GestaoCoord = () => {
       }
       fecharModal();
     } catch (error) {
-      alert(`Erro ao salvar coordenador: ${error.message}`);
+      console.error("Erro ao salvar coordenador:", error); // Melhoria no tratamento de erro
+      alert(`Erro ao salvar coordenador: ${error.message || "Ocorreu um erro desconhecido ao salvar coordenador."}`);
     }
   };
 
@@ -250,7 +263,7 @@ const GestaoCoord = () => {
                       {coord.cursos?.map((curso) => (
                         <span key={curso} className="admin-soft-chip">{curso}</span>
                       ))}
-                      <span className={`admin-status-chip admin-status-chip--${coord.status.toLowerCase()}`}>
+                  <span className={`admin-status-chip admin-status-chip--${(coord.status || "ativo").toLowerCase()}`}>
                         {coord.status}
                       </span>
                     </div>

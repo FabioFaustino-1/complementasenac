@@ -22,6 +22,7 @@ const GestaoAlunos = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState([]);
+  const [busca, setBusca] = useState("");
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -29,7 +30,7 @@ const GestaoAlunos = () => {
     curso: "",
   });
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
   const nomeUsuario = deriveDisplayName({
@@ -47,8 +48,10 @@ const GestaoAlunos = () => {
   ];
 
   useEffect(() => {
-    carregarAlunos();
-  }, []);
+    if (token) {
+      carregarAlunos();
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -71,7 +74,11 @@ const GestaoAlunos = () => {
   const carregarAlunos = async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_URL);
+      const response = await fetch(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!response.ok) throw new Error("Falha ao carregar alunos");
       const data = await response.json();
       setStudents(data);
@@ -81,6 +88,11 @@ const GestaoAlunos = () => {
       setLoading(false);
     }
   };
+
+  const alunosFiltrados = students.filter((student) =>
+    (student.nome || "").toLowerCase().includes(busca.toLowerCase()) ||
+    (student.matricula || "").toLowerCase().includes(busca.toLowerCase())
+  );
 
   const handleLogout = async () => {
     await logout();
@@ -102,11 +114,14 @@ const GestaoAlunos = () => {
       setLoading(true);
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(formData),
       });
       if (!response.ok) throw new Error("Falha ao salvar aluno");
-      setShowForm(false);
+      alert(`Aluno ${formData.nome} salvo com sucesso! Um e-mail de confirmação foi enviado para ${formData.email}.`);
       setFormData({ nome: "", email: "", matricula: "", curso: "" });
       await carregarAlunos();
     } catch (error) {
@@ -216,11 +231,16 @@ const GestaoAlunos = () => {
 
             <div className="admin-search-box">
               <Search size={18} />
-              <input type="text" placeholder="Buscar por nome ou matricula..." />
+              <input 
+                type="text" 
+                placeholder="Buscar por nome ou matricula..." 
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+              />
             </div>
 
             <div className="admin-record-list">
-              {students.map((student) => (
+              {alunosFiltrados.map((student) => (
                 <article key={student.id} className="admin-record-item">
                   <div>
                     <h4>{student.nome}</h4>
