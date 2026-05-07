@@ -9,6 +9,7 @@ public class AtividadeCoordenadorModel {
     private int horas;
     private int confiancaIa;
     private String status;
+    private String comprovanteUrl;
 
     public String getId() {
         return id;
@@ -72,5 +73,13 @@ public class AtividadeCoordenadorModel {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getComprovanteUrl() {
+        return comprovanteUrl;
+    }
+
+    public void setComprovanteUrl(String comprovanteUrl) {
+        this.comprovanteUrl = comprovanteUrl;
     }
 }

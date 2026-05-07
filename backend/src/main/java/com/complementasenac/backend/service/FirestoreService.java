@@ -30,11 +30,25 @@ public class FirestoreService {
         }
         try {
             DocumentSnapshot docPrincipal = db().collection(COLLECTION_USUARIOS).document(uid).get().get();
-            if (docPrincipal.exists()) {
+            Optional<DocumentSnapshot> porCampoPrincipal = buscarUsuarioPorCampoUid(COLLECTION_USUARIOS, uid);
+            if (porCampoPrincipal.isPresent() && possuiVinculo(porCampoPrincipal.get())) {
+                return porCampoPrincipal;
+            }
+            if (docPrincipal.exists() && possuiVinculo(docPrincipal)) {
                 return Optional.of(docPrincipal);
             }
             DocumentSnapshot docLegacy = db().collection(COLLECTION_USUARIOS_LEGACY).document(uid).get().get();
-            return docLegacy.exists() ? Optional.of(docLegacy) : Optional.empty();
+            Optional<DocumentSnapshot> porCampoLegacy = buscarUsuarioPorCampoUid(COLLECTION_USUARIOS_LEGACY, uid);
+            if (porCampoLegacy.isPresent() && possuiVinculo(porCampoLegacy.get())) {
+                return porCampoLegacy;
+            }
+            if (docPrincipal.exists()) {
+                return Optional.of(docPrincipal);
+            }
+            if (docLegacy.exists()) {
+                return Optional.of(docLegacy);
+            }
+            return porCampoPrincipal.or(() -> porCampoLegacy);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao buscar usuario por UID.", e);
@@ -224,21 +238,18 @@ public class FirestoreService {
             return;
         }
         DocumentSnapshot usuario = usuarioOpt.get();
-        List<Map<String, Object>> vinculos = (List<Map<String, Object>>) usuario.get("vinculos");
+        String campoVinculo = usuario.get("vinculo") != null ? "vinculo" : "vinculos";
+        List<Map<String, Object>> vinculos = (List<Map<String, Object>>) usuario.get(campoVinculo);
         if (vinculos == null || vinculos.isEmpty()) {
             return;
         }
 
-        String chaveSaldo = categoria.toLowerCase()
-                .replace("ã", "a")
-                .replace("ç", "c")
-                .replace("á", "a")
-                .replace("é", "e");
+        String chaveSaldo = categoria.toLowerCase();
 
         boolean alterado = false;
         for (Map<String, Object> vinculo : vinculos) {
             Object cursoVinculo = vinculo.get("id_curso");
-            if (cursoVinculo == null || !cursoVinculo.toString().equals(idCurso)) {
+            if (!cursoVinculoContem(cursoVinculo, idCurso)) {
                 continue;
             }
             Map<String, Object> saldos = (Map<String, Object>) vinculo.getOrDefault("saldos", new HashMap<>());
@@ -250,7 +261,7 @@ public class FirestoreService {
 
         if (alterado) {
             try {
-                db().collection(COLLECTION_USUARIOS).document(uidAluno).update("vinculos", vinculos).get();
+                usuario.getReference().update(campoVinculo, vinculos).get();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
@@ -258,5 +269,53 @@ public class FirestoreService {
                 throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
             }
         }
+    }
+
+    private boolean cursoVinculoContem(Object cursoVinculo, String idCurso) {
+        if (cursoVinculo == null || idCurso == null || idCurso.isBlank()) {
+            return false;
+        }
+        if (cursoVinculo instanceof List<?> cursos) {
+            return cursos.stream().anyMatch(curso -> idCurso.equals(idReferenciaOuTexto(curso)));
+        }
+        return idCurso.equals(idReferenciaOuTexto(cursoVinculo));
+    }
+
+    private Optional<DocumentSnapshot> buscarUsuarioPorCampoUid(String colecao, String uid) throws InterruptedException, ExecutionException {
+        return db().collection(colecao)
+                .whereEqualTo("uid", uid)
+                .limit(1)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .findFirst()
+                .map(doc -> (DocumentSnapshot) doc);
+    }
+
+    private boolean possuiVinculo(DocumentSnapshot doc) {
+        Object vinculo = doc.get("vinculo");
+        if (vinculo instanceof List<?> lista) {
+            return !lista.isEmpty();
+        }
+        if (vinculo instanceof Map<?, ?> map) {
+            return !map.isEmpty();
+        }
+        Object vinculos = doc.get("vinculos");
+        if (vinculos instanceof List<?> lista) {
+            return !lista.isEmpty();
+        }
+        return vinculos instanceof Map<?, ?> map && !map.isEmpty();
+    }
+
+    private String idReferenciaOuTexto(Object value) {
+        if (value instanceof DocumentReference ref) {
+            return ref.getId();
+        }
+        String texto = value == null ? "" : value.toString().trim();
+        if (texto.contains("/")) {
+            return texto.substring(texto.lastIndexOf("/") + 1);
+        }
+        return texto;
     }
 }

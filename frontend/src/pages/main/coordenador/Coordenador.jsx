@@ -3,6 +3,7 @@ import {
   CheckCheck,
   ClipboardCheck,
   Clock3,
+  FileText,
   Menu,
   Sparkles,
 } from "lucide-react";
@@ -26,13 +27,21 @@ const ActivityCard = ({
   student,
   hours,
   date,
-  confidence,
   type,
+  comprovanteUrl,
   onApprove,
   onReject,
 }) => {
   const [isExiting, setIsExiting] = useState(false);
-  const isDivergent = confidence < 50;
+  const hasComprovante = Boolean(comprovanteUrl);
+
+  const handleViewPdf = () => {
+    if (!hasComprovante) {
+      window.alert("Comprovante indisponivel para esta atividade.");
+      return;
+    }
+    window.open(comprovanteUrl, "_blank", "noopener,noreferrer");
+  };
 
   const handleAction = (status) => {
     setIsExiting(true);
@@ -51,7 +60,6 @@ const ActivityCard = ({
       <div className="coordenador-activity-card__body">
         <div className="coordenador-activity-card__title-row">
           <h3>{title}</h3>
-          {isDivergent ? <span className="coordenador-badge-divergence">Divergencia IA</span> : null}
         </div>
 
         <div className="coordenador-activity-card__meta-row">
@@ -64,13 +72,19 @@ const ActivityCard = ({
             <Clock3 size={14} aria-hidden="true" />
             Em validacao
           </span>
-          <span className={isDivergent ? "coordenador-badge-ia-warning" : "coordenador-badge-ia-success"} aria-label={`Confiança da Inteligência Artificial em ${confidence} por cento`}>
-            IA: {confidence}% confianca
-          </span>
         </div>
       </div>
 
       <div className="coordenador-activity-card__actions">
+        <button
+          type="button"
+          className="coordenador-file-link"
+          onClick={handleViewPdf}
+          aria-label={`Visualizar comprovante de ${title}`}
+        >
+          <FileText size={14} aria-hidden="true" />
+          Ver PDF
+        </button>
         <button className="coordenador-btn-secondary" onClick={() => handleAction("INDEFERIDO")}>
           Indeferir
         </button>
@@ -108,8 +122,8 @@ const Coordenador = () => {
             student: item.aluno,
             hours: String(item.horas),
             date: item.data,
-            confidence: item.confiancaIa,
             type: item.tipo,
+            comprovanteUrl: item.comprovanteUrl || item.urlCertificado || item.url_certificado,
           }))
         );
         setResumo(resumoApi);

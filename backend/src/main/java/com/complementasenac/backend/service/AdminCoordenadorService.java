@@ -33,7 +33,7 @@ public class AdminCoordenadorService {
     public CoordenadorAdminModel criar(CoordenadorAdminModel coordenador) {
         validar(coordenador);
         String uid = UUID.randomUUID().toString();
-        firestoreService.salvarUsuario(uid, payload(uid, coordenador));
+        firestoreService.salvarUsuario(uid, payload(coordenador));
         return buscarPorId(uid).orElseThrow();
     }
 
@@ -42,7 +42,7 @@ public class AdminCoordenadorService {
         if (buscarPorId(id).isEmpty()) {
             return Optional.empty();
         }
-        firestoreService.salvarUsuario(id, payload(id, coordenador));
+        firestoreService.salvarUsuario(id, payload(coordenador));
         return buscarPorId(id);
     }
 
@@ -60,16 +60,15 @@ public class AdminCoordenadorService {
         }
     }
 
-    private Map<String, Object> payload(String uid, CoordenadorAdminModel c) {
+    private Map<String, Object> payload(CoordenadorAdminModel c) {
         Map<String, Object> data = new HashMap<>();
-        data.put("uid", uid);
         data.put("nome", c.getNome().trim());
         data.put("email", c.getEmail().trim().toLowerCase());
         data.put("role", "COORDENADOR");
         data.put("departamento", c.getDepartamento() == null ? "" : c.getDepartamento().trim());
         data.put("status", c.getStatus() == null ? "Ativo" : c.getStatus().trim());
         data.put("cursos", c.getCursos() == null ? List.of() : c.getCursos());
-        data.put("vinculos", List.of());
+        data.put("vinculo", List.of());
         return data;
     }
 

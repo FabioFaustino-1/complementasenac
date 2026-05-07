@@ -347,10 +347,7 @@
   margin-top: 14px;
 }
 
-.coordenador-soft-pill,
-.coordenador-badge-divergence,
-.coordenador-badge-ia-success,
-.coordenador-badge-ia-warning {
+.coordenador-soft-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -364,15 +361,24 @@
   background: rgba(61, 124, 255, 0.08);
 }
 
-.coordenador-badge-divergence,
-.coordenador-badge-ia-warning {
-  color: #b24d61;
-  background: rgba(255, 111, 132, 0.16);
+.coordenador-file-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(20, 50, 92, 0.58);
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-.coordenador-badge-ia-success {
-  color: #1f8b4d;
-  background: rgba(103, 221, 136, 0.14);
+.coordenador-file-link:hover {
+  color: rgba(20, 50, 92, 0.82);
 }
 
 .coordenador-activity-card__hours {

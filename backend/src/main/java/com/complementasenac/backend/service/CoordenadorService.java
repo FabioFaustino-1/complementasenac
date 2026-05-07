@@ -16,9 +16,11 @@ import java.util.Optional;
 @Service
 public class CoordenadorService {
     private final FirestoreService firestoreService;
+    private final FileUploadService fileUploadService;
 
-    public CoordenadorService(FirestoreService firestoreService) {
+    public CoordenadorService(FirestoreService firestoreService, FileUploadService fileUploadService) {
         this.firestoreService = firestoreService;
+        this.fileUploadService = fileUploadService;
     }
 
     public List<AtividadeCoordenadorModel> listarPendentes() {
@@ -113,6 +115,7 @@ public class CoordenadorService {
         atividade.setHoras(asInt(a.get("horas_informadas")));
         atividade.setConfiancaIa(0);
         atividade.setStatus(texto(a.get("status")));
+        atividade.setComprovanteUrl(fileUploadService.gerarUrlVisualizacao(texto(a.get("url_certificado"))));
         return atividade;
     }
 

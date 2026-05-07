@@ -36,7 +36,7 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
                 request.setAttribute("email", decodedToken.getEmail());
 
             } catch (Exception e) {
-                if (request.getRequestURI().startsWith("/api/auth/")) {
+                if (request.getRequestURI().startsWith("/api/")) {
                     corsHeaders(request, response);
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("{\"error\":\"Token invalido\"}");
@@ -45,7 +45,7 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        if (request.getRequestURI().startsWith("/api/auth/")
+        if (request.getRequestURI().startsWith("/api/")
                 && request.getAttribute("uid") == null) {
             corsHeaders(request, response);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
