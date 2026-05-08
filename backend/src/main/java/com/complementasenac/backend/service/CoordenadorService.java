@@ -6,6 +6,8 @@ import com.complementasenac.backend.model.CoordenadorPerfilModel;
 import com.complementasenac.backend.model.CoordenadorResumoModel;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,10 +17,13 @@ import java.util.Optional;
 
 @Service
 public class CoordenadorService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoordenadorService.class);
     private final FirestoreService firestoreService;
+    private final EmailNotificationService emailNotificationService;
 
-    public CoordenadorService(FirestoreService firestoreService) {
+    public CoordenadorService(FirestoreService firestoreService, EmailNotificationService emailNotificationService) {
         this.firestoreService = firestoreService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     public List<AtividadeCoordenadorModel> listarPendentes() {
@@ -50,6 +55,7 @@ public class CoordenadorService {
         updates.put("horas_aprovadas", "APROVADO".equals(status) ? horasFinal : 0);
         updates.put("justificativa_coordenador", justificativa == null ? "" : justificativa.trim());
         firestoreService.atualizarSolicitacao(id, updates);
+        LOGGER.info("Solicitacao {} atualizada para status {}", id, status);
 
         if ("APROVADO".equals(status)) {
             firestoreService.creditarHorasAprovadas(
@@ -59,6 +65,18 @@ public class CoordenadorService {
                     horasFinal
             );
         }
+
+        String uidAluno = texto(doc.get("uid_aluno"));
+        String emailAluno = firestoreService.buscarUsuarioPorUid(uidAluno)
+                .map(aluno -> texto(aluno.get("email")))
+                .orElse("");
+        emailNotificationService.enviarStatusSolicitacao(
+                emailAluno,
+                texto(doc.get("titulo_atividade")),
+                status,
+                "APROVADO".equals(status) ? horasFinal : null,
+                justificativa
+        );
 
         return firestoreService.buscarSolicitacaoPorId(id).map(this::paraCoordenador);
     }

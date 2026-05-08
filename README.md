@@ -37,10 +37,10 @@ Para persistir entre sessões: *Configurações do Windows → Variáveis de amb
 
 ## Como rodar o backend (Spring Boot)
 
-No PowerShell, entre na pasta do Maven (se já estiver em `complementasenac`, use só `cd backend\backend`):
+No PowerShell, entre na pasta do backend:
 
 ```powershell
-cd backend\backend
+cd backend
 ./mvnw.cmd spring-boot:run
 
 Caso haja algum erro
@@ -51,6 +51,11 @@ java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
 
 A API sobe em **http://localhost:8080** (o frontend está configurado para chamar essa URL).
+
+Documentação da API (Swagger/OpenAPI):
+
+- UI: **http://localhost:8080/swagger-ui**
+- JSON: **http://localhost:8080/api/docs**
 
 Outros comandos úteis:
 
@@ -79,6 +84,11 @@ Build de produção:
 npm run build
 ```
 
+PWA:
+
+- O frontend já está configurado com service worker.
+- Em produção, a aplicação pode ser instalada no dispositivo (modo standalone).
+
 ---
 
 ## Configuração de Ambiente (.env)
@@ -89,6 +99,20 @@ O projeto utiliza variáveis de ambiente para chaves do Firebase.
 3. Preencha os valores com as suas credenciais do Firebase Console.
 
 O arquivo `.env` está no `.gitignore` e nunca deve ser versionado.
+
+### E-mail (backend)
+
+Por padrão, o envio de e-mail está desabilitado e o backend registra o conteúdo em log.
+Para habilitar SMTP em deploy, configure no `application.properties`/variáveis:
+
+- `app.mail.enabled=true`
+- `app.mail.from=seu-email`
+- `spring.mail.host`
+- `spring.mail.port`
+- `spring.mail.username`
+- `spring.mail.password`
+- `spring.mail.properties.mail.smtp.auth=true`
+- `spring.mail.properties.mail.smtp.starttls.enable=true`
 
 ---
 

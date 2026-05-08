@@ -7,6 +7,7 @@ com\complementasenac\backend\service\PerfilService.class
 com\complementasenac\backend\service\FirestoreService.class
 com\complementasenac\backend\model\CursoModel.class
 com\complementasenac\backend\service\FirebaseUserProvisioningService.class
+com\complementasenac\backend\service\EmailNotificationService.class
 com\complementasenac\backend\service\FileUploadService.class
 com\complementasenac\backend\exception\StandardError.class
 com\complementasenac\backend\model\CoordenadorResumoModel.class
@@ -30,5 +31,6 @@ com\complementasenac\backend\controller\AuthController.class
 com\complementasenac\backend\model\AlunoAtividadeModel.class
 com\complementasenac\backend\service\AdminCoordenadorService.class
 com\complementasenac\backend\BackendApplication.class
+com\complementasenac\backend\config\OpenApiConfig.class
 com\complementasenac\backend\controller\AdminCursoController.class
 com\complementasenac\backend\config\SecurityConfig.class

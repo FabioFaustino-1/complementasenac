@@ -3,6 +3,7 @@ D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementase
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\config\FilterConfig.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\config\FirebaseAuthFilter.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\config\FirebaseConfig.java
+D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\config\OpenApiConfig.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\config\SecurityConfig.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\controller\AdminAlunoController.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\controller\AdminCoordenadorController.java
@@ -27,6 +28,7 @@ D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementase
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\AdminCursoService.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\AlunoService.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\CoordenadorService.java
+D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\EmailNotificationService.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\FileUploadService.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\FirebaseUserProvisioningService.java
 D:\vscode\Disk\PI\SideA\complementasenac\backend\src\main\java\com\complementasenac\backend\service\FirestoreService.java
