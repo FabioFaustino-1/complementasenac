@@ -147,11 +147,21 @@ public class AlunoService {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> primeiroVinculo(DocumentSnapshot usuario) {
-        List<Map<String, Object>> vinculos = (List<Map<String, Object>>) usuario.get("vinculos");
-        if (vinculos == null || vinculos.isEmpty()) {
-            throw new IllegalArgumentException("Usuario sem vinculos no curso.");
+        Object vinculoRaw = usuario.get("vinculo");
+        if (vinculoRaw instanceof Map<?, ?> mapVinculo) {
+            Map<String, Object> vinculo = new HashMap<>();
+            mapVinculo.forEach((k, v) -> vinculo.put(String.valueOf(k), v));
+            return vinculo;
         }
-        return vinculos.get(0);
+        if (vinculoRaw instanceof List<?> listaVinculo
+                && !listaVinculo.isEmpty()
+                && listaVinculo.get(0) instanceof Map<?, ?> mapVinculo) {
+            Map<String, Object> vinculo = new HashMap<>();
+            mapVinculo.forEach((k, v) -> vinculo.put(String.valueOf(k), v));
+            return vinculo;
+        }
+
+        throw new IllegalArgumentException("Usuario sem vinculo no curso.");
     }
 
     private Map<String, Object> castMap(Object value) {

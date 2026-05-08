@@ -54,10 +54,7 @@ public class CoordenadorController {
     public CoordenadorPerfilModel perfil(HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
         String email = (String) request.getAttribute("email");
-        if (uid == null || uid.isBlank() || email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Token sem dados de usuario.");
-        }
-        return coordenadorService.perfil(uid, email);
+        return coordenadorService.perfil(uid == null ? "" : uid, email == null ? "" : email);
     }
 
     @GetMapping("/alunos")

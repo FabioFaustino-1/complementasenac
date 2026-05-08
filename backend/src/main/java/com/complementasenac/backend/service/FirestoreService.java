@@ -34,13 +34,34 @@ public class FirestoreService {
                 return Optional.of(docPrincipal);
             }
             DocumentSnapshot docLegacy = db().collection(COLLECTION_USUARIOS_LEGACY).document(uid).get().get();
-            return docLegacy.exists() ? Optional.of(docLegacy) : Optional.empty();
+            if (docLegacy.exists()) {
+                return Optional.of(docLegacy);
+            }
+
+            // Fallback para bases antigas: uid armazenado como campo do documento.
+            Optional<DocumentSnapshot> porCampoPrincipal = buscarUsuarioPorCampoUid(COLLECTION_USUARIOS, uid);
+            if (porCampoPrincipal.isPresent()) {
+                return porCampoPrincipal;
+            }
+            return buscarUsuarioPorCampoUid(COLLECTION_USUARIOS_LEGACY, uid);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao buscar usuario por UID.", e);
         } catch (ExecutionException e) {
             throw new RuntimeException("Falha ao buscar usuario por UID.", e);
         }
+    }
+
+    private Optional<DocumentSnapshot> buscarUsuarioPorCampoUid(String collection, String uid) throws ExecutionException, InterruptedException {
+        var query = db().collection(collection)
+                .whereEqualTo("uid", uid)
+                .limit(1)
+                .get()
+                .get();
+        if (!query.isEmpty()) {
+            return Optional.of(query.getDocuments().get(0));
+        }
+        return Optional.empty();
     }
 
     public Optional<DocumentSnapshot> buscarUsuarioPorEmail(String email) {
@@ -224,8 +245,8 @@ public class FirestoreService {
             return;
         }
         DocumentSnapshot usuario = usuarioOpt.get();
-        List<Map<String, Object>> vinculos = (List<Map<String, Object>>) usuario.get("vinculos");
-        if (vinculos == null || vinculos.isEmpty()) {
+        Map<String, Object> vinculo = primeiroVinculo(usuario.get("vinculo"));
+        if (vinculo == null) {
             return;
         }
 
@@ -235,28 +256,37 @@ public class FirestoreService {
                 .replace("á", "a")
                 .replace("é", "e");
 
-        boolean alterado = false;
-        for (Map<String, Object> vinculo : vinculos) {
-            Object cursoVinculo = vinculo.get("id_curso");
-            if (cursoVinculo == null || !cursoVinculo.toString().equals(idCurso)) {
-                continue;
-            }
-            Map<String, Object> saldos = (Map<String, Object>) vinculo.getOrDefault("saldos", new HashMap<>());
-            Number atual = (Number) saldos.getOrDefault(chaveSaldo, 0);
-            saldos.put(chaveSaldo, atual.intValue() + horasAprovadas);
-            vinculo.put("saldos", saldos);
-            alterado = true;
+        Object cursoVinculo = vinculo.get("id_curso");
+        if (cursoVinculo == null || !cursoVinculo.toString().equals(idCurso)) {
+            return;
         }
+        Map<String, Object> saldos = (Map<String, Object>) vinculo.getOrDefault("saldos", new HashMap<>());
+        Number atual = (Number) saldos.getOrDefault(chaveSaldo, 0);
+        saldos.put(chaveSaldo, atual.intValue() + horasAprovadas);
+        vinculo.put("saldos", saldos);
 
-        if (alterado) {
-            try {
-                db().collection(COLLECTION_USUARIOS).document(uidAluno).update("vinculos", vinculos).get();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
-            }
+        try {
+            db().collection(COLLECTION_USUARIOS).document(uidAluno).update("vinculo", vinculo).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> primeiroVinculo(Object vinculoRaw) {
+        if (vinculoRaw instanceof Map<?, ?> map) {
+            Map<String, Object> vinculo = new HashMap<>();
+            map.forEach((k, v) -> vinculo.put(String.valueOf(k), v));
+            return vinculo;
+        }
+        if (vinculoRaw instanceof List<?> lista && !lista.isEmpty() && lista.get(0) instanceof Map<?, ?> map) {
+            Map<String, Object> vinculo = new HashMap<>();
+            map.forEach((k, v) -> vinculo.put(String.valueOf(k), v));
+            return vinculo;
+        }
+        return null;
     }
 }

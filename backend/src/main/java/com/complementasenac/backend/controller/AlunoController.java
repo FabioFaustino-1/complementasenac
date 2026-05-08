@@ -76,17 +76,11 @@ public class AlunoController {
 
     private String lerUid(HttpServletRequest request) {
         String uid = (String) request.getAttribute("uid");
-        if (uid == null || uid.isBlank()) {
-            throw new IllegalArgumentException("Token sem uid.");
-        }
-        return uid;
+        return uid == null ? "" : uid;
     }
 
     private String lerEmail(HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Token sem e-mail.");
-        }
-        return email;
+        return email == null ? "" : email;
     }
 }

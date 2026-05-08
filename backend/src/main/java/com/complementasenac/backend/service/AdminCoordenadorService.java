@@ -8,14 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AdminCoordenadorService {
     private final FirestoreService firestoreService;
+    private final FirebaseUserProvisioningService firebaseUserProvisioningService;
 
-    public AdminCoordenadorService(FirestoreService firestoreService) {
+    public AdminCoordenadorService(
+            FirestoreService firestoreService,
+            FirebaseUserProvisioningService firebaseUserProvisioningService
+    ) {
         this.firestoreService = firestoreService;
+        this.firebaseUserProvisioningService = firebaseUserProvisioningService;
     }
 
     public List<CoordenadorAdminModel> listar() {
@@ -32,7 +36,12 @@ public class AdminCoordenadorService {
 
     public CoordenadorAdminModel criar(CoordenadorAdminModel coordenador) {
         validar(coordenador);
-        String uid = UUID.randomUUID().toString();
+        String uid = firebaseUserProvisioningService.upsertUser(
+                null,
+                coordenador.getEmail(),
+                coordenador.getNome(),
+                senhaPadraoCoordenador(coordenador.getEmail())
+        );
         firestoreService.salvarUsuario(uid, payload(uid, coordenador));
         return buscarPorId(uid).orElseThrow();
     }
@@ -42,6 +51,12 @@ public class AdminCoordenadorService {
         if (buscarPorId(id).isEmpty()) {
             return Optional.empty();
         }
+        firebaseUserProvisioningService.upsertUser(
+                id,
+                coordenador.getEmail(),
+                coordenador.getNome(),
+                senhaPadraoCoordenador(coordenador.getEmail())
+        );
         firestoreService.salvarUsuario(id, payload(id, coordenador));
         return buscarPorId(id);
     }
@@ -50,6 +65,7 @@ public class AdminCoordenadorService {
         if (buscarPorId(id).isEmpty()) {
             return false;
         }
+        firebaseUserProvisioningService.deleteByUid(id);
         firestoreService.removerUsuario(id);
         return true;
     }
@@ -69,7 +85,7 @@ public class AdminCoordenadorService {
         data.put("departamento", c.getDepartamento() == null ? "" : c.getDepartamento().trim());
         data.put("status", c.getStatus() == null ? "Ativo" : c.getStatus().trim());
         data.put("cursos", c.getCursos() == null ? List.of() : c.getCursos());
-        data.put("vinculos", List.of());
+        data.put("vinculo", new HashMap<>());
         return data;
     }
 
@@ -88,5 +104,15 @@ public class AdminCoordenadorService {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String senhaPadraoCoordenador(String email) {
+        String normalized = email == null ? "" : email.trim().toLowerCase();
+        int atIndex = normalized.indexOf('@');
+        String base = atIndex > 0 ? normalized.substring(0, atIndex) : normalized;
+        if (base.isBlank()) {
+            throw new IllegalArgumentException("E-mail invalido para gerar senha padrao do coordenador.");
+        }
+        return base + "2026";
     }
 }

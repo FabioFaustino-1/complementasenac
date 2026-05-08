@@ -113,6 +113,7 @@ public class CoordenadorService {
         atividade.setHoras(asInt(a.get("horas_informadas")));
         atividade.setConfiancaIa(0);
         atividade.setStatus(texto(a.get("status")));
+        atividade.setComprovanteUrl(texto(a.get("url_certificado")));
         return atividade;
     }
 
