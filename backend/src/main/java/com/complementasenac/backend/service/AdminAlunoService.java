@@ -47,7 +47,7 @@ public class AdminAlunoService {
     public Optional<AlunoAdminModel> atualizar(String id, String nome, String email, String matricula, String curso) {
         validarDados(nome, email, matricula, curso);
         Optional<DocumentSnapshot> alunoExistente = firestoreService.buscarUsuarioPorId(id);
-        if (alunoExistente.isEmpty() || !"ALUNO".equals(alunoExistente.get().getString("role"))) {
+        if (alunoExistente.isEmpty() || !"ALUNO".equalsIgnoreCase(roleDoUsuario(alunoExistente.get()))) {
             return Optional.empty();
         }
         firebaseUserProvisioningService.upsertUser(
@@ -94,6 +94,10 @@ public class AdminAlunoService {
             aluno.setMatricula(texto(vinculo.get("matricula")));
             aluno.setCurso(texto(vinculo.get("id_curso")));
             aluno.setTurma(texto(vinculo.get("id_turma")));
+        } else {
+            aluno.setMatricula(doc.getString("matricula"));
+            aluno.setCurso(textoOuPadrao(doc.getString("id_curso"), doc.getString("curso")));
+            aluno.setTurma(textoOuPadrao(doc.getString("id_turma"), doc.getString("turma")));
         }
         return aluno;
     }
@@ -143,5 +147,17 @@ public class AdminAlunoService {
 
     private String texto(Object value) {
         return value == null ? "" : value.toString();
+    }
+
+    private String textoOuPadrao(String value, String fallback) {
+        return value == null || value.isBlank() ? texto(fallback) : value;
+    }
+
+    private String roleDoUsuario(DocumentSnapshot doc) {
+        String role = doc.getString("role");
+        if (role != null && !role.isBlank()) return role;
+        role = doc.getString("perfil");
+        if (role != null && !role.isBlank()) return role;
+        return doc.getString("tipo");
     }
 }

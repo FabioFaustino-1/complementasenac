@@ -99,8 +99,7 @@ public class CoordenadorService {
     }
 
     public CoordenadorPerfilModel perfil(String uid, String email) {
-        DocumentSnapshot usuario = firestoreService.buscarUsuarioPorUid(uid)
-                .or(() -> firestoreService.buscarUsuarioPorEmail(email))
+        DocumentSnapshot usuario = buscarUsuario(uid, email)
                 .orElseThrow(() -> new IllegalArgumentException("Coordenador nao encontrado."));
 
         CoordenadorPerfilModel perfil = new CoordenadorPerfilModel();
@@ -113,6 +112,18 @@ public class CoordenadorService {
         perfil.setMatricula("");
         perfil.setDepartamento("");
         return perfil;
+    }
+
+    private Optional<DocumentSnapshot> buscarUsuario(String uid, String email) {
+        try {
+            Optional<DocumentSnapshot> porUid = firestoreService.buscarUsuarioPorUid(uid);
+            if (porUid.isPresent()) {
+                return porUid;
+            }
+        } catch (RuntimeException ignored) {
+            // Permite fallback por e-mail em bancos importados sem UID como id de documento.
+        }
+        return firestoreService.buscarUsuarioPorEmail(email);
     }
 
     private void validarStatus(String status) {

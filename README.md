@@ -25,7 +25,7 @@ javac -version
 Se `javac` não for encontrado, aponte o `JAVA_HOME` para a pasta do JDK (não a JRE) e inclua `bin` no PATH da sessão:
 
 ```powershell
-$env:JAVA_HOME = "C:\Users\aluno\Documents\vsfabo\jdk-17.0.12_windows-x64_bin\jdk-17.0.12"
+$env:JAVA_HOME = "C:\Users\FABIOFAUSTINOMOURADA\Downloads\jdk-17.0.12"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 ```
 

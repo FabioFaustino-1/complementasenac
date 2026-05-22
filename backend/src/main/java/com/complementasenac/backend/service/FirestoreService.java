@@ -7,6 +7,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +16,12 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirestoreService {
-    private static final String COLLECTION_USUARIOS = "Usuarios";
-    private static final String COLLECTION_USUARIOS_LEGACY = "usuarios";
-    private static final String COLLECTION_SOLICITACOES = "Solicitacoes";
-    private static final String COLLECTION_CURSOS = "Cursos";
+    private static final String COLLECTION_USUARIOS_PADRAO = "usuarios";
+    private static final String COLLECTION_SOLICITACOES_PADRAO = "solicitacoes";
+    private static final String COLLECTION_CURSOS_PADRAO = "cursos";
+    private static final List<String> COLLECTIONS_USUARIOS = List.of("usuarios", "Usuarios", "users", "Users");
+    private static final List<String> COLLECTIONS_SOLICITACOES = List.of("solicitacoes", "Solicitacoes", "atividades", "Atividades");
+    private static final List<String> COLLECTIONS_CURSOS = List.of("cursos", "Cursos");
 
     public Firestore db() {
         return FirestoreClient.getFirestore();
@@ -28,22 +31,32 @@ public class FirestoreService {
         if (uid == null || uid.isBlank()) {
             return Optional.empty();
         }
-        try {
-            DocumentSnapshot docPrincipal = db().collection(COLLECTION_USUARIOS).document(uid).get().get();
-            if (docPrincipal.exists()) {
-                return Optional.of(docPrincipal);
+        for (String collection : COLLECTIONS_USUARIOS) {
+            Optional<DocumentSnapshot> doc = buscarDocumentoPorId(collection, uid, "Falha ao buscar usuario por UID.");
+            if (doc.isPresent()) {
+                return doc;
             }
-            DocumentSnapshot docLegacy = db().collection(COLLECTION_USUARIOS_LEGACY).document(uid).get().get();
-            if (docLegacy.exists()) {
-                return Optional.of(docLegacy);
+        }
+        for (String collection : COLLECTIONS_USUARIOS) {
+            Optional<DocumentSnapshot> doc = buscarUsuarioPorCampoUid(collection, uid);
+            if (doc.isPresent()) {
+                return doc;
             }
+        }
+        return Optional.empty();
+    }
 
-            // Fallback para bases antigas: uid armazenado como campo do documento.
-            Optional<DocumentSnapshot> porCampoPrincipal = buscarUsuarioPorCampoUid(COLLECTION_USUARIOS, uid);
-            if (porCampoPrincipal.isPresent()) {
-                return porCampoPrincipal;
+    private Optional<DocumentSnapshot> buscarUsuarioPorCampoUid(String collection, String uid) {
+        try {
+            var query = db().collection(collection)
+                    .whereEqualTo("uid", uid)
+                    .limit(1)
+                    .get()
+                    .get();
+            if (!query.isEmpty()) {
+                return Optional.of(query.getDocuments().get(0));
             }
-            return buscarUsuarioPorCampoUid(COLLECTION_USUARIOS_LEGACY, uid);
+            return Optional.empty();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao buscar usuario por UID.", e);
@@ -52,27 +65,24 @@ public class FirestoreService {
         }
     }
 
-    private Optional<DocumentSnapshot> buscarUsuarioPorCampoUid(String collection, String uid) throws ExecutionException, InterruptedException {
-        var query = db().collection(collection)
-                .whereEqualTo("uid", uid)
-                .limit(1)
-                .get()
-                .get();
-        if (!query.isEmpty()) {
-            return Optional.of(query.getDocuments().get(0));
-        }
-        return Optional.empty();
-    }
-
     public Optional<DocumentSnapshot> buscarUsuarioPorEmail(String email) {
         if (email == null || email.isBlank()) {
             return Optional.empty();
         }
         try {
             String alvo = email.trim().toLowerCase();
-            List<String> colecoes = List.of(COLLECTION_USUARIOS, COLLECTION_USUARIOS_LEGACY);
-            for (String colecao : colecoes) {
-                var query = db().collection(colecao).limit(200).get().get();
+            for (String colecao : COLLECTIONS_USUARIOS) {
+                var query = db().collection(colecao)
+                        .whereEqualTo("email", alvo)
+                        .limit(1)
+                        .get()
+                        .get();
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    return Optional.of(doc);
+                }
+            }
+            for (String colecao : COLLECTIONS_USUARIOS) {
+                var query = db().collection(colecao).limit(500).get().get();
                 for (DocumentSnapshot doc : query.getDocuments()) {
                     String emailDoc = doc.getString("email");
                     if (emailDoc != null && alvo.equals(emailDoc.trim().toLowerCase())) {
@@ -91,7 +101,7 @@ public class FirestoreService {
 
     public DocumentSnapshot salvarSolicitacao(Map<String, Object> payload) {
         try {
-            DocumentReference ref = db().collection(COLLECTION_SOLICITACOES).document();
+            DocumentReference ref = db().collection(COLLECTION_SOLICITACOES_PADRAO).document();
             payload.put("id_solicitacao", ref.getId());
             ref.set(payload).get();
             return ref.get().get();
@@ -105,11 +115,15 @@ public class FirestoreService {
 
     public List<QueryDocumentSnapshot> listarSolicitacoesPorAluno(String uidAluno) {
         try {
-            return db().collection(COLLECTION_SOLICITACOES)
-                    .whereEqualTo("uid_aluno", uidAluno)
-                    .get()
-                    .get()
-                    .getDocuments();
+            List<QueryDocumentSnapshot> docs = new ArrayList<>();
+            for (String collection : COLLECTIONS_SOLICITACOES) {
+                docs.addAll(db().collection(collection)
+                        .whereEqualTo("uid_aluno", uidAluno)
+                        .get()
+                        .get()
+                        .getDocuments());
+            }
+            return docs;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao listar solicitacoes do aluno.", e);
@@ -120,14 +134,21 @@ public class FirestoreService {
 
     public List<QueryDocumentSnapshot> listarSolicitacoes(String status) {
         try {
+            List<QueryDocumentSnapshot> docs = new ArrayList<>();
             if (status == null || status.isBlank()) {
-                return db().collection(COLLECTION_SOLICITACOES).get().get().getDocuments();
+                for (String collection : COLLECTIONS_SOLICITACOES) {
+                    docs.addAll(db().collection(collection).get().get().getDocuments());
+                }
+                return docs;
             }
-            return db().collection(COLLECTION_SOLICITACOES)
-                    .whereEqualTo("status", status)
-                    .get()
-                    .get()
-                    .getDocuments();
+            for (String collection : COLLECTIONS_SOLICITACOES) {
+                docs.addAll(db().collection(collection)
+                        .whereEqualTo("status", status)
+                        .get()
+                        .get()
+                        .getDocuments());
+            }
+            return docs;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao listar solicitacoes.", e);
@@ -137,20 +158,20 @@ public class FirestoreService {
     }
 
     public Optional<DocumentSnapshot> buscarSolicitacaoPorId(String idSolicitacao) {
-        try {
-            DocumentSnapshot doc = db().collection(COLLECTION_SOLICITACOES).document(idSolicitacao).get().get();
-            return doc.exists() ? Optional.of(doc) : Optional.empty();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Falha ao buscar solicitacao.", e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Falha ao buscar solicitacao.", e);
+        for (String collection : COLLECTIONS_SOLICITACOES) {
+            Optional<DocumentSnapshot> doc = buscarDocumentoPorId(collection, idSolicitacao, "Falha ao buscar solicitacao.");
+            if (doc.isPresent()) {
+                return doc;
+            }
         }
+        return Optional.empty();
     }
 
     public void atualizarSolicitacao(String idSolicitacao, Map<String, Object> updates) {
         try {
-            db().collection(COLLECTION_SOLICITACOES).document(idSolicitacao).update(updates).get();
+            DocumentSnapshot doc = buscarSolicitacaoPorId(idSolicitacao)
+                    .orElseThrow(() -> new IllegalArgumentException("Solicitacao nao encontrada."));
+            doc.getReference().update(updates).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao atualizar solicitacao.", e);
@@ -162,11 +183,13 @@ public class FirestoreService {
     public List<QueryDocumentSnapshot> listarUsuariosPorRole(String role) {
         try {
             String roleAlvo = role == null ? "" : role.trim().toLowerCase();
-            List<QueryDocumentSnapshot> usuarios = db().collection(COLLECTION_USUARIOS).get().get().getDocuments();
-            List<QueryDocumentSnapshot> legacy = db().collection(COLLECTION_USUARIOS_LEGACY).get().get().getDocuments();
-            return java.util.stream.Stream.concat(usuarios.stream(), legacy.stream())
+            List<QueryDocumentSnapshot> usuarios = new ArrayList<>();
+            for (String collection : COLLECTIONS_USUARIOS) {
+                usuarios.addAll(db().collection(collection).get().get().getDocuments());
+            }
+            return usuarios.stream()
                     .filter(doc -> {
-                        String roleDoc = doc.getString("role");
+                        String roleDoc = roleDoUsuario(doc);
                         return roleDoc != null && roleDoc.trim().toLowerCase().equals(roleAlvo);
                     })
                     .toList();
@@ -184,7 +207,10 @@ public class FirestoreService {
 
     public void salvarUsuario(String uid, Map<String, Object> payload) {
         try {
-            db().collection(COLLECTION_USUARIOS).document(uid).set(payload).get();
+            DocumentReference ref = buscarUsuarioPorUid(uid)
+                    .map(DocumentSnapshot::getReference)
+                    .orElse(db().collection(COLLECTION_USUARIOS_PADRAO).document(uid));
+            ref.set(payload).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao salvar usuario.", e);
@@ -195,7 +221,10 @@ public class FirestoreService {
 
     public void removerUsuario(String uid) {
         try {
-            db().collection(COLLECTION_USUARIOS).document(uid).delete().get();
+            Optional<DocumentSnapshot> usuario = buscarUsuarioPorUid(uid);
+            if (usuario.isPresent()) {
+                usuario.get().getReference().delete().get();
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao remover usuario.", e);
@@ -206,7 +235,11 @@ public class FirestoreService {
 
     public List<QueryDocumentSnapshot> listarCursos() {
         try {
-            return db().collection(COLLECTION_CURSOS).get().get().getDocuments();
+            List<QueryDocumentSnapshot> docs = new ArrayList<>();
+            for (String collection : COLLECTIONS_CURSOS) {
+                docs.addAll(db().collection(collection).get().get().getDocuments());
+            }
+            return docs;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao listar cursos.", e);
@@ -217,7 +250,10 @@ public class FirestoreService {
 
     public void salvarCurso(String idCurso, Map<String, Object> payload) {
         try {
-            db().collection(COLLECTION_CURSOS).document(idCurso).set(payload).get();
+            DocumentReference ref = buscarCurso(idCurso)
+                    .map(DocumentSnapshot::getReference)
+                    .orElse(db().collection(COLLECTION_CURSOS_PADRAO).document(idCurso));
+            ref.set(payload).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao salvar curso.", e);
@@ -227,15 +263,13 @@ public class FirestoreService {
     }
 
     public Optional<DocumentSnapshot> buscarCurso(String idCurso) {
-        try {
-            DocumentSnapshot doc = db().collection(COLLECTION_CURSOS).document(idCurso).get().get();
-            return doc.exists() ? Optional.of(doc) : Optional.empty();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Falha ao buscar curso.", e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Falha ao buscar curso.", e);
+        for (String collection : COLLECTIONS_CURSOS) {
+            Optional<DocumentSnapshot> doc = buscarDocumentoPorId(collection, idCurso, "Falha ao buscar curso.");
+            if (doc.isPresent()) {
+                return doc;
+            }
         }
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
@@ -266,7 +300,7 @@ public class FirestoreService {
         vinculo.put("saldos", saldos);
 
         try {
-            db().collection(COLLECTION_USUARIOS).document(uidAluno).update("vinculo", vinculo).get();
+            usuario.getReference().update("vinculo", vinculo).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Falha ao atualizar saldos do aluno.", e);
@@ -288,5 +322,29 @@ public class FirestoreService {
             return vinculo;
         }
         return null;
+    }
+
+    private Optional<DocumentSnapshot> buscarDocumentoPorId(String collection, String id, String mensagemErro) {
+        try {
+            DocumentSnapshot doc = db().collection(collection).document(id).get().get();
+            return doc.exists() ? Optional.of(doc) : Optional.empty();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(mensagemErro, e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(mensagemErro, e);
+        }
+    }
+
+    private String roleDoUsuario(DocumentSnapshot doc) {
+        String role = doc.getString("role");
+        if (role != null) {
+            return role;
+        }
+        role = doc.getString("perfil");
+        if (role != null) {
+            return role;
+        }
+        return doc.getString("tipo");
     }
 }

@@ -30,7 +30,7 @@ public class AdminCoordenadorService {
 
     public Optional<CoordenadorAdminModel> buscarPorId(String id) {
         return firestoreService.buscarUsuarioPorId(id)
-                .filter(doc -> "COORDENADOR".equals(doc.getString("role")))
+                .filter(doc -> "COORDENADOR".equalsIgnoreCase(roleDoUsuario(doc)))
                 .map(this::paraModel);
     }
 
@@ -114,5 +114,13 @@ public class AdminCoordenadorService {
             throw new IllegalArgumentException("E-mail invalido para gerar senha padrao do coordenador.");
         }
         return base + "2026";
+    }
+
+    private String roleDoUsuario(DocumentSnapshot doc) {
+        String role = doc.getString("role");
+        if (role != null && !role.isBlank()) return role;
+        role = doc.getString("perfil");
+        if (role != null && !role.isBlank()) return role;
+        return doc.getString("tipo");
     }
 }

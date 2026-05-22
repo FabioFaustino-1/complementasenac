@@ -52,9 +52,9 @@ public class AdminCursoService {
 
     private CursoModel paraModel(DocumentSnapshot doc) {
         CursoModel model = new CursoModel();
-        model.setIdCurso(doc.getId());
-        model.setNomeCurso(doc.getString("nome_curso"));
-        model.setEixoTecnologico(doc.getString("eixo_tecnologico"));
+        model.setIdCurso(textoOuPadrao(doc.getString("id_curso"), doc.getId()));
+        model.setNomeCurso(textoOuPadrao(doc.getString("nome_curso"), doc.getString("nome")));
+        model.setEixoTecnologico(textoOuPadrao(doc.getString("eixo_tecnologico"), doc.getString("eixo")));
         return model;
     }
 
@@ -66,5 +66,9 @@ public class AdminCursoService {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String textoOuPadrao(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 }

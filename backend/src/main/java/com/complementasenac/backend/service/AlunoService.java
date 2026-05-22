@@ -30,7 +30,7 @@ public class AlunoService {
         Map<String, Object> primeiroVinculo = primeiroVinculo(usuario);
 
         AlunoPerfilModel perfil = new AlunoPerfilModel();
-        perfil.setUid(usuario.getString("uid"));
+        perfil.setUid(textoOuPadrao(usuario.getString("uid"), usuario.getId()));
         perfil.setNome(usuario.getString("nome"));
         perfil.setEmail(usuario.getString("email"));
         perfil.setTelefone("");
@@ -122,9 +122,13 @@ public class AlunoService {
     }
 
     private DocumentSnapshot buscarUsuario(String uid, String email) {
-        Optional<DocumentSnapshot> porUid = firestoreService.buscarUsuarioPorUid(uid);
-        if (porUid.isPresent()) {
-            return porUid.get();
+        try {
+            Optional<DocumentSnapshot> porUid = firestoreService.buscarUsuarioPorUid(uid);
+            if (porUid.isPresent()) {
+                return porUid.get();
+            }
+        } catch (RuntimeException ignored) {
+            // Bases antigas podem nao aceitar consulta por UID; o e-mail do token ainda identifica o usuario.
         }
         return firestoreService.buscarUsuarioPorEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado no banco."));
@@ -158,6 +162,14 @@ public class AlunoService {
                 && listaVinculo.get(0) instanceof Map<?, ?> mapVinculo) {
             Map<String, Object> vinculo = new HashMap<>();
             mapVinculo.forEach((k, v) -> vinculo.put(String.valueOf(k), v));
+                return vinculo;
+        }
+
+        Map<String, Object> vinculo = new HashMap<>();
+        vinculo.put("id_curso", textoOuPadrao(usuario.getString("id_curso"), usuario.getString("curso")));
+        vinculo.put("matricula", usuario.getString("matricula"));
+        vinculo.put("ch_total_exigida", usuario.get("ch_total_exigida"));
+        if (!texto(vinculo.get("id_curso")).isBlank() || !texto(vinculo.get("matricula")).isBlank()) {
             return vinculo;
         }
 
@@ -182,6 +194,10 @@ public class AlunoService {
 
     private String texto(Object value) {
         return value == null ? "" : value.toString();
+    }
+
+    private String textoOuPadrao(String value, String fallback) {
+        return value == null || value.isBlank() ? texto(fallback) : value;
     }
 
     private String resolverCategoria(String categoria, String tipo) {
@@ -221,6 +237,9 @@ public class AlunoService {
 
     private String cursoDoVinculo(Map<String, Object> vinculo) {
         String idCurso = texto(vinculo.get("id_curso"));
+        if (idCurso.isBlank()) {
+            idCurso = texto(vinculo.get("curso"));
+        }
         return firestoreService.buscarCurso(idCurso)
                 .map(c -> texto(c.get("nome_curso")))
                 .filter(v -> !v.isBlank())
