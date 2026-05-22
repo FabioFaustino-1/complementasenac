@@ -2,6 +2,6 @@ target/
 .idea/
 *.log
 
-firebase_key.json
+firebase-key.json
 .env
 node_modules

@@ -12,7 +12,7 @@ router.get('/auth/me', async (req, res, next) => {
     const uid = req.uid;
     const email = req.email;
 
-    if (!uid || !email) {
+    if (!email) {
       return res.status(401).json({ error: 'Token ausente' });
     }
 

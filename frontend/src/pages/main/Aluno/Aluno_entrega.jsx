@@ -545,8 +545,7 @@ const AlunoEntrega = () => {
                   </p>
                 )}
 
-                {!loading &&
-                  recentes.map((atividade) => {
+                {Array.isArray(recentes) && recentes.map((atividade) => {
                     const status = uiStatus(atividade.status);
 
                     return (
