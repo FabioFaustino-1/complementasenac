@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
-const { initFirebaseAdmin } = require('./libs/firebase');
+const { initFirebaseAdmin, getAdmin } = require('./libs/firebase');
 const { authFirebaseMiddleware } = require('./middleware/authFirebase');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
