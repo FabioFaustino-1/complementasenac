@@ -1,74 +1,62 @@
-# Complementa+ (complementa-senac)
+# Complementa+ (Ruby + Firestore)
 
-Projeto acadêmico: sistema para alunos registrarem horas complementares, com interface em **React (Vite)** e API em **Java (Spring Boot)**. Autenticação via **Firebase**; o backend valida o token e define perfil (aluno, coordenador ou admin).
+Migracao do backend Java/Spring Boot para **Ruby on Rails 8 (API)** com **Firestore** e autenticacao **Firebase**.
 
----
+## Estrutura
 
-## O que precisa instalado
+| Componente | Pasta | Porta padrao |
+|------------|-------|---------------|
+| API Ruby   | `backend` | **8080** (compativel com o frontend) |
+| React/Vite | `frontend` | 5173 |
 
-- **Node.js** (LTS) — para o frontend  
-- **JDK 17** (recomendado para este Spring Boot) — para o backend e para o Maven Wrapper compilar
+## Requisitos
 
----
+- Ruby 3.3+ (recomendado)
+- Node.js LTS (frontend)
+- Credenciais Firebase Admin em `backend/config/firebase/credentials.json`
 
-## Java no Windows (PowerShell)
-
-Ver se o compilador e o runtime estão no PATH:
-
-```powershell
-where java
-where javac
-java -version
-javac -version
-```
-
-Se `javac` não for encontrado, aponte o `JAVA_HOME` para a pasta do JDK (não a JRE) e inclua `bin` no PATH da sessão:
+Copie o JSON do projeto Java:
 
 ```powershell
-$env:JAVA_HOME = "C:\Users\aluno\Documents\vsfabo\jdk-17.0.12_windows-x64_bin\jdk-17.0.12"
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+Copy-Item "..\complementasenac\backend\src\main\resources\pi-3-286ed-firebase-adminsdk-fbsvc-d4d68e7e19.json" `
+  "backend\config\firebase\credentials.json"
 ```
 
-(Ajuste o caminho conforme a instalação no seu PC.)
-
-Para persistir entre sessões: *Configurações do Windows → Variáveis de ambiente* e defina `JAVA_HOME` e edite `Path` adicionando `%JAVA_HOME%\bin`.
-
----
-
-## Como rodar o backend (Spring Boot)
-
-No PowerShell, entre na pasta do backend:
+## Backend (Rails)
 
 ```powershell
 cd backend
-./mvnw.cmd spring-boot:run
+bundle install
 
-Caso haja algum erro
+# Subir API (Windows)
+.\server.bat
 
-./mvnw clean package
-java -jar target/backend-0.0.1-SNAPSHOT.jar
+# Se aparecer "EADDRINUSE" / porta 8080 em uso:
+.\stop-server.bat
+.\server.bat
 
+# Alternativa manual:
+# Get-NetTCPConnection -LocalPort 8080 -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+# Remove-Item tmp\pids\server.pid -ErrorAction SilentlyContinue
+# bundle exec rails server -b 127.0.0.1 -p 8080
 ```
 
-A API sobe em **http://localhost:8080** (o frontend está configurado para chamar essa URL).
+**Importante:** nao rode o backend Java (`Disk\complementasenac`) e o Ruby ao mesmo tempo — os dois usam a porta **8080**.
 
-Documentação da API (Swagger/OpenAPI):
+A API sobe em **http://localhost:8080**.
 
-- UI: **http://localhost:8080/swagger-ui**
-- JSON: **http://localhost:8080/api/docs**
+### Correcao Firestore (chaves normalizadas)
 
-Outros comandos úteis:
+O banco armazena IDs, campos e valores em formato **minusculo, sem acentos e sem caracteres especiais** (`-`, `_`, `ç`, etc.).
 
-```powershell
-.\mvnw.cmd compile
-.\mvnw.cmd test
-```
+O modulo `FirestoreKeyNormalizer` aplica essa normalizacao em:
 
----
+- busca de documentos por ID (cursos, usuarios, solicitacoes)
+- leitura de campos aninhados (`vinculo`, `saldos`)
+- filtros por `status` e `role`
+- gravacao de novos registros no mesmo padrao do banco
 
-## Como rodar o frontend (React)
-
-Em outro terminal (a partir da pasta `complementasenac`):
+## Frontend
 
 ```powershell
 cd frontend
@@ -76,55 +64,11 @@ npm install
 npm run dev
 ```
 
-O Vite costuma abrir em **http://localhost:5173**. Deixe o backend rodando ao mesmo tempo para login e chamadas à API funcionarem.
+Configure `.env` a partir de `.env.example` (Firebase + `VITE_API_BASE=http://localhost:8080`).
 
-Build de produção:
+## Endpoints principais
 
-```powershell
-npm run build
-```
-
-PWA:
-
-- O frontend já está configurado com service worker.
-- Em produção, a aplicação pode ser instalada no dispositivo (modo standalone).
-
----
-
-## Configuração de Ambiente (.env)
-
-O projeto utiliza variáveis de ambiente para chaves do Firebase. 
-1. Na pasta `frontend`, duplique o arquivo `.env.example`.
-2. Renomeie a cópia para `.env`.
-3. Preencha os valores com as suas credenciais do Firebase Console.
-
-O arquivo `.env` está no `.gitignore` e nunca deve ser versionado.
-
-### E-mail (backend)
-
-Por padrão, o envio de e-mail está desabilitado e o backend registra o conteúdo em log.
-Para habilitar SMTP em deploy, configure no `application.properties`/variáveis:
-
-- `app.mail.enabled=true`
-- `app.mail.from=seu-email`
-- `spring.mail.host`
-- `spring.mail.port`
-- `spring.mail.username`
-- `spring.mail.password`
-- `spring.mail.properties.mail.smtp.auth=true`
-- `spring.mail.properties.mail.smtp.starttls.enable=true`
-
----
-
-## Resumo rápido
-
-| O quê           | Pasta            | Comando principal             |
-|-----------------|------------------|--------------------------------|
-| API Java        | `backend\backend`| `.\mvnw.cmd spring-boot:run`   |
-| Interface React | `frontend`     | `npm run dev`                  |
-
----
-
-## Observação
-
-Este repositório é um trabalho acadêmico; dados e persistência em memória são simplificados para demonstração.
+- `GET /api/auth/me` — perfil do usuario autenticado
+- `GET /api/aluno/*` — aluno
+- `GET|POST /api/coordenador/*` — coordenador
+- `GET|POST|PUT|DELETE /api/admin/*` — administracao

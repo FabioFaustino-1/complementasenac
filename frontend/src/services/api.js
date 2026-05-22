@@ -3,6 +3,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 export async function apiRequest(path, { token, method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
 
   let response;
   try {
@@ -10,14 +12,20 @@ export async function apiRequest(path, { token, method = "GET", body } = {}) {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
     });
   } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("Tempo esgotado ao carregar dados do backend.");
+    }
     if (error instanceof TypeError) {
       throw new Error(
         `Nao foi possivel conectar ao backend em ${API_BASE}. Verifique se a API esta em execucao.`
       );
     }
     throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 
   if (!response.ok) {

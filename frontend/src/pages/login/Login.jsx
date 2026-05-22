@@ -66,7 +66,7 @@ function Login() {
     try {
       setErroLogin("");
       setLoading(true);
-      const { perfil, token } = await autenticarUsuario(emailNormalizado, senha);
+      const { perfil, token } = await autenticarUsuario(emailNormalizado, senha, perfilAtivo);
       const perfilBackend = perfil?.perfil ?? perfilAtivo;
 
       if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
