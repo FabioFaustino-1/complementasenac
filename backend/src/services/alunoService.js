@@ -102,7 +102,8 @@ class AlunoService {
       horas_aprovadas: 0,
       status: 'PENDENTE',
       url_certificado: comprovanteUrl,
-      data_envio: new Date().toString(),
+      data_evento: payload.data ? String(payload.data).trim() : '',
+      data_envio: new Date().toISOString(),
       justificativa_coordenador: ''
     };
 
@@ -142,7 +143,7 @@ class AlunoService {
       horasAprovadas: this.asInt(doc.get('horas_aprovadas')),
       status: this.normalizarStatus(this.texto(statusRaw)),
       comprovanteUrl: this.texto(doc.get('url_certificado')),
-      data: this.formatarData(doc.get('data_envio')),
+      data: this.formatarData(doc.get('data_evento') || doc.get('data_envio')),
       justificativaCoordenador: this.texto(doc.get('justificativa_coordenador'))
     };
   }

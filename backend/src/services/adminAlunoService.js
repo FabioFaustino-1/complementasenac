@@ -1,4 +1,5 @@
 const { IllegalArgumentError } = require('../middleware/errorHandler');
+const { rolesEquivalentes } = require('../utils/roleUtils');
 
 class AdminAlunoService {
   constructor(firestoreService, firebaseUserProvisioningService) {
@@ -28,7 +29,7 @@ class AdminAlunoService {
     this.validarDados(nome, email, matricula, curso);
     const alunoExistente = await this.firestoreService.buscarUsuarioPorId(id);
     if (!alunoExistente) return null;
-    if (alunoExistente.get('role') !== 'ALUNO') return null;
+    if (!rolesEquivalentes(alunoExistente.get('role'), 'ALUNO')) return null;
 
     await this.firebaseUserProvisioningService.upsertUser(id, email, nome, matricula);
     await this.firestoreService.salvarUsuario(id, await this.payloadAluno(id, nome, email, matricula, curso, alunoExistente));

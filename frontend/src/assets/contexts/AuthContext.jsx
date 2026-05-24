@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
 import { signOut } from "firebase/auth";
-import { auth } from "../../services/firebase";
+import { auth as firebaseAuth } from "../../services/firebase";
 
 const AuthContext = createContext(undefined);
 
@@ -25,7 +25,7 @@ function clearStorage() {
 
 export function AuthProvider({ children }) {
   const initial = readStorage();
-  const [auth, setAuth] = useState(
+  const [session, setSession] = useState(
     initial ?? { user: null, role: null, token: null }
   );
 
@@ -38,30 +38,30 @@ export function AuthProvider({ children }) {
       role,
     };
     const next = { user, role, token };
-    setAuth(next);
+    setSession(next);
     writeStorage(next);
   };
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await signOut(firebaseAuth);
     } catch {
-      // sessão local ainda é limpa
+      // sessao local ainda e limpa
     }
-    setAuth({ user: null, role: null, token: null });
+    setSession({ user: null, role: null, token: null });
     clearStorage();
   };
 
   const value = useMemo(
     () => ({
-      user: auth.user,
-      role: auth.role,
-      token: auth.token,
-      isAuthenticated: !!auth.token,
+      user: session.user,
+      role: session.role,
+      token: session.token,
+      isAuthenticated: !!session.token,
       loginWithBackend,
       logout,
     }),
-    [auth]
+    [session]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

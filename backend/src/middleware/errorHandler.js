@@ -39,6 +39,7 @@ function errorHandler(err, req, res, next) {
     return;
   }
 
+  console.error('[backend]', err.message || err);
   const status = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   res.status(status).json(
     new StandardError({

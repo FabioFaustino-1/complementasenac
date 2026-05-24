@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { autenticarUsuario } from "../../services/auth";
 import { useAuth } from "../../assets/contexts/AuthContext";
-import loginScene from "../../assets/login-scene.png";
 
 const perfis = [
   {
@@ -70,7 +69,11 @@ function Login() {
       const perfilBackend = perfil?.perfil ?? perfilAtivo;
 
       if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
-        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema.`);
+        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema. Selecione a aba correta.`);
+      }
+
+      if (perfilAtivo === "admin" && perfilBackend !== "admin") {
+        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema. Selecione a aba correta.`);
       }
 
       loginWithBackend({ token, perfil, email: emailNormalizado });
@@ -115,7 +118,7 @@ function Login() {
         <div className="scene-card">
           <img
             className="scene-card__image"
-            src={loginScene}
+            src="/login-scene.svg"
             alt="Estudantes do Senac em sala de aula"
           />
           <p className="scene-card__caption">

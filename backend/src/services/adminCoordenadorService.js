@@ -1,4 +1,5 @@
 const { IllegalArgumentError } = require('../middleware/errorHandler');
+const { rolesEquivalentes } = require('../utils/roleUtils');
 
 class AdminCoordenadorService {
   constructor(firestoreService, firebaseUserProvisioningService) {
@@ -14,7 +15,7 @@ class AdminCoordenadorService {
   async buscarPorId(id) {
     const doc = await this.firestoreService.buscarUsuarioPorId(id);
     if (!doc) return null;
-    if (doc.get('role') !== 'COORDENADOR') return null;
+    if (!rolesEquivalentes(doc.get('role'), 'COORDENADOR')) return null;
     return this.paraModel(doc);
   }
 

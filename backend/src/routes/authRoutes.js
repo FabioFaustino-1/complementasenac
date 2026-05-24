@@ -19,8 +19,8 @@ router.get('/auth/me', async (req, res, next) => {
     const perfilService = getPerfilService();
     if (!perfilService) return res.status(500).json({ error: 'Firebase nao inicializado' });
 
-    const perfil = await perfilService.resolverPerfil(uid, email);
-    res.json({ uid, email, perfil });
+    const perfil = await perfilService.resolverPerfilCompleto(uid, email);
+    res.json(perfil);
 
 
   } catch (e) {

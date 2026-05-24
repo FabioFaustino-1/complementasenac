@@ -8,12 +8,12 @@ class CoordenadorService {
 
   async listarPendentes() {
     const docs = await this.firestoreService.listarSolicitacoes('PENDENTE');
-    return docs.map((d) => this.paraCoordenador(d));
+    return Promise.all(docs.map((d) => this.paraCoordenador(d)));
   }
 
   async listarTodas() {
     const docs = await this.firestoreService.listarSolicitacoes(null);
-    return docs.map((d) => this.paraCoordenador(d));
+    return Promise.all(docs.map((d) => this.paraCoordenador(d)));
   }
 
   async decidir(id, status, horasAprovadas, justificativa) {
@@ -104,13 +104,18 @@ class CoordenadorService {
     }
   }
 
-  paraCoordenador(a) {
+  async paraCoordenador(a) {
+    const uidAluno = this.texto(a.get('uid_aluno'));
+    const aluno = uidAluno ? await this.buscarNomeAluno(uidAluno) : 'Aluno';
+    const dataEvento = this.texto(a.get('data_evento'));
+    const dataEnvio = this.texto(a.get('data_envio'));
+
     return {
       id: a.id,
       titulo: this.texto(a.get('titulo_atividade')),
-      aluno: '',
+      aluno,
       tipo: this.texto(a.get('categoria')),
-      data: this.texto(a.get('data_envio')),
+      data: dataEvento || dataEnvio,
       horas: this.asInt(a.get('horas_informadas')),
       confiancaIa: 0,
       status: this.texto(a.get('status')),

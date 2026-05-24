@@ -3,143 +3,185 @@ const { getAdminAlunoService, getAdminCursoService, getAdminCoordenadorService }
 
 const router = express.Router();
 
-// Alunos Admin
-router.get('/admin/alunos', (req, res, next) => {
+function serviceOr503(res, getter) {
+  const service = getter();
+  if (!service) {
+    res.status(503).json({ error: 'Firebase nao inicializado' });
+    return null;
+  }
+  return service;
+}
+
+router.get('/admin/alunos', async (req, res, next) => {
   try {
-    res.json(getAdminAlunoService().listar());
-  } catch (e) {
-    next(e);
+    const service = serviceOr503(res, getAdminAlunoService);
+    if (!service) return;
+    res.json(await service.listar());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/admin/alunos/:id', (req, res, next) => {
+router.get('/admin/alunos/:id', async (req, res, next) => {
   try {
-    const doc = getAdminAlunoService().buscarPorId(req.params.id);
+    const service = serviceOr503(res, getAdminAlunoService);
+    if (!service) return;
+
+    const doc = await service.buscarPorId(req.params.id);
     if (!doc) return res.status(404).end();
     res.json(doc);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/admin/alunos', (req, res, next) => {
+router.post('/admin/alunos', async (req, res, next) => {
   try {
+    const service = serviceOr503(res, getAdminAlunoService);
+    if (!service) return;
+
     const a = req.body || {};
-    const created = getAdminAlunoService().criar(a.nome, a.email, a.matricula, a.curso);
+    const created = await service.criar(a.nome, a.email, a.matricula, a.curso);
     res.status(201).json(created);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.put('/admin/alunos/:id', (req, res, next) => {
+router.put('/admin/alunos/:id', async (req, res, next) => {
   try {
+    const service = serviceOr503(res, getAdminAlunoService);
+    if (!service) return;
+
     const a = req.body || {};
-    const updated = getAdminAlunoService().atualizar(req.params.id, a.nome, a.email, a.matricula, a.curso);
+    const updated = await service.atualizar(req.params.id, a.nome, a.email, a.matricula, a.curso);
     if (!updated) return res.status(404).end();
     res.json(updated);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.delete('/admin/alunos/:id', (req, res, next) => {
+router.delete('/admin/alunos/:id', async (req, res, next) => {
   try {
-    const ok = getAdminAlunoService().remover(req.params.id);
+    const service = serviceOr503(res, getAdminAlunoService);
+    if (!service) return;
+
+    const ok = await service.remover(req.params.id);
     if (!ok) return res.status(404).end();
     res.status(204).end();
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Coordenadores Admin
-router.get('/admin/coordenadores', (req, res, next) => {
+router.get('/admin/coordenadores', async (req, res, next) => {
   try {
-    res.json(getAdminCoordenadorService().listar());
-  } catch (e) {
-    next(e);
+    const service = serviceOr503(res, getAdminCoordenadorService);
+    if (!service) return;
+    res.json(await service.listar());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/admin/coordenadores/:id', (req, res, next) => {
+router.get('/admin/coordenadores/:id', async (req, res, next) => {
   try {
-    const doc = getAdminCoordenadorService().buscarPorId(req.params.id);
+    const service = serviceOr503(res, getAdminCoordenadorService);
+    if (!service) return;
+
+    const doc = await service.buscarPorId(req.params.id);
     if (!doc) return res.status(404).end();
     res.json(doc);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/admin/coordenadores', (req, res, next) => {
+router.post('/admin/coordenadores', async (req, res, next) => {
   try {
-    const c = req.body || {};
-    const created = getAdminCoordenadorService().criar(c);
+    const service = serviceOr503(res, getAdminCoordenadorService);
+    if (!service) return;
+
+    const created = await service.criar(req.body || {});
     res.status(201).json(created);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.put('/admin/coordenadores/:id', (req, res, next) => {
+router.put('/admin/coordenadores/:id', async (req, res, next) => {
   try {
-    const c = req.body || {};
-    const updated = getAdminCoordenadorService().atualizar(req.params.id, c);
+    const service = serviceOr503(res, getAdminCoordenadorService);
+    if (!service) return;
+
+    const updated = await service.atualizar(req.params.id, req.body || {});
     if (!updated) return res.status(404).end();
     res.json(updated);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.delete('/admin/coordenadores/:id', (req, res, next) => {
+router.delete('/admin/coordenadores/:id', async (req, res, next) => {
   try {
-    const ok = getAdminCoordenadorService().remover(req.params.id);
+    const service = serviceOr503(res, getAdminCoordenadorService);
+    if (!service) return;
+
+    const ok = await service.remover(req.params.id);
     if (!ok) return res.status(404).end();
     res.status(204).end();
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-// Cursos Admin
-router.get('/admin/cursos', (req, res, next) => {
+router.get('/admin/cursos', async (req, res, next) => {
   try {
-    res.json(getAdminCursoService().listar());
-  } catch (e) {
-    next(e);
+    const service = serviceOr503(res, getAdminCursoService);
+    if (!service) return;
+    res.json(await service.listar());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/admin/cursos/:idCurso', (req, res, next) => {
+router.get('/admin/cursos/:idCurso', async (req, res, next) => {
   try {
-    const doc = getAdminCursoService().buscarPorId(req.params.idCurso);
+    const service = serviceOr503(res, getAdminCursoService);
+    if (!service) return;
+
+    const doc = await service.buscarPorId(req.params.idCurso);
     if (!doc) return res.status(404).end();
     res.json(doc);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/admin/cursos', (req, res, next) => {
+router.post('/admin/cursos', async (req, res, next) => {
   try {
-    const created = getAdminCursoService().criar(req.body || {});
+    const service = serviceOr503(res, getAdminCursoService);
+    if (!service) return;
+
+    const created = await service.criar(req.body || {});
     res.status(201).json(created);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.put('/admin/cursos/:idCurso', (req, res, next) => {
+router.put('/admin/cursos/:idCurso', async (req, res, next) => {
   try {
-    const updated = getAdminCursoService().atualizar(req.params.idCurso, req.body || {});
+    const service = serviceOr503(res, getAdminCursoService);
+    if (!service) return;
+
+    const updated = await service.atualizar(req.params.idCurso, req.body || {});
     if (!updated) return res.status(404).end();
     res.json(updated);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
 module.exports = router;
-

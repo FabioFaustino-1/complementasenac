@@ -1,4 +1,5 @@
 const { IllegalArgumentError } = require('../middleware/errorHandler');
+const { rolesEquivalentes } = require('../utils/roleUtils');
 
 class FirestoreService {
   constructor(admin) {
@@ -79,17 +80,13 @@ class FirestoreService {
   }
 
   async listarUsuariosPorRole(role) {
-    const roleAlvo = role ? role.trim().toLowerCase() : '';
     const [snap1, snap2] = await Promise.all([
       this.db.collection(this.COLLECTION_USUARIOS).get(),
       this.db.collection(this.COLLECTION_USUARIOS_LEGACY).get()
     ]);
 
     const all = [...snap1.docs, ...snap2.docs];
-    return all.filter((doc) => {
-      const roleDoc = doc.get('role');
-      return roleDoc && String(roleDoc).trim().toLowerCase() === roleAlvo;
-    });
+    return all.filter((doc) => rolesEquivalentes(doc.get('role'), role));
   }
 
   async buscarUsuarioPorId(uid) {

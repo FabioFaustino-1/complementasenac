@@ -3,62 +3,82 @@ const { getAlunoService } = require('../services/getServices');
 
 const router = express.Router();
 
-router.get('/usuario', (req, res, next) => {
+function alunoServiceOr503(res) {
+  const alunoService = getAlunoService();
+  if (!alunoService) {
+    res.status(503).json({ error: 'Firebase nao inicializado' });
+    return null;
+  }
+  return alunoService;
+}
+
+router.get('/usuario', async (req, res, next) => {
   try {
-    const uid = req.uid;
-    const email = req.email;
-    const perfil = getAlunoService().perfilResolver(uid, email);
-    res.json({ uid, email, perfil });
-  } catch (e) {
-    next(e);
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    const perfil = await alunoService.perfilResolver(req.uid, req.email);
+    res.json({ uid: req.uid, email: req.email, perfil });
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/aluno/perfil', (req, res, next) => {
+router.get('/aluno/perfil', async (req, res, next) => {
   try {
-    const alunoService = getAlunoService();
-    if (!alunoService || typeof alunoService.buscarPerfil !== 'function') {
-      return res.status(503).json({ error: 'Firebase nao inicializado' });
-    }
-    const payload = alunoService.buscarPerfil(req.uid || '', req.email || '');
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    const payload = await alunoService.buscarPerfil(req.uid || '', req.email || '');
     res.json(payload);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/aluno/resumo', (req, res, next) => {
+router.get('/aluno/resumo', async (req, res, next) => {
   try {
-    res.json(getAlunoService().buscarResumo(req.uid || '', req.email || ''));
-  } catch (e) {
-    next(e);
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    res.json(await alunoService.buscarResumo(req.uid || '', req.email || ''));
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/aluno/atividades/recentes', (req, res, next) => {
+router.get('/aluno/atividades/recentes', async (req, res, next) => {
   try {
-    res.json(getAlunoService().listarRecentes(3, req.uid || '', req.email || ''));
-  } catch (e) {
-    next(e);
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    res.json(await alunoService.listarRecentes(3, req.uid || '', req.email || ''));
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/aluno/atividades', (req, res, next) => {
+router.get('/aluno/atividades', async (req, res, next) => {
   try {
-    res.json(getAlunoService().listarHistorico(req.uid || '', req.email || ''));
-  } catch (e) {
-    next(e);
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    res.json(await alunoService.listarHistorico(req.uid || '', req.email || ''));
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/aluno/atividades', (req, res, next) => {
+router.post('/aluno/atividades', async (req, res, next) => {
   try {
-    const created = getAlunoService().submeterAtividade(req.body || {}, req.uid || '', req.email || '');
+    const alunoService = alunoServiceOr503(res);
+    if (!alunoService) return;
+
+    const created = await alunoService.submeterAtividade(req.body || {}, req.uid || '', req.email || '');
     res.status(201).json(created);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
 module.exports = router;
-

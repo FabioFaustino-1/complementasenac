@@ -417,11 +417,18 @@
 }
 
 .coordenador-pdf-link {
-  color: rgba(20, 50, 92, 0.72);
+  color: rgba(100, 116, 139, 0.65);
   text-decoration: underline;
-  text-underline-offset: 2px;
-  font-size: 0.9rem;
+  text-underline-offset: 3px;
+  font-size: 0.88rem;
   white-space: nowrap;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.coordenador-pdf-link:hover {
+  opacity: 1;
+  color: rgba(71, 85, 105, 0.85);
 }
 
 .coordenador-summary-card {

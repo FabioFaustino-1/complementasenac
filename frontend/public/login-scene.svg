@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Estudantes em sala de aula">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8f0ff"/>
+      <stop offset="100%" stop-color="#f7f4ef"/>
+    </linearGradient>
+    <linearGradient id="desk" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3d7cff"/>
+      <stop offset="100%" stop-color="#2458c6"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#bg)" rx="24"/>
+  <rect x="40" y="320" width="720" height="140" rx="18" fill="#14325c" opacity="0.08"/>
+  <rect x="80" y="280" width="640" height="24" rx="12" fill="#14325c" opacity="0.12"/>
+  <circle cx="180" cy="210" r="48" fill="#ffd8b1"/>
+  <rect x="140" y="250" width="80" height="90" rx="24" fill="#3d7cff"/>
+  <circle cx="320" cy="195" r="44" fill="#ffe0cc"/>
+  <rect x="284" y="232" width="72" height="88" rx="22" fill="#2458c6"/>
+  <circle cx="460" cy="205" r="46" fill="#f5c9a8"/>
+  <rect x="422" y="244" width="76" height="86" rx="22" fill="#3d7cff"/>
+  <circle cx="600" cy="198" r="42" fill="#ffd8b1"/>
+  <rect x="566" y="235" width="68" height="84" rx="20" fill="#2458c6"/>
+  <rect x="120" y="120" width="560" height="120" rx="16" fill="white" opacity="0.72"/>
+  <rect x="150" y="150" width="180" height="12" rx="6" fill="#3d7cff" opacity="0.35"/>
+  <rect x="150" y="175" width="320" height="10" rx="5" fill="#14325c" opacity="0.18"/>
+  <rect x="150" y="198" width="260" height="10" rx="5" fill="#14325c" opacity="0.12"/>
+  <text x="400" y="470" text-anchor="middle" fill="#14325c" opacity="0.45" font-family="Segoe UI, sans-serif" font-size="18">Complementa+ Senac</text>
+</svg>

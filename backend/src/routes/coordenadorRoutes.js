@@ -3,26 +3,44 @@ const { getCoordenadorService, getAdminAlunoService } = require('../services/get
 
 const router = express.Router();
 
-router.get('/coordenador/atividades', (req, res, next) => {
+function coordenadorServiceOr503(res) {
+  const service = getCoordenadorService();
+  if (!service) {
+    res.status(503).json({ error: 'Firebase nao inicializado' });
+    return null;
+  }
+  return service;
+}
+
+router.get('/coordenador/atividades', async (req, res, next) => {
   try {
-    res.json(getCoordenadorService().listarPendentes());
-  } catch (e) {
-    next(e);
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
+    res.json(await service.listarPendentes());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/coordenador/atividades/todas', (req, res, next) => {
+router.get('/coordenador/atividades/todas', async (req, res, next) => {
   try {
-    res.json(getCoordenadorService().listarTodas());
-  } catch (e) {
-    next(e);
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
+    res.json(await service.listarTodas());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/coordenador/atividades/:id/decisao', (req, res, next) => {
+router.post('/coordenador/atividades/:id/decisao', async (req, res, next) => {
   try {
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
     const { status = 'PENDENTE', horasAprovadas, justificativa } = req.body || {};
-    const result = getCoordenadorService().decidir(
+    const result = await service.decidir(
       req.params.id,
       String(status).toUpperCase(),
       typeof horasAprovadas === 'number' ? horasAprovadas : null,
@@ -31,34 +49,44 @@ router.post('/coordenador/atividades/:id/decisao', (req, res, next) => {
 
     if (!result) return res.status(404).end();
     res.json(result);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/coordenador/resumo', (req, res, next) => {
+router.get('/coordenador/resumo', async (req, res, next) => {
   try {
-    res.json(getCoordenadorService().resumo());
-  } catch (e) {
-    next(e);
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
+    res.json(await service.resumo());
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/coordenador/perfil', (req, res, next) => {
+router.get('/coordenador/perfil', async (req, res, next) => {
   try {
-    res.json(getCoordenadorService().perfil(req.uid || '', req.email || ''));
-  } catch (e) {
-    next(e);
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
+    res.json(await service.perfil(req.uid || '', req.email || ''));
+  } catch (error) {
+    next(error);
   }
 });
 
-router.get('/coordenador/alunos', (req, res, next) => {
+router.get('/coordenador/alunos', async (req, res, next) => {
   try {
-    res.json(getAdminAlunoService().listar());
-  } catch (e) {
-    next(e);
+    const adminAlunoService = getAdminAlunoService();
+    if (!adminAlunoService) {
+      return res.status(503).json({ error: 'Firebase nao inicializado' });
+    }
+
+    res.json(await adminAlunoService.listar());
+  } catch (error) {
+    next(error);
   }
 });
 
 module.exports = router;
-

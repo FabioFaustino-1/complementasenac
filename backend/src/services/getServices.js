@@ -16,26 +16,26 @@ const AdminCursoService = require('./adminCursoService');
 let services;
 
 function ensure() {
-  if (services) return services;
-
   const admin = getAdmin();
+  const firebaseReady = admin && admin.apps != null && admin.apps.length > 0;
 
-  // Se Firebase admin nao inicializou, nao vamos criar services que dependem de Firestore/Storage/Auth.
-  if (!admin || admin.apps == null || admin.apps.length === 0) {
-    // Controllers que dependem de Firebase vao falhar com erro interno (tratado pelo errorHandler).
-    // Para manter compatibilidade, ainda retornamos os objetos para nao quebrar require/import.
-    services = {
-      firestoreService: null,
-      fileUploadService: null,
-      firebaseUserProvisioningService: null,
-      emailNotificationService: new EmailNotificationService(),
-      perfilService: null,
-      alunoService: null,
-      coordenadorService: null,
-      adminAlunoService: null,
-      adminCoordenadorService: null,
-      adminCursoService: null
-    };
+  if (services?.firestoreService) return services;
+
+  if (!firebaseReady) {
+    if (!services) {
+      services = {
+        firestoreService: null,
+        fileUploadService: null,
+        firebaseUserProvisioningService: null,
+        emailNotificationService: new EmailNotificationService(),
+        perfilService: null,
+        alunoService: null,
+        coordenadorService: null,
+        adminAlunoService: null,
+        adminCoordenadorService: null,
+        adminCursoService: null
+      };
+    }
     return services;
   }
 

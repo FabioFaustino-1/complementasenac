@@ -1,130 +1,190 @@
-# Complementa+ (complementa-senac)
+# Complementa+ (complementasenac)
 
-Projeto acadêmico: sistema para alunos registrarem horas complementares, com interface em **React (Vite)** e API em **Java (Spring Boot)**. Autenticação via **Firebase**; o backend valida o token e define perfil (aluno, coordenador ou admin).
+Sistema academico para gestao de horas complementares do Senac. Alunos submetem atividades com comprovante, coordenadores aprovam ou negam, e administradores gerenciam alunos, coordenadores e cursos.
 
----
-
-## O que precisa instalado
-
-- **Node.js** (LTS) — para o frontend  
-- **JDK 17** (recomendado para este Spring Boot) — para o backend e para o Maven Wrapper compilar
+**Stack:** React (Vite) + Node.js (Express) + Firebase Auth + Firestore + Firebase Storage.
 
 ---
 
-## Java no Windows (PowerShell)
+## Requisitos
 
-Ver se o compilador e o runtime estão no PATH:
-
-```powershell
-where java
-where javac
-java -version
-javac -version
-```
-
-Se `javac` não for encontrado, aponte o `JAVA_HOME` para a pasta do JDK (não a JRE) e inclua `bin` no PATH da sessão:
-
-```powershell
-$env:JAVA_HOME = "C:\Users\aluno\Documents\vsfabo\jdk-17.0.12_windows-x64_bin\jdk-17.0.12"
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
-```
-
-(Ajuste o caminho conforme a instalação no seu PC.)
-
-Para persistir entre sessões: *Configurações do Windows → Variáveis de ambiente* e defina `JAVA_HOME` e edite `Path` adicionando `%JAVA_HOME%\bin`.
+- **Node.js** 18+ (LTS recomendado)
+- Conta Firebase com Auth, Firestore e Storage habilitados
+- Arquivo JSON de service account do Firebase Admin
 
 ---
 
-## Como rodar o backend (Spring Boot)
+## Estrutura do projeto
 
-No PowerShell, entre na pasta do backend:
+| Pasta | Descricao |
+|-------|-----------|
+| `frontend/` | Interface React (Vite, PWA) |
+| `backend/` | API REST Node.js + Express |
+
+---
+
+## Configuracao de ambiente
+
+### Backend (`backend/.env`)
+
+Copie `backend/.env.example` para `backend/.env` e preencha:
+
+| Variavel | Obrigatoria | Descricao |
+|----------|-------------|-----------|
+| `PORT` | Nao | Porta da API (padrao: `8080`) |
+| `CORS_ORIGIN` | Nao | URL do frontend. Em producao use a URL publica. Multiplas origens separadas por virgula. |
+| `FIREBASE_CREDENTIALS_FILE` | **Sim** | Caminho relativo a `backend/` ou absoluto. Padrao: `pi-3-286ed-firebase-adminsdk-fbsvc-67db96b0ab.json` |
+| `FIREBASE_STORAGE_BUCKET` | **Sim** | Bucket do Storage: `pi-3-286ed.firebasestorage.app` |
+| `MAIL_ENABLED` | Nao | `true` para enviar e-mails (padrao: `false`) |
+| `MAIL_FROM` | Nao | Remetente dos e-mails |
+| `SMTP_HOST` | Nao | Host SMTP |
+| `SMTP_PORT` | Nao | Porta SMTP (ex: `587`) |
+| `SMTP_USER` | Nao | Usuario SMTP |
+| `SMTP_PASS` | Nao | Senha SMTP |
+
+### Frontend (`frontend/.env`)
+
+Copie `frontend/.env.example` para `frontend/.env` e preencha:
+
+| Variavel | Obrigatoria | Descricao |
+|----------|-------------|-----------|
+| `VITE_API_BASE` | **Sim** | URL da API (dev: `http://localhost:8080`, prod: URL do backend) |
+| `VITE_FIREBASE_APIKEY` | **Sim** | API Key do Firebase Web SDK |
+| `VITE_FIREBASE_AUTHDOMAIN` | **Sim** | Ex: `pi-3-286ed.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECTID` | **Sim** | Ex: `pi-3-286ed` |
+| `VITE_FIREBASE_STORAGEBUCKET` | **Sim** | Ex: `pi-3-286ed.firebasestorage.app` |
+| `VITE_FIREBASE_MESSAGINGSENDERID` | **Sim** | Sender ID do Firebase |
+| `VITE_FIREBASE_APPID` | **Sim** | App ID do Firebase Web |
+
+> Todas as variaveis do Firebase no frontend usam nomes **minusculos e sem caracteres especiais** (sem `-`, `_` ou acentos).
+
+---
+
+## Como rodar localmente
+
+### 1. Backend
 
 ```powershell
 cd backend
-./mvnw.cmd spring-boot:run
-
-Caso haja algum erro
-
-./mvnw clean package
-java -jar target/backend-0.0.1-SNAPSHOT.jar
-
+npm install
+# Configure backend/.env com FIREBASE_CREDENTIALS_FILE
+npm run dev
 ```
 
-A API sobe em **http://localhost:8080** (o frontend está configurado para chamar essa URL).
+API disponivel em **http://localhost:8080**  
+Health check: **http://localhost:8080/api/health**
 
-Documentação da API (Swagger/OpenAPI):
+### 2. Frontend
 
-- UI: **http://localhost:8080/swagger-ui**
-- JSON: **http://localhost:8080/api/docs**
-
-Outros comandos úteis:
-
-```powershell
-.\mvnw.cmd compile
-.\mvnw.cmd test
-```
-
----
-
-## Como rodar o frontend (React)
-
-Em outro terminal (a partir da pasta `complementasenac`):
+Em outro terminal:
 
 ```powershell
 cd frontend
 npm install
+# Configure frontend/.env
 npm run dev
 ```
 
-O Vite costuma abrir em **http://localhost:5173**. Deixe o backend rodando ao mesmo tempo para login e chamadas à API funcionarem.
+Interface em **http://localhost:5173**
 
-Build de produção:
+---
+
+## Build de producao (sem deploy)
+
+### Frontend
 
 ```powershell
+cd frontend
 npm run build
 ```
 
-PWA:
+Artefatos em `frontend/dist/`. Sirva estaticamente (Firebase Hosting, Vercel, Netlify, etc.) apontando todas as rotas para `index.html`.
 
-- O frontend já está configurado com service worker.
-- Em produção, a aplicação pode ser instalada no dispositivo (modo standalone).
+### Backend
 
----
+```powershell
+cd backend
+npm install --production
+npm start
+```
 
-## Configuração de Ambiente (.env)
-
-O projeto utiliza variáveis de ambiente para chaves do Firebase. 
-1. Na pasta `frontend`, duplique o arquivo `.env.example`.
-2. Renomeie a cópia para `.env`.
-3. Preencha os valores com as suas credenciais do Firebase Console.
-
-O arquivo `.env` está no `.gitignore` e nunca deve ser versionado.
-
-### E-mail (backend)
-
-Por padrão, o envio de e-mail está desabilitado e o backend registra o conteúdo em log.
-Para habilitar SMTP em deploy, configure no `application.properties`/variáveis:
-
-- `app.mail.enabled=true`
-- `app.mail.from=seu-email`
-- `spring.mail.host`
-- `spring.mail.port`
-- `spring.mail.username`
-- `spring.mail.password`
-- `spring.mail.properties.mail.smtp.auth=true`
-- `spring.mail.properties.mail.smtp.starttls.enable=true`
+Hospede em Render, Railway, Cloud Run, VPS ou similar. Defina as variaveis de ambiente do backend na plataforma.
 
 ---
 
-## Resumo rápido
+## Fluxos do sistema
 
-| O quê           | Pasta            | Comando principal             |
-|-----------------|------------------|--------------------------------|
-| API Java        | `backend\backend`| `.\mvnw.cmd spring-boot:run`   |
-| Interface React | `frontend`     | `npm run dev`                  |
+### Login
+
+1. Usuario escolhe perfil (Aluno, Coordenador ou Admin) e informa e-mail/senha.
+2. Firebase Auth autentica e retorna ID token.
+3. Backend valida token em `GET /api/auth/me` e retorna perfil do Firestore.
+4. Frontend redireciona para `/aluno`, `/coordenador` ou `/admin`.
+
+### Aluno
+
+- **Submissao:** `/aluno/submissao` — envia titulo, tipo, data, horas e comprovante (PDF/imagem).
+- **Historico:** `/aluno/historico` — lista todas as atividades com status.
+- Dados salvos na colecao Firestore `Solicitacoes`; comprovantes no bucket `pi-3-286ed.firebasestorage.app`.
+
+### Coordenador
+
+- Visualiza fila de atividades pendentes.
+- **Aprovar** ou **Indeferir** com justificativa (obrigatoria na recusa).
+- Link **Visualizar PDF** abre o comprovante enviado pelo aluno.
+- Horas aprovadas sao creditadas automaticamente no saldo do aluno.
+
+### Administrador
+
+- **Alunos:** criar, editar e remover (`/gestaoAlunos`). Senha inicial = matricula.
+- **Coordenadores:** criar, editar e remover (`/GestaoCoord`). Senha inicial = parte do e-mail + `2026`.
+- **Cursos:** criar e listar (`/GestaoCursos`).
 
 ---
 
-## Observação
+## Modelo Firestore
 
-Este repositório é um trabalho acadêmico; dados e persistência em memória são simplificados para demonstração.
+| Colecao | Campos principais |
+|---------|-------------------|
+| `Usuarios` | `uid`, `nome`, `email`, `role`, `vinculo` |
+| `Solicitacoes` | `uid_aluno`, `titulo_atividade`, `categoria`, `horas_informadas`, `status`, `url_certificado`, `data_evento` |
+| `Cursos` | `id_curso`, `nome_curso`, `eixo_tecnologico` |
+
+Campos em **minusculas com underscore** (`uid_aluno`, `id_curso`, etc.), sem acentos.
+
+---
+
+## API (resumo)
+
+| Metodo | Rota | Perfil |
+|--------|------|--------|
+| GET | `/api/health` | Publico |
+| GET | `/api/auth/me` | Autenticado |
+| GET/POST | `/api/aluno/*` | Aluno |
+| GET/POST | `/api/coordenador/*` | Coordenador |
+| GET/POST/PUT/DELETE | `/api/admin/*` | Admin |
+
+Todas as rotas (exceto `/api/health`) exigem header `Authorization: Bearer <idToken>`.
+
+---
+
+## PWA
+
+O frontend inclui service worker via `vite-plugin-pwa`. Em producao, a aplicacao pode ser instalada como app standalone.
+
+---
+
+## Checklist antes do deploy
+
+- [ ] `backend/.env` configurado na plataforma de hospedagem
+- [ ] `frontend/.env` com `VITE_API_BASE` apontando para a URL publica da API
+- [ ] `CORS_ORIGIN` no backend com a URL publica do frontend
+- [ ] Service account JSON disponivel no servidor (via variavel ou secret)
+- [ ] Regras do Firestore e Storage configuradas no Firebase Console
+- [ ] Usuarios admin/coordenador/aluno criados no Firestore com `role` correto
+
+---
+
+## Observacao
+
+Projeto academico do Senac. Nao faca commit de arquivos `.env` ou credenciais Firebase.

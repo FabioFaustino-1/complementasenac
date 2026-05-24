@@ -1,7 +1,22 @@
 class FileUploadService {
   constructor(admin) {
     this.admin = admin;
-    this.bucket = admin.storage().bucket();
+    this.projectId = this.resolveProjectId();
+    this.defaultBucket =
+      process.env.FIREBASE_STORAGE_BUCKET || 'pi-3-286ed.firebasestorage.app';
+  }
+
+  resolveProjectId() {
+    try {
+      if (this.admin.apps && this.admin.apps.length > 0) {
+        const app = this.admin.app();
+        if (app?.options?.projectId) return app.options.projectId;
+      }
+    } catch (_) {
+      // ignore
+    }
+
+    return process.env.FIREBASE_PROJECT_ID || 'pi-3-286ed';
   }
 
   async uploadDataUrl(dataUrl, uidAluno) {
@@ -14,8 +29,12 @@ class FileUploadService {
     const metadata = dataUrl.substring(5, split);
     const base64Content = dataUrl.substring(split + 1);
 
-    const contentType = metadata.includes(';') ? metadata.substring(0, metadata.indexOf(';')) : 'application/octet-stream';
-    const extensao = contentType.includes('/') ? contentType.substring(contentType.indexOf('/') + 1) : 'bin';
+    const contentType = metadata.includes(';')
+      ? metadata.substring(0, metadata.indexOf(';'))
+      : 'application/octet-stream';
+    const extensao = contentType.includes('/')
+      ? contentType.substring(contentType.indexOf('/') + 1)
+      : 'bin';
 
     const bytes = Buffer.from(base64Content, 'base64');
 
@@ -27,12 +46,17 @@ class FileUploadService {
       metadata: { contentType }
     });
 
-    return `https://storage.googleapis.com/${bucketName}/${objectName}`;
+    const [signedUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10)
+    });
+
+    return signedUrl;
   }
 
   async resolverBucketExistente() {
-    const configured = process.env.FIREBASE_STORAGE_BUCKET;
-    const projectId = this.admin.app.options.projectId;
+    const configured = this.defaultBucket;
+    const projectId = this.projectId;
 
     const candidatos = [];
     if (configured && configured.trim().length) candidatos.push(configured.trim());
@@ -41,7 +65,6 @@ class FileUploadService {
       candidatos.push(`${projectId}.appspot.com`);
     }
 
-    // A API Node não tem busca direta 'get bucket list'; tentamos abrir e se falhar, continua.
     for (const nome of candidatos) {
       try {
         const bucket = this.admin.storage().bucket(nome);
@@ -51,11 +74,11 @@ class FileUploadService {
         // ignore
       }
     }
-    throw new Error('Bucket do Firebase Storage nao encontrado. Configure FIREBASE_STORAGE_BUCKET com um bucket valido.');
+
+    return configured.trim();
   }
 
   uuid() {
-    // bom o suficiente para compatibilidade
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -65,4 +88,3 @@ class FileUploadService {
 }
 
 module.exports = FileUploadService;
-
