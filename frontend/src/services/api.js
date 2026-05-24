@@ -1,4 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+const API_BASE = (import.meta.env.VITE_API_BASE || "http://localhost:8080").replace(/\/+$/, "");
+
+export function apiUrl(path) {
+  return `${API_BASE}/${String(path).replace(/^\/+/, "")}`;
+}
 
 export async function apiRequest(path, { token, method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
@@ -6,7 +10,7 @@ export async function apiRequest(path, { token, method = "GET", body } = {}) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}${path}`, {
+    response = await fetch(apiUrl(path), {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,

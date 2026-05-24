@@ -1,6 +1,6 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import app from "./firebase";
-import { API_BASE } from "./api";
+import { API_BASE, apiUrl } from "./api";
 
 const auth = getAuth(app);
 
@@ -14,7 +14,7 @@ export async function autenticarUsuario(email, senha) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}/api/auth/me`, {
+    response = await fetch(apiUrl("/api/auth/me"), {
       headers: {
         Authorization: `Bearer ${token}`,
       },
