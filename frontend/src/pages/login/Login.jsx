@@ -10,8 +10,11 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import loginScene from "../../assets/login-scene.png";
 import { autenticarUsuario } from "../../services/auth";
 import { useAuth } from "../../assets/contexts/AuthContext";
+
+
 
 const perfis = [
   {
@@ -118,7 +121,7 @@ function Login() {
         <div className="scene-card">
           <img
             className="scene-card__image"
-            src="/login-scene.svg"
+            src={loginScene}
             alt="Estudantes do Senac em sala de aula"
           />
           <p className="scene-card__caption">
