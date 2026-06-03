@@ -22,19 +22,19 @@ class AlunoService {
     const usuario = await this.buscarUsuario(uid, email);
     const primeiroVinculo = this.primeiroVinculo(usuario);
 
-    const cursoId = this.cursoDoVinculo(primeiroVinculo);
-
     return {
       uid: usuario.get('uid'),
       nome: usuario.get('nome'),
       email: usuario.get('email'),
       telefone: '',
       ingresso: '',
-      curso: await cursoId,
+      curso: await this.cursoDoVinculo(primeiroVinculo),
       departamento: '',
       matricula: this.texto(primeiroVinculo.matricula)
     };
+
   }
+
 
   async buscarResumo(uid, email) {
     const usuario = await this.buscarUsuario(uid, email);
@@ -88,7 +88,8 @@ class AlunoService {
     const usuario = await this.buscarUsuario(uid, email);
     const vinculo = this.primeiroVinculo(usuario);
 
-    const idCurso = this.isBlank(payload.idCurso) ? this.texto(vinculo.id_curso) : String(payload.idCurso).trim();
+    const idCursoPayload = this.cursoId(payload.idCurso);
+    const idCurso = this.isBlank(idCursoPayload) ? this.cursoId(vinculo.id_curso || vinculo.curso) : idCursoPayload;
     const categoria = this.resolverCategoria(payload.categoria, payload.tipo);
 
     const comprovanteUrl = await this.fileUploadService.uploadDataUrl(payload.comprovanteUrl, usuario.id);
@@ -202,13 +203,32 @@ class AlunoService {
   }
 
   async cursoDoVinculo(vinculo) {
-    const idCurso = this.texto(vinculo.id_curso);
+    const cursoRaw = vinculo.id_curso || vinculo.curso;
+    const nomeNoVinculo = this.cursoNome(cursoRaw);
+    if (!this.isBlank(nomeNoVinculo)) return nomeNoVinculo;
+
+    const idCurso = this.cursoId(cursoRaw);
     const c = await this.firestoreService.buscarCurso(idCurso);
     if (c) {
       const nome = this.texto(c.get('nome_curso'));
       if (!this.isBlank(nome)) return nome;
     }
     return idCurso;
+  }
+
+  cursoId(value) {
+    if (value == null) return '';
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) return value.length ? this.cursoId(value[0]) : '';
+      return this.texto(value.id_curso || value.idCurso || value.id || value.codigo || value.codigoCurso).trim();
+    }
+    return this.texto(value).trim();
+  }
+
+  cursoNome(value) {
+    if (value == null || typeof value !== 'object') return '';
+    if (Array.isArray(value)) return value.length ? this.cursoNome(value[0]) : '';
+    return this.texto(value.nome_curso || value.nomeCurso || value.nome || value.descricao);
   }
 
   isBlank(valor) {

@@ -80,7 +80,9 @@
   background: transparent;
   color: rgba(20, 50, 92, 0.66);
   cursor: pointer;
+  white-space: nowrap;
 }
+
 
 .submission-tabs button.active {
   background: rgba(61, 124, 255, 0.12);

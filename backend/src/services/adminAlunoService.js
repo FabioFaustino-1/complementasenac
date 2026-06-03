@@ -9,7 +9,7 @@ class AdminAlunoService {
 
   async listar() {
     const docs = await this.firestoreService.listarUsuariosPorRole('ALUNO');
-    return docs.map((d) => this.paraAlunoAdmin(d));
+    return Promise.all(docs.map((d) => this.paraAlunoAdmin(d)));
   }
 
   async buscarPorId(id) {
@@ -45,7 +45,7 @@ class AdminAlunoService {
   }
 
   validarDados(nome, email, matricula, curso) {
-    if (this.isBlank(nome) || this.isBlank(email) || this.isBlank(matricula) || this.isBlank(curso)) {
+    if (this.isBlank(nome) || this.isBlank(email) || this.isBlank(matricula) || this.isBlank(this.cursoId(curso))) {
       throw new IllegalArgumentError('Todos os campos sao obrigatorios.');
     }
     if (String(matricula).trim().length < 6) {
@@ -64,7 +64,7 @@ class AdminAlunoService {
     const vinculoAtual = atual ? this.mapVinculo(atual.get('vinculo')) : null;
 
     const vinculo = {
-      id_curso: String(curso).trim(),
+      id_curso: this.cursoId(curso),
       id_turma: vinculoAtual ? this.texto(vinculoAtual.id_turma) : '',
       matricula: String(matricula).trim(),
       ch_total_exigida: 200,
@@ -83,7 +83,7 @@ class AdminAlunoService {
     return null;
   }
 
-  paraAlunoAdmin(doc) {
+  async paraAlunoAdmin(doc) {
     const aluno = {
       id: doc.id,
       nome: this.texto(doc.get('nome')),
@@ -93,10 +93,36 @@ class AdminAlunoService {
     const vinculo = this.mapVinculo(doc.get('vinculo'));
     if (vinculo) {
       aluno.matricula = this.texto(vinculo.matricula);
-      aluno.curso = this.texto(vinculo.id_curso);
+      aluno.curso = await this.cursoDoVinculo(vinculo);
       aluno.turma = this.texto(vinculo.id_turma);
     }
     return aluno;
+  }
+
+  async cursoDoVinculo(vinculo) {
+    const cursoRaw = vinculo.id_curso || vinculo.curso;
+    const nomeNoVinculo = this.cursoNome(cursoRaw);
+    if (!this.isBlank(nomeNoVinculo)) return nomeNoVinculo;
+
+    const idCurso = this.cursoId(cursoRaw);
+    const cursoDoc = await this.firestoreService.buscarCurso(idCurso);
+    const nomeCurso = cursoDoc ? this.texto(cursoDoc.get('nome_curso')) : '';
+    return this.isBlank(nomeCurso) ? idCurso : nomeCurso;
+  }
+
+  cursoId(value) {
+    if (value == null) return '';
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) return value.length ? this.cursoId(value[0]) : '';
+      return this.texto(value.id_curso || value.idCurso || value.id || value.codigo || value.codigoCurso).trim();
+    }
+    return this.texto(value).trim();
+  }
+
+  cursoNome(value) {
+    if (value == null || typeof value !== 'object') return '';
+    if (Array.isArray(value)) return value.length ? this.cursoNome(value[0]) : '';
+    return this.texto(value.nome_curso || value.nomeCurso || value.nome || value.descricao);
   }
 
   isBlank(v) {
