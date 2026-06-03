@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { BookOpen, Menu, Pencil, Sparkles, UserRound } from "lucide-react";
+import { BookOpen, Menu, Sparkles } from "lucide-react";
+
+
 import { useNavigate } from "react-router-dom";
 import "./PerfilAluno.css";
 import Sidebar from "../../../assets/Sidebar";
 import { createAlunoMenu } from "../menuConfig";
 import { useAuth } from "../../../assets/contexts/AuthContext";
 import { fetchPerfilAluno, fetchResumoAluno } from "../../../services/aluno";
+import { formatCourseName } from "../../../utils/userDisplay";
 
 function iniciais(nome) {
   if (!nome || !nome.trim()) return "AL";
@@ -15,11 +18,14 @@ function iniciais(nome) {
 }
 
 const PerfilAluno = () => {
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [perfil, setPerfil] = useState(null);
   const [resumo, setResumo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
 
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -94,7 +100,8 @@ const PerfilAluno = () => {
             <p>Identidade, progresso academico e dados institucionais em uma interface unificada.</p>
 
             <div className="profile-tabs">
-              <button type="button" onClick={() => navigate("/aluno")}>Overview</button>
+              <button type="button" onClick={() => navigate("/aluno")}>Minhas horas</button>
+              <button type="button" onClick={() => navigate("/aluno/submissao")}>Nova Submissao</button>
               <button type="button" onClick={() => navigate("/aluno/historico")}>Historico</button>
               <button type="button" className="active">Perfil</button>
             </div>
@@ -155,12 +162,8 @@ const PerfilAluno = () => {
                   <h3>Informacoes pessoais</h3>
                   <p>Dados institucionais exibidos no mesmo design system do dashboard.</p>
                 </div>
-
-                <button type="button" className="profile-edit-btn" disabled title="Edicao em breve">
-                  <Pencil size={15} />
-                  Editar
-                </button>
               </div>
+
 
               <div className="profile-form-grid">
                 <div className="profile-field">
@@ -180,30 +183,55 @@ const PerfilAluno = () => {
                 <div className="profile-field">
                   <label>Telefone</label>
                   <div className="profile-input-shell">
-                    <input type="text" value={perfil?.telefone || ""} readOnly disabled />
+                    <input
+                      type="text"
+                      value={perfil?.telefone || ""}
+                      readOnly
+                      disabled
+                    />
+
                   </div>
                 </div>
 
                 <div className="profile-field">
                   <label>Ingresso</label>
                   <div className="profile-input-shell">
-                    <input type="text" value={perfil?.ingresso || ""} readOnly disabled />
+                    <input
+                      type="text"
+                      value={perfil?.ingresso || ""}
+                      readOnly
+                      disabled
+                    />
                   </div>
                 </div>
+
+
 
                 <div className="profile-field">
                   <label>Curso</label>
                   <div className="profile-input-shell">
-                    <input type="text" value={perfil?.curso || ""} readOnly disabled />
+                    <input
+                      type="text"
+                      value={formatCourseName(perfil?.curso)}
+                      readOnly
+                      disabled
+                    />
                   </div>
                 </div>
 
                 <div className="profile-field">
                   <label>Departamento</label>
                   <div className="profile-input-shell">
-                    <input type="text" value={perfil?.departamento || ""} readOnly disabled />
+                    <input
+                      type="text"
+                      value={perfil?.departamento || ""}
+                      readOnly
+                      disabled
+                    />
+
                   </div>
                 </div>
+
 
                 <div className="profile-field profile-field--full">
                   <label>Matricula / Registro</label>
@@ -214,15 +242,7 @@ const PerfilAluno = () => {
               </div>
             </article>
 
-            <article className="profile-note-card">
-              <div className="profile-note-card__icon">
-                <UserRound size={16} />
-              </div>
-              <div>
-                <strong>Painel coerente com o dashboard</strong>
-                <p>Mesma atmosfera escura, cards modulares, bordas suaves e acentos violetas.</p>
-              </div>
-            </article>
+
           </section>
         </section>
       </main>

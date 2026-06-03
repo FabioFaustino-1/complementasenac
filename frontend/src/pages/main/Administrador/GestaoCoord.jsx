@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
-import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { buildGreeting, deriveDisplayName, formatCourseName } from "../../../utils/userDisplay";
 import {
   atualizarCoordenadorAdmin,
   criarCoordenadorAdmin,
@@ -247,8 +247,8 @@ const GestaoCoord = () => {
                     <p>{coord.email}</p>
                     <div className="admin-record-tags">
                       <span className="admin-soft-chip">{coord.departamento || "Sem departamento"}</span>
-                      {coord.cursos?.map((curso) => (
-                        <span key={curso} className="admin-soft-chip">{curso}</span>
+                      {coord.cursos?.map((curso, index) => (
+                        <span key={formatCourseName(curso) || index} className="admin-soft-chip">{formatCourseName(curso, "Curso sem nome")}</span>
                       ))}
                       <span className={`admin-status-chip admin-status-chip--${(coord.status || "Ativo").toLowerCase()}`}>
                         {coord.status || "Ativo"}

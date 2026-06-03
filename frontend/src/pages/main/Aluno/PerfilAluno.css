@@ -80,7 +80,9 @@
   background: transparent;
   color: rgba(20, 50, 92, 0.66);
   cursor: pointer;
+  white-space: nowrap;
 }
+
 
 .profile-tabs button.active {
   background: rgba(61, 124, 255, 0.12);
@@ -291,6 +293,14 @@
   background: transparent;
   color: rgba(20, 50, 92, 0.84);
 }
+
+.profile-input-shell input:disabled,
+.profile-input-shell input[readonly] {
+  opacity: 1;
+  cursor: default;
+  color: rgba(20, 50, 92, 0.84);
+}
+
 
 .profile-field--full {
   grid-column: 1 / -1;

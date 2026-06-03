@@ -80,7 +80,9 @@
   background: transparent;
   color: rgba(20, 50, 92, 0.66);
   cursor: pointer;
+  white-space: nowrap;
 }
+
 
 .history-tabs button.active {
   background: rgba(61, 124, 255, 0.12);
@@ -176,7 +178,17 @@
   color: rgba(20, 50, 92, 0.72);
 }
 
+.history-search-input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  color: rgba(20, 50, 92, 0.72);
+  font: inherit;
+  padding: 0;
+}
+
 .history-list {
+
   display: grid;
   gap: 14px;
 }

@@ -12,7 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
-import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { buildGreeting, deriveDisplayName, formatCourseName } from "../../../utils/userDisplay";
 import {
   listarAlunosAdmin,
   listarCoordenadoresAdmin,
@@ -80,7 +80,7 @@ const Admin = () => {
           { label: "Alunos cadastrados", value: String(alunos.length), delta: "Base institucional", tone: "green", accent: "line" },
           { label: "Cursos ativos", value: String(cursos.length), delta: "Catalogo", tone: "amber", accent: "dots" },
         ]);
-      } catch (error) {
+      } catch {
         // Mantem o painel renderizado com placeholders
       }
     };
@@ -229,8 +229,8 @@ const Admin = () => {
                     <div className="admin-coordinator-item__meta">
                       <span>{coord.departamento || "Sem departamento"}</span>
                       <div className="admin-course-badges">
-                        {(coord.cursos || []).map((course) => (
-                          <span key={course}>{course}</span>
+                        {(coord.cursos || []).map((course, index) => (
+                          <span key={formatCourseName(course) || index}>{formatCourseName(course, "Curso sem nome")}</span>
                         ))}
                       </div>
                     </div>

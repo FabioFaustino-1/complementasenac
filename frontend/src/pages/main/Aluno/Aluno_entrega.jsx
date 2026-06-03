@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import "./Aluno_entrega.css";
 import { createAlunoMenu } from "../menuConfig";
 import { useAuth } from "../../../assets/contexts/AuthContext";
-import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { buildGreeting, deriveDisplayName, formatCourseName } from "../../../utils/userDisplay";
 import {
   fetchAtividadesRecentes,
   fetchPerfilAluno,
@@ -131,7 +131,9 @@ const AlunoEntrega = () => {
   const aprovadas = resumo?.aprovadas ?? 0;
   const pendentes = resumo?.pendentes ?? 0;
   const indeferidas = resumo?.indeferidas ?? 0;
-  const curso = resumo?.curso || perfil?.curso || "Acompanhe seu progresso em atividades complementares";
+  const curso = formatCourseName(resumo?.curso || perfil?.curso, "Curso nao informado");
+
+
   const nomeUsuario = deriveDisplayName({
     name: perfil?.nome || user?.name,
     email: perfil?.email || user?.email,
@@ -456,11 +458,13 @@ const AlunoEntrega = () => {
                 Seu painel
               </span>
               <h1>{loading ? "Carregando..." : saudacao}</h1>
-              <p>{loading ? "Carregando informacoes..." : curso}</p>
+              <p className="student-course-subtitle">{loading ? "Carregando informacoes..." : curso}</p>
+
             </div>
 
             <div className="student-tabs">
-              <button type="button" className="active">Overview</button>
+              <button type="button" className="active">Minhas horas</button>
+              <button type="button" onClick={() => navigate("/aluno/submissao")}>Nova Submissao</button>
               <button type="button" onClick={() => navigate("/aluno/historico")}>Historico</button>
               <button type="button" onClick={() => navigate("/aluno/perfil")}>Perfil</button>
             </div>
@@ -503,10 +507,15 @@ const AlunoEntrega = () => {
               <div className="hero-course-card__content">
                 <div>
                   <span className="hero-course-card__label">Carga complementar</span>
-                  <h2>
-                    {loading ? "..." : horasConcluidas}
-                    <span> / {horasNecessarias}h</span>
-                  </h2>
+                  <div className="hero-course-card__hours">
+                    <span className="hero-course-card__hours-value">
+                      {loading ? "..." : horasConcluidas}
+                    </span>
+                    <span className="hero-course-card__hours-total">
+                      / {horasNecessarias}h
+                    </span>
+                  </div>
+
                 </div>
                 <span className="hero-course-card__badge">{badgeText}</span>
               </div>
@@ -621,17 +630,19 @@ const AlunoEntrega = () => {
                 </div>
               </div>
             </section>
+
+            <button
+              type="button"
+              className="student-floating-submit"
+              onClick={() => setSubmissionModalOpen(true)}
+            >
+              <Plus size={18} />
+              <span>Enviar submissao</span>
+            </button>
           </aside>
         </section>
 
-        <button
-          type="button"
-          className="student-floating-submit"
-          onClick={() => setSubmissionModalOpen(true)}
-        >
-          <Plus size={18} />
-          <span>Enviar submissao</span>
-        </button>
+
       </main>
     </div>
   );
