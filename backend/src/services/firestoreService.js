@@ -132,8 +132,9 @@ class FirestoreService {
       .replace('á', 'a')
       .replace('é', 'e');
 
-    const cursoVinculo = vinculo.id_curso;
-    if (!cursoVinculo || String(cursoVinculo) !== String(idCurso)) return;
+    const cursoVinculo = this.cursoId(vinculo.id_curso || vinculo.curso);
+    const cursoSolicitacao = this.cursoId(idCurso);
+    if (!cursoVinculo || cursoVinculo !== cursoSolicitacao) return;
 
     const saldos = vinculo.saldos || {};
     const atual = Number(saldos[chaveSaldo] ?? 0);
@@ -152,6 +153,15 @@ class FirestoreService {
       return { ...vinculoRaw[0] };
     }
     return null;
+  }
+
+  cursoId(value) {
+    if (value == null) return '';
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) return value.length ? this.cursoId(value[0]) : '';
+      return String(value.id_curso || value.idCurso || value.id || value.codigo || value.codigoCurso || '').trim();
+    }
+    return String(value).trim();
   }
 }
 

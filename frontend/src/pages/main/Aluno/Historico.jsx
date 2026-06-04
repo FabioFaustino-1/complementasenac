@@ -23,8 +23,12 @@ const Historico = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [perfil, setPerfil] = useState(null);
   const [atividades, setAtividades] = useState([]);
+  const [busca, setBusca] = useState("");
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -63,7 +67,20 @@ const Historico = () => {
     };
   }, [token]);
 
+  const atividadesFiltradas = useMemo(() => {
+    const q = (busca || "").toLowerCase().trim();
+    if (!q) return atividades;
+
+    return atividades.filter((atividade) => {
+      const titulo = String(atividade.titulo || "").toLowerCase();
+      const tipo = String(atividade.tipo || "").toLowerCase();
+      const data = String(atividade.data || "").toLowerCase();
+      return titulo.includes(q) || tipo.includes(q) || data.includes(q);
+    });
+  }, [atividades, busca]);
+
   const resumo = useMemo(() => {
+
     const counts = atividades.reduce(
       (acc, atividade) => {
         const status = uiStatus(atividade.status).pillClass;
@@ -112,7 +129,8 @@ const Historico = () => {
             <p>Todas as atividades submetidas organizadas em um painel escuro e modular.</p>
 
             <div className="history-tabs">
-              <button type="button" onClick={() => navigate("/aluno")}>Overview</button>
+              <button type="button" onClick={() => navigate("/aluno")}>Minhas horas</button>
+              <button type="button" onClick={() => navigate("/aluno/submissao")}>Nova Submissao</button>
               <button type="button" className="active">Historico</button>
               <button type="button" onClick={() => navigate("/aluno/perfil")}>Perfil</button>
             </div>
@@ -163,20 +181,29 @@ const Historico = () => {
 
             <div className="history-search-pill">
               <Search size={15} />
-              <span>Historico do aluno</span>
+              <input
+                className="history-search-input"
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar por titulo, tipo ou data"
+                aria-label="Buscar atividades"
+              />
             </div>
+
           </div>
 
           <div className="history-list">
             {loading && <p className="history-empty">Carregando atividades...</p>}
 
-            {!loading && atividades.length === 0 && (
-              <p className="history-empty">Nenhuma atividade registrada ate o momento.</p>
+            {!loading && atividadesFiltradas.length === 0 && (
+              <p className="history-empty">Nenhuma atividade encontrada ate o momento.</p>
             )}
 
             {!loading &&
-              atividades.map((atividade) => {
+              atividadesFiltradas.map((atividade) => {
                 const status = uiStatus(atividade.status);
+
 
                 return (
                   <article key={atividade.id} className="history-item">

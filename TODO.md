@@ -1,19 +1,16 @@
-# TODO - Migração do backend (Java -> Node.js)
-
-## Plano aprovado
-- Criar backend Node.js em `backend-node/`.
-- Manter rotas/JSON iguais às do Spring Boot.
-- Rodar na porta 8080.
-- Não mexer no frontend.
-- Autenticação via Firebase ID token (Authorization Bearer) e mesmo comportamento de 401 apenas em `/api/auth/*`.
-
-## Checklist (andamento)
-- [x] Criar estrutura do `backend-node/` (package.json, src/, routes/, services/, middleware/).
-- [ ] Implementar autenticação Firebase (middleware) + CORS.
-- [ ] Implementar error handler (StandardError).
-- [ ] Implementar services: FirestoreService, FileUploadService, PerfilService, FirebaseUserProvisioningService, AlunoService, CoordenadorService, Admin*Service, EmailNotificationService.
-- [ ] Implementar controllers/routes: auth, aluno, coordenador, admin (com mesmo contrato de status codes).
-- [ ] Configurar env vars (Firebase credentials, storage bucket, mail enabled).
-- [ ] Rodar backend Node e testar endpoints principais.
-- [ ] Ajustar qualquer diferença de JSON/status até bater com o frontend.
-
+erros:
+Tela Aluno:
+1: na tela inicial tela de login esta dando erro transparente 
+2: na tela de usuario, 0/200 esta bugado.
+3: no painel do usuario, mudar o " overview " para " Minhas horas "
+4: arrumar a ordem da barra de escolha das paginas desse jeito na vertical, e tbm organize na horizontal, ja que na tela de dashbord do aluno não aparece a "Nova submissão"
+":Minhas horas
+:Nova submissao
+:Meu perfil
+:Historico
+:Sair da conta".
+5: na tela de perfil, deixa dados pre-definidos, sem poder alterar e editar na tela de perfil
+6: remover o "Painel coerente com o dashbord" onde fica o icone de perfil bem pequeno
+7: alterar o curso que na tela de perfil para "Analise e desenvolvimento de sistemas" e aparecer no minhas hrs, debaixo do "Olá, Testealuno"
+8: no historico do aluno na parte de timeline de atividades não tem um botão para pesquisar "'lupa', Historico do aluno"
+9: no "overview" quero deixar "Enviar submissão" fixo no final e simetrico

@@ -19,7 +19,7 @@ import {
   obterPendentes,
   obterResumoCoordenador,
 } from "../../../services/coordenador";
-import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { buildGreeting, deriveDisplayName, formatDisplayText } from "../../../utils/userDisplay";
 import "./Coordenador.css";
 
 const ActivityCard = ({
@@ -55,7 +55,7 @@ const ActivityCard = ({
         </div>
 
         <div className="coordenador-activity-card__meta-row">
-          <span>{student} • {type} • {date}</span>
+          <span>{formatDisplayText(student, "Aluno")} • {formatDisplayText(type)} • {formatDisplayText(date)}</span>
           <span className="coordenador-activity-card__hours">{hours}h</span>
         </div>
 

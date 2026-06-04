@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BarChart3,
@@ -13,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
-import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
+import { buildGreeting, deriveDisplayName, formatCourseName } from "../../../utils/userDisplay";
 import {
   atualizarAlunoAdmin,
   criarAlunoAdmin,
@@ -52,10 +52,22 @@ const GestaoAlunos = () => {
     { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/GestaoCursos") },
   ];
 
-  useEffect(() => {
+  const carregarAlunos = useCallback(async () => {
     if (!token) return;
-    carregarAlunos();
+    try {
+      setLoading(true);
+      const data = await listarAlunosAdmin(token);
+      setStudents(data);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
+
+  useEffect(() => {
+    carregarAlunos();
+  }, [carregarAlunos]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -74,19 +86,6 @@ const GestaoAlunos = () => {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [menuOpen]);
-
-  const carregarAlunos = async () => {
-    if (!token) return;
-    try {
-      setLoading(true);
-      const data = await listarAlunosAdmin(token);
-      setStudents(data);
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -129,7 +128,7 @@ const GestaoAlunos = () => {
       nome: student.nome || "",
       email: student.email || "",
       matricula: student.matricula || "",
-      curso: student.curso || "",
+      curso: formatCourseName(student.curso),
     });
     setShowForm(true);
   };
@@ -277,7 +276,7 @@ const GestaoAlunos = () => {
                     <p>{student.email}</p>
                     <div className="admin-record-tags">
                       <span className="admin-soft-chip">{student.matricula}</span>
-                      <span className="admin-soft-chip">{student.curso}</span>
+                      <span className="admin-soft-chip">{formatCourseName(student.curso, "Curso nao informado")}</span>
                     </div>
                   </div>
                   <div className="admin-record-actions">

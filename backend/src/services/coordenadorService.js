@@ -37,7 +37,7 @@ class CoordenadorService {
     if (st === 'APROVADO') {
       await this.firestoreService.creditarHorasAprovadas(
         this.texto(doc.get('uid_aluno')),
-        this.texto(doc.get('id_curso')),
+        doc.get('id_curso'),
         this.texto(doc.get('categoria')),
         horasFinal
       );

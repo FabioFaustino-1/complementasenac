@@ -227,12 +227,14 @@
 .auth-card__error {
   margin: 0 0 1rem;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(255, 111, 132, 0.24);
+  border: 1px solid rgba(220, 53, 69, 0.5);
   border-radius: 1rem;
-  background: rgba(160, 52, 72, 0.12);
-  color: #000000;
+  background: rgba(220, 53, 69, 0.15);
+  color: #c0392b;
   font-size: 0.9rem;
+  font-weight: 500;
 }
+
 
 .profile-grid {
   display: grid;

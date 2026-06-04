@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ListaAlunosCoordenador.css";
 import { useAuth } from "../../../../assets/contexts/AuthContext";
 import { obterAlunosCoordenador } from "../../../../services/coordenador";
+import { formatCourseName } from "../../../../utils/userDisplay";
 
 const ListaAlunosCoordenador = () => {
   const { token } = useAuth();
@@ -41,7 +42,7 @@ const ListaAlunosCoordenador = () => {
               {alunos.map((aluno) => (
                 <tr key={aluno.id}>
                   <td className="student-name">{aluno.nome}</td>
-                  <td>{aluno.curso}</td>
+                  <td>{formatCourseName(aluno.curso, "Curso nao informado")}</td>
                   <td className="text-mono">{aluno.matricula}</td>
                   <td className="text-center">
                     <span className="status-badge ativo">Ativo</span>

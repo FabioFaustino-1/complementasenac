@@ -159,9 +159,10 @@ const NovaSubmissao = () => {
             </p>
 
             <div className="submission-tabs">
-              <button type="button" onClick={() => navigate("/aluno")}>Overview</button>
+              <button type="button" onClick={() => navigate("/aluno")}>Minhas horas</button>
+              <button type="button" className="active">Nova Submissao</button>
               <button type="button" onClick={() => navigate("/aluno/historico")}>Historico</button>
-              <button type="button" className="active">Submissao</button>
+              <button type="button" onClick={() => navigate("/aluno/perfil")}>Perfil</button>
             </div>
           </div>
         </header>
