@@ -14,5 +14,5 @@ Tela Aluno:
 7: alterar o curso que na tela de perfil para "Analise e desenvolvimento de sistemas" e aparecer no minhas hrs, debaixo do "Olá, Testealuno" {X}
 8: no historico do aluno na parte de timeline de atividades não tem um botão para pesquisar "'lupa', Historico do aluno"
 9: no "overview" quero deixar "Enviar submissão" fixo no final e simetrico {X}
-10: ajeitar o a pontuação do texto da tela de login.
+10: ajeitar o a pontuação do texto da tela de login e de todo o site.
 11: trocar o texto abaixo do "COMPLEMENTA+" pelo o que está dentro da imagem inical.
