@@ -73,3 +73,5 @@ const RelatoriosCoordenador = ({ stats, activities, taxa, nomeUsuario }) => (
 );
 
 export default RelatoriosCoordenador;
+
+
