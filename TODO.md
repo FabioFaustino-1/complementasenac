@@ -16,3 +16,4 @@ Tela Aluno:
 9: no "overview" quero deixar "Enviar submissão" fixo no final e simetrico {X}
 10: ajeitar o a pontuação do texto da tela de login e de todo o site.
 11: trocar o texto abaixo do "COMPLEMENTA+" pelo o que está dentro da imagem inical.
+12: Colocar o link da vercel no readme
