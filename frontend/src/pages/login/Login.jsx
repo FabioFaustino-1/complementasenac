@@ -71,14 +71,6 @@ function Login() {
       const { perfil, token } = await autenticarUsuario(emailNormalizado, senha);
       const perfilBackend = perfil?.perfil ?? perfilAtivo;
 
-      if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
-        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema. Selecione a aba correta.`);
-      }
-
-      if (perfilAtivo === "admin" && perfilBackend !== "admin") {
-        throw new Error(`Este usuario possui perfil "${perfilBackend}" no sistema. Selecione a aba correta.`);
-      }
-
       loginWithBackend({ token, perfil, email: emailNormalizado });
 
       if (perfilBackend === "aluno") {
@@ -113,10 +105,6 @@ function Login() {
       <div className="login-page__glow login-page__glow--soft" />
 
       <section className="hero-panel" aria-label="Apresentacao da plataforma">
-        <div className="brand-mark">
-          <span className="brand-mark__text">S+</span>
-          <span className="brand-mark__badge">Senac</span>
-        </div>
 
         <div className="scene-card">
           <img
