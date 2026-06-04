@@ -71,6 +71,14 @@ function Login() {
       const { perfil, token } = await autenticarUsuario(emailNormalizado, senha);
       const perfilBackend = perfil?.perfil ?? perfilAtivo;
 
+      if (perfilAtivo !== "admin" && perfilBackend !== perfilAtivo) {
+        throw new Error(`Login ou senhas incorretos.`);
+      }
+
+      if (perfilAtivo === "admin" && perfilBackend !== "admin") {
+        throw new Error(`Login ou senhas incorretos.`);
+      }
+
       loginWithBackend({ token, perfil, email: emailNormalizado });
 
       if (perfilBackend === "aluno") {
