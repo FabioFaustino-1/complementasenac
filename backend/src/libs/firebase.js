@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
 
-const DEFAULT_CREDENTIALS_FILE = 'pi-3-286ed-596217dade71.json';
+const DEFAULT_CREDENTIALS_FILE = 'pi-3-286ed-firebase-adminsdk-fbsvc-9edefa08b0.json';
 const BACKEND_ROOT = path.join(__dirname, '..', '..');
 
 let initialized = false;
