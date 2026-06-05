@@ -18,7 +18,7 @@ Tela Aluno:
 
 
 
-AMD(TELA)
+ADM(TELA)
 : Mudar overview para painel adm
 : Ajeitar a ordem do menu
 : No lugar de aluno botar "adcionar alunos" 
