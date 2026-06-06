@@ -23,3 +23,12 @@ export function decidirAtividadeCoordenador(token, id, status, extras = {}) {
     body: { status, ...extras },
   });
 }
+
+export function solicitarExclusaoAluno(token, alunoId, nomeAluno) {
+  return apiRequest("/api/coordenador/solicitacoes-exclusao", {
+    token,
+    method: "POST",
+    body: { alunoId, nomeAluno },
+  });
+}
+

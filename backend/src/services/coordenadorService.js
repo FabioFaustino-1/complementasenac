@@ -139,7 +139,22 @@ class CoordenadorService {
   texto(value) {
     return value == null ? '' : String(value);
   }
+
+  async solicitarExclusao(alunoId, nomeAluno, uidCoordenador, emailCoordenador) {
+    const payload = {
+      alunoId,
+      nomeAluno,
+      uidCoordenador,
+      emailCoordenador,
+      status: 'PENDENTE',
+      criadoEm: new Date().toISOString(),
+    };
+
+    return this.firestoreService.criarSolicitacaoExclusao(payload);
+  }
 }
 
 module.exports = CoordenadorService;
+
+
 

@@ -15,13 +15,18 @@
 }
 
 .submission-topbar {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
 }
 
+
 .submission-menu-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -35,6 +40,7 @@
     0 18px 40px rgba(21, 45, 84, 0.14),
     0 4px 14px rgba(61, 124, 255, 0.08);
 }
+
 
 .submission-topbar__content {
   flex: 1;
@@ -324,7 +330,9 @@
 @media (max-width: 780px) {
   .submission-topbar {
     flex-direction: column;
+    min-height: 48px;
   }
+
 
   .submission-grid,
   .submission-row {
@@ -366,3 +374,4 @@
     width: 100%;
   }
 }
+

@@ -18,13 +18,18 @@
 }
 
 .coordenador-topbar {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 18px;
 }
 
+
 .coordenador-menu-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -39,6 +44,7 @@
     0 4px 14px rgba(61, 124, 255, 0.08);
   cursor: pointer;
 }
+
 
 .coordenador-topbar__content {
   flex: 1;
@@ -66,6 +72,13 @@
   color: rgba(20, 50, 92, 0.58);
   line-height: 1.6;
 }
+
+.coordenador-topbar__email {
+  font-size: 0.82rem;
+  color: rgba(20, 50, 92, 0.5);
+  margin: 0.2rem 0 0;
+}
+
 
 .coordenador-tabs {
   display: inline-flex;
@@ -589,7 +602,9 @@
 @media (max-width: 780px) {
   .coordenador-topbar {
     flex-direction: column;
+    min-height: 48px;
   }
+
 
   .coordenador-tabs {
     flex-wrap: wrap;
@@ -644,3 +659,4 @@
     word-break: break-word;
   }
 }
+

@@ -111,8 +111,8 @@ const Admin = () => {
               <div ref={menuRef} className="admin-menu-popover">
                 <div className="admin-menu-popover__header">
                   <div>
-                    <strong>{nomeUsuario}</strong>
-                    <span>{user?.email || "admin@senac.pe.br"}</span>
+                    <div className="admin-menu-header-nome">{nomeUsuario || "Administrador"}</div>
+                    <div className="admin-menu-header-email">{user?.email || ""}</div>
                   </div>
                 </div>
 
@@ -163,6 +163,7 @@ const Admin = () => {
               <button type="button" onClick={() => navigate("/gestaoalunos")}>Alunos</button>
               <button type="button" onClick={() => navigate("/gestaocoord")}>Coordenadores</button>
               <button type="button" onClick={() => navigate("/gestaocursos")}>Cursos</button>
+              <button type="button" onClick={() => navigate("/solicitacoes-exclusao")}>Solicitacoes de exclusao</button>
             </div>
           </div>
         </header>

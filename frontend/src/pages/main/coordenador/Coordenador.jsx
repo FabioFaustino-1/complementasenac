@@ -4,7 +4,9 @@ import {
   CheckCheck,
   ClipboardCheck,
   Clock3,
+  Edit2,
   Menu,
+  Trash2,
   X,
   Sparkles,
 } from "lucide-react";
@@ -26,7 +28,6 @@ const ActivityCard = ({
   id,
   title,
   student,
-  hours,
   date,
   type,
   comprovanteUrl,
@@ -56,7 +57,8 @@ const ActivityCard = ({
 
         <div className="coordenador-activity-card__meta-row">
           <span>{formatDisplayText(student, "Aluno")} • {formatDisplayText(type)} • {formatDisplayText(date)}</span>
-          <span className="coordenador-activity-card__hours">{hours}h</span>
+
+
         </div>
 
         <div className="coordenador-activity-card__footer">
@@ -98,6 +100,48 @@ const Coordenador = () => {
   const [decisionModal, setDecisionModal] = useState(null);
   const { token, user } = useAuth();
 
+  const MOCK_ACTIVITIES = [
+  {
+    id: "mock-001",
+    titulo: "Palestra sobre Inteligência Artificial",
+    aluno: "João Silva",
+    tipo: "Ensino",
+    data: "2025-05-10",
+    horas: 4,
+    status: "PENDENTE",
+    comprovanteUrl: "",
+    student: "João Silva",
+    title: "Palestra sobre Inteligência Artificial",
+    type: "Ensino",
+  },
+  {
+    id: "mock-002",
+    titulo: "Workshop de Design Thinking",
+    aluno: "Maria Souza",
+    tipo: "Extensão",
+    data: "2025-05-14",
+    horas: 8,
+    status: "PENDENTE",
+    comprovanteUrl: "",
+    student: "Maria Souza",
+    title: "Workshop de Design Thinking",
+    type: "Extensão",
+  },
+  {
+    id: "mock-003",
+    titulo: "Monitoria de Programação Web",
+    aluno: "Carlos Andrade",
+    tipo: "Pesquisa",
+    data: "2025-05-20",
+    horas: 6,
+    status: "PENDENTE",
+    comprovanteUrl: "",
+    student: "Carlos Andrade",
+    title: "Monitoria de Programação Web",
+    type: "Pesquisa",
+  },
+];
+
   useEffect(() => {
     if (!token) return;
 
@@ -109,17 +153,19 @@ const Coordenador = () => {
           obterResumoCoordenador(token),
         ]);
 
-        setActivities(
-          pendentes.map((item) => ({
-            id: item.id,
-            title: item.titulo,
-            student: item.aluno,
-            hours: String(item.horas),
-            date: item.data,
-            type: item.tipo,
-            comprovanteUrl: item.comprovanteUrl,
-          }))
-        );
+        const data = pendentes.length
+          ? pendentes.map((item) => ({
+              id: item.id,
+              title: item.titulo,
+              student: item.aluno,
+              hours: String(item.horas),
+              date: item.data,
+              type: item.tipo,
+              comprovanteUrl: item.comprovanteUrl,
+            }))
+          : MOCK_ACTIVITIES;
+
+        setActivities(data);
         setResumo(resumoApi);
       } catch (loadError) {
         setError(loadError.message || "Nao foi possivel carregar o painel do coordenador.");
@@ -162,6 +208,12 @@ const Coordenador = () => {
         extras.justificativa = justificativa.trim();
       }
 
+      if (id.startsWith("mock-")) {
+        setActivities((prev) => prev.filter((a) => a.id !== id));
+        fecharModalDecisao();
+        return;
+      }
+
       await decidirAtividadeCoordenador(token, id, status, extras);
       setActivities((prev) => prev.filter((act) => act.id !== id));
       fecharModalDecisao();
@@ -195,6 +247,38 @@ const Coordenador = () => {
     fallback: "Coordenador",
   });
   const menuItems = createCoordenadorMenu(setActiveTab);
+
+  const eyebrowMap = {
+    validacao: "Painel de Validação",
+    alunos: "Lista de Alunos",
+    relatorios: "Relatórios",
+    perfil: "Meu Perfil",
+  };
+
+  const headerContent = {
+    validacao: {
+      title: buildGreeting(nomeUsuario),
+      eyebrow: eyebrowMap.validacao,
+      description:
+        "Acompanhe a fila de atividades, aprove pendencias e acesse os modulos de alunos, relatorios e perfil no mesmo design system do painel do aluno.",
+    },
+    alunos: {
+      title: "Lista de Alunos",
+      eyebrow: eyebrowMap.alunos,
+      description: "Gerenciamento de usuarios e matriculas da instituicao",
+    },
+    relatorios: {
+      title: "Relatorios",
+      eyebrow: eyebrowMap.relatorios,
+      description: "Gerencie e valide as atividades complementares dos alunos",
+    },
+    perfil: {
+      title: "Perfil",
+      eyebrow: eyebrowMap.perfil,
+      description: "Atualize seus dados institucionais e mantenha seu perfil de coordenador organizado.",
+    },
+  };
+  const currentHeader = headerContent[activeTab] ?? headerContent.validacao;
   const statCards = [
     {
       label: "Pendentes",
@@ -235,7 +319,6 @@ const Coordenador = () => {
           stats={stats}
           activities={activities}
           taxa={taxa}
-          nomeUsuario={nomeUsuario}
         />
       );
     }
@@ -354,25 +437,22 @@ const Coordenador = () => {
       <div className="coordenador-shell">
         <main className="coordenador-main">
           <header className="coordenador-topbar">
-            <button
-              type="button"
-              className="coordenador-menu-toggle"
-              onClick={() => setIsMenuOpen(true)}
-              aria-label="Abrir menu"
-            >
-              <Menu size={18} />
-            </button>
-
             <div className="coordenador-topbar__content">
+              <button
+                type="button"
+                className="coordenador-menu-toggle"
+                onClick={() => setIsMenuOpen(true)}
+                aria-label="Abrir menu"
+              >
+                <Menu size={18} />
+              </button>
+
               <span className="coordenador-eyebrow">
                 <Sparkles size={14} />
-                Seu painel
+                {currentHeader.eyebrow || "Painel de Validação"}
               </span>
-              <h1>{buildGreeting(nomeUsuario)}</h1>
-              <p>
-                Acompanhe a fila de atividades, aprove pendencias e acesse os modulos
-                de alunos, relatorios e perfil no mesmo design system do painel do aluno.
-              </p>
+              <h1>{currentHeader.title}</h1>
+              <p>Acompanhe a fila de atividades...</p>
 
               <div className="coordenador-tabs">
                 <button
@@ -380,30 +460,31 @@ const Coordenador = () => {
                   className={activeTab === "validacao" ? "active" : ""}
                   onClick={() => setActiveTab("validacao")}
                 >
-                  Validacao
+                  Painel de Validação
                 </button>
                 <button
                   type="button"
                   className={activeTab === "alunos" ? "active" : ""}
                   onClick={() => setActiveTab("alunos")}
                 >
-                  Alunos
+                  Lista de Alunos
                 </button>
                 <button
                   type="button"
                   className={activeTab === "relatorios" ? "active" : ""}
                   onClick={() => setActiveTab("relatorios")}
                 >
-                  Relatorios
+                  Relatórios
                 </button>
                 <button
                   type="button"
                   className={activeTab === "perfil" ? "active" : ""}
                   onClick={() => setActiveTab("perfil")}
                 >
-                  Perfil
+                  Meu Perfil
                 </button>
               </div>
+
             </div>
           </header>
 

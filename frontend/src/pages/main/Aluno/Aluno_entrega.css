@@ -17,10 +17,13 @@
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 18px;
+  position: relative;
 }
 
 .student-topbar__menu-area {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .student-menu-toggle {
@@ -41,7 +44,8 @@
 .student-menu-popover {
   position: absolute;
   top: calc(100% + 10px);
-  left: 0;
+  right: 0;
+  left: auto;
   width: min(280px, calc(100vw - 36px));
   padding: 14px;
   border-radius: 20px;
@@ -825,6 +829,7 @@
 @media (max-width: 780px) {
   .student-topbar {
     flex-direction: column;
+    min-height: 48px;
   }
 
   .student-tabs {

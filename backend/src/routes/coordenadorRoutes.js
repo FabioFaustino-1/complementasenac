@@ -89,4 +89,27 @@ router.get('/coordenador/alunos', async (req, res, next) => {
   }
 });
 
+router.post('/coordenador/solicitacoes-exclusao', async (req, res, next) => {
+  try {
+    const service = coordenadorServiceOr503(res);
+    if (!service) return;
+
+    const { alunoId, nomeAluno } = req.body || {};
+    if (!alunoId || !nomeAluno) {
+      return res.status(400).json({ error: 'alunoId e nomeAluno são obrigatórios.' });
+    }
+
+    const id = await service.solicitarExclusao(
+      alunoId,
+      nomeAluno,
+      req.uid || '',
+      req.email || ''
+    );
+    res.status(201).json({ id });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
+

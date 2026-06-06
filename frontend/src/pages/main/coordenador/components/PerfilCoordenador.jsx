@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Edit2, Save, X } from "lucide-react";
 import "./PerfilCoordenador.css";
 import { useAuth } from "../../../../assets/contexts/AuthContext";
 import { obterPerfilCoordenador } from "../../../../services/coordenador";
 
 const PerfilCoordenador = () => {
-  const [isEditing, setIsEditing] = useState(false);
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,11 +42,6 @@ const PerfilCoordenador = () => {
     load();
   }, [token]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
   return (
     <div className="rep-main-viewport">
       <div className="rep-content-wrapper">
@@ -65,20 +58,6 @@ const PerfilCoordenador = () => {
           <main className="profile-info-card-refined">
             <div className="profile-card-header">
               <h3>INFORMACOES PESSOAIS</h3>
-              {!isEditing ? (
-                <button className="btn-edit-refined" onClick={() => setIsEditing(true)}>
-                  <Edit2 size={13} /> Editar
-                </button>
-              ) : (
-                <div className="edit-actions">
-                  <button className="btn-save-refined" onClick={() => setIsEditing(false)}>
-                    <Save size={13} /> Salvar
-                  </button>
-                  <button className="btn-cancel-refined" onClick={() => setIsEditing(false)}>
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
             </div>
             {error ? <p style={{ color: "#b24d61", margin: "0 0 12px" }}>{error}</p> : null}
 
@@ -93,21 +72,13 @@ const PerfilCoordenador = () => {
               ].map((field) => (
                 <div className="detail-field" key={field.name}>
                   <label>{field.label}</label>
-                  {isEditing ? (
-                    <input className="edit-input-field" name={field.name} value={userData[field.name]} onChange={handleChange} />
-                  ) : (
-                    <div className="value-box-refined">{userData[field.name]}</div>
-                  )}
+                  <div className="value-box-refined">{userData[field.name]}</div>
                 </div>
               ))}
 
               <div className="detail-field full-row">
                 <label>Departamento</label>
-                {isEditing ? (
-                  <input className="edit-input-field" name="departamento" value={userData.departamento} onChange={handleChange} />
-                ) : (
-                  <div className="value-box-refined">{userData.departamento}</div>
-                )}
+                <div className="value-box-refined">{userData.departamento}</div>
               </div>
             </div>
           </main>
@@ -118,3 +89,4 @@ const PerfilCoordenador = () => {
 };
 
 export default PerfilCoordenador;
+

@@ -51,8 +51,9 @@ const Sidebar = ({
           <div className="sidebar-top">
             <div className="sidebar-logo-section">
               <div className="sidebar-logo-text">
-                <div className="senac-txt">Senac</div>
-                <div className="comp-txt">Complementares</div>
+                <div className="senac-txt">{userName || "Usuário"}</div>
+                <div className="comp-txt">{userEmail || ""}</div>
+
               </div>
               <button
                 type="button"
@@ -63,6 +64,7 @@ const Sidebar = ({
                 <X size={16} />
               </button>
             </div>
+
 
             <nav className="nav-list">
               {menuItems.map((item) => {
@@ -95,10 +97,7 @@ const Sidebar = ({
               </div>
               <span>Sair da Conta</span>
             </button>
-            <div className="footer-user-info">
-              <div className="user-name-bold">{userName || "Usuario"}</div>
-              <div className="user-email">{userEmail || "email@exemplo.com"}</div>
-            </div>
+
           </div>
         </div>
       </div>

@@ -29,19 +29,23 @@ export const createAlunoMenu = (navigate) => [
 ];
 
 export const createCoordenadorMenu = (setActiveTab) => [
-  { id: "perfil", name: "Meu Perfil", icon: icon(User), onClick: () => setActiveTab("perfil") },
   {
     id: "validacao",
-    name: "Painel de Validacao",
+    name: "Painel de Validação",
     icon: icon(ClipboardCheck),
     onClick: () => setActiveTab("validacao"),
   },
   { id: "alunos", name: "Lista de Alunos", icon: icon(Users), onClick: () => setActiveTab("alunos") },
   {
     id: "relatorios",
-    name: "Relatorios",
+    name: "Relatórios",
     icon: icon(BarChart3),
     onClick: () => setActiveTab("relatorios"),
   },
+  { id: "perfil", name: "Meu Perfil", icon: icon(User), onClick: () => setActiveTab("perfil") },
 ];
+
+
+
+
 

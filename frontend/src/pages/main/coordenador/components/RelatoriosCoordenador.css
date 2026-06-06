@@ -147,10 +147,11 @@
 .rep-student-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   padding: 16px 0;
   border-bottom: 1px solid rgba(61, 124, 255, 0.08);
 }
+
 
 .rep-table-body .rep-student-row:last-child {
   border-bottom: 0;
@@ -197,15 +198,12 @@
   font-weight: 600;
 }
 
-.rep-hours-display {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #14325c;
-  width: 40px;
-  text-align: right;
+.rep-type-tag--fixed {
+  min-width: 90px;
+  text-align: center;
 }
 
-.rep-action-btn {
+.rep-action-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -213,9 +211,17 @@
   height: 38px;
   border: 1px solid rgba(61, 124, 255, 0.14);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.64);
-  color: #14325c;
-  cursor: pointer;
+  background: rgba(61, 124, 255, 0.06);
+  color: rgba(20, 50, 92, 0.4);
+  flex-shrink: 0;
+}
+
+
+.rep-empty-search {
+  margin: 0;
+  padding: 16px 0 4px;
+  color: rgba(20, 50, 92, 0.58);
+  font-weight: 600;
 }
 
 .rep-panel-charts {

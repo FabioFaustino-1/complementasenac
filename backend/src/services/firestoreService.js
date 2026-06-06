@@ -9,6 +9,7 @@ class FirestoreService {
     this.COLLECTION_USUARIOS_LEGACY = 'usuarios';
     this.COLLECTION_SOLICITACOES = 'Solicitacoes';
     this.COLLECTION_CURSOS = 'Cursos';
+    this.COLLECTION_SOLICITACOES_EXCLUSAO = 'SolicitacoesExclusao';
   }
 
   async buscarUsuarioPorUid(uid) {
@@ -77,6 +78,30 @@ class FirestoreService {
 
   async atualizarSolicitacao(idSolicitacao, updates) {
     await this.db.collection(this.COLLECTION_SOLICITACOES).doc(idSolicitacao).update(updates);
+  }
+
+  async criarSolicitacaoExclusao(payload) {
+    const ref = this.db
+      .collection(this.COLLECTION_SOLICITACOES_EXCLUSAO)
+      .doc();
+    await ref.set({ ...payload, id: ref.id });
+    return ref.id;
+  }
+
+  async listarSolicitacoesExclusao(status = null) {
+    let query = this.db.collection(this.COLLECTION_SOLICITACOES_EXCLUSAO);
+    if (status) query = query.where('status', '==', status);
+    const snap = await query.orderBy('criadoEm', 'desc').get();
+    return snap.docs;
+  }
+
+  async buscarSolicitacaoExclusaoPorId(id) {
+    const doc = await this.db.collection(this.COLLECTION_SOLICITACOES_EXCLUSAO).doc(id).get();
+    return doc.exists ? doc : null;
+  }
+
+  async atualizarSolicitacaoExclusao(id, updates) {
+    await this.db.collection(this.COLLECTION_SOLICITACOES_EXCLUSAO).doc(id).update(updates);
   }
 
   async listarUsuariosPorRole(role) {
