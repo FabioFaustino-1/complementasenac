@@ -23,42 +23,7 @@ Sistema academico para gestao de horas complementares do Senac. Alunos submetem 
 
 ---
 
-## Configuracao de ambiente
 
-### Backend (`backend/.env`)
-
-Copie `backend/.env.example` para `backend/.env` e preencha:
-
-| Variavel | Obrigatoria | Descricao |
-|----------|-------------|-----------|
-| `PORT` | Nao | Porta da API (padrao: `8080`) |
-| `CORS_ORIGIN` | Nao | URL do frontend. Em producao use a URL publica. Multiplas origens separadas por virgula. |
-| `FIREBASE_CREDENTIALS_FILE` | **Sim** | Caminho relativo a `backend/` ou absoluto. Padrao: `pi-3-286ed-firebase-adminsdk-fbsvc-67db96b0ab.json` |
-| `FIREBASE_STORAGE_BUCKET` | **Sim** | Bucket do Storage: `pi-3-286ed.firebasestorage.app` |
-| `MAIL_ENABLED` | Nao | `true` para enviar e-mails (padrao: `false`) |
-| `MAIL_FROM` | Nao | Remetente dos e-mails |
-| `SMTP_HOST` | Nao | Host SMTP |
-| `SMTP_PORT` | Nao | Porta SMTP (ex: `587`) |
-| `SMTP_USER` | Nao | Usuario SMTP |
-| `SMTP_PASS` | Nao | Senha SMTP |
-
-### Frontend (`frontend/.env`)
-
-Copie `frontend/.env.example` para `frontend/.env` e preencha:
-
-| Variavel | Obrigatoria | Descricao |
-|----------|-------------|-----------|
-| `VITE_API_BASE` | **Sim** | URL da API (dev: `http://localhost:8080`, prod: URL do backend) |
-| `VITE_FIREBASE_APIKEY` | **Sim** | API Key do Firebase Web SDK |
-| `VITE_FIREBASE_AUTHDOMAIN` | **Sim** | Ex: `pi-3-286ed.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECTID` | **Sim** | Ex: `pi-3-286ed` |
-| `VITE_FIREBASE_STORAGEBUCKET` | **Sim** | Ex: `pi-3-286ed.firebasestorage.app` |
-| `VITE_FIREBASE_MESSAGINGSENDERID` | **Sim** | Sender ID do Firebase |
-| `VITE_FIREBASE_APPID` | **Sim** | App ID do Firebase Web |
-
-> Todas as variaveis do Firebase no frontend usam nomes **minusculos e sem caracteres especiais** (sem `-`, `_` ou acentos).
-
----
 
 ## Como rodar localmente
 
@@ -125,7 +90,7 @@ Hospede em Render, Railway, Cloud Run, VPS ou similar. Defina as variaveis de am
 
 - **Submissao:** `/aluno/submissao` — envia titulo, tipo, data, horas e comprovante (PDF/imagem).
 - **Historico:** `/aluno/historico` — lista todas as atividades com status.
-- Dados salvos na colecao Firestore `Solicitacoes`; comprovantes no bucket `pi-3-286ed.firebasestorage.app`.
+- Dados salvos na colecao Firestore `Solicitacoes`; comprovantes no bucket `**********.firebasestorage.app`.
 
 ### Coordenador
 
