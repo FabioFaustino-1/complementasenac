@@ -113,11 +113,6 @@ function Login() {
       <div className="login-page__glow login-page__glow--soft" />
 
       <section className="hero-panel" aria-label="Apresentacao da plataforma">
-        <div className="brand-mark">
-          <span className="brand-mark__text">S+</span>
-          <span className="brand-mark__badge">Senac</span>
-        </div>
-
         <div className="scene-card">
           <img
             className="scene-card__image"
@@ -125,9 +120,7 @@ function Login() {
             alt="Estudantes do Senac em sala de aula"
           />
           <p className="scene-card__caption">
-            Bem-vindo ao Complementa+, a plataforma de atividades complementares do
-            Senac. Aqui, voce pode submeter atividades, acompanhar o progresso e
-            garantir que suas horas sejam validadas com rapidez e seguranca.
+           
           </p>
         </div>
       </section>
@@ -140,9 +133,9 @@ function Login() {
           </span>
           <h1>Complementa +.</h1>
           <p>
-            Sua evolucao academica comeca aqui. Acesse, submeta atividades e acompanhe
-            seu progresso de forma simples e intuitiva. Temos as ferramentas certas
-            para voce.
+             Bem-vindo ao Complementa+, a plataforma de atividades complementares do
+            Senac. Aqui, você pode submeter atividades, acompanhar o progresso e
+            garantir que suas horas sejam validadas com rapidez e segurança.
           </p>
         </div>
 

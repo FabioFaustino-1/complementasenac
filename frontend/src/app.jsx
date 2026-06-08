@@ -9,7 +9,9 @@ import GestaoAlunos from "./pages/main/Administrador/GestaoAlunos";
 import Admin from "./pages/main/Administrador/Admin"; 
 import GestaoCoord from "./pages/main/Administrador/GestaoCoord"
 import GestaoCursos from "./pages/main/Administrador/GestaoCursos";
+import SolicitacoesExclusao from "./pages/main/Administrador/SolicitacoesExclusao";
 import { useAuth } from "./assets/contexts/AuthContext";
+
 
 function PrivateRoute({ children, allowedRoles }) {
   const { isAuthenticated, role } = useAuth();
@@ -36,6 +38,14 @@ function App() {
         <Route path="/gestaocoord" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCoord /></PrivateRoute>} />
         <Route path="/GestaoCursos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCursos /></PrivateRoute>} />
         <Route path="/gestaocursos" element={<PrivateRoute allowedRoles={["admin"]}><GestaoCursos /></PrivateRoute>} />
+        <Route
+          path="/admin/solicitacoes-exclusao"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <SolicitacoesExclusao />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

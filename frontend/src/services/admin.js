@@ -36,10 +36,6 @@ export function listarCursosAdmin(token) {
   return apiRequest("/api/admin/cursos", { token });
 }
 
-export function listarSolicitacoesExclusao(token) {
-  return apiRequest("/api/admin/solicitacoes-exclusao", { token });
-}
-
 export function decidirSolicitacaoExclusao(token, id, decisao) {
   return apiRequest(`/api/admin/solicitacoes-exclusao/${id}/decisao`, {
     token,
@@ -48,7 +44,11 @@ export function decidirSolicitacaoExclusao(token, id, decisao) {
   });
 }
 
+export function listarSolicitacoesExclusao(token) {
+  return apiRequest("/api/admin/solicitacoes-exclusao", { token });
+}
 
 export function criarCursoAdmin(token, payload) {
   return apiRequest("/api/admin/cursos", { token, method: "POST", body: payload });
 }
+

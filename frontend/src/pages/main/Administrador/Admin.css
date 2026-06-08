@@ -22,13 +22,13 @@
 
 
 .admin-topbar__menu-area {
-  position: relative;
-}
-
-.admin-menu-toggle {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 100;
+}
+
+.admin-menu-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -48,17 +48,24 @@
 .admin-menu-popover {
   position: absolute;
   top: calc(100% + 10px);
-  left: 0;
+  right: 0;
+  left: auto;
   width: min(300px, calc(100vw - 36px));
   padding: 14px;
   border-radius: 20px;
   border: 1px solid rgba(61, 124, 255, 0.15);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 244, 239, 0.98));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(247, 244, 239, 0.98)
+  );
   box-shadow:
     0 24px 54px rgba(21, 45, 84, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  z-index: 100;
+  z-index: 200;
 }
+
+
 
 .admin-menu-popover__header {
   margin-bottom: 12px;

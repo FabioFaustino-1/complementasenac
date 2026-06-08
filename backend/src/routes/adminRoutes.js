@@ -208,24 +208,24 @@ router.get('/admin/solicitacoes-exclusao', async (req, res, next) => {
 router.post('/admin/solicitacoes-exclusao/:id/decisao', async (req, res, next) => {
   try {
     const { getAdminAlunoService } = require('../services/getServices');
-    const adminAlunoService = getAdminAlunoService();
-    if (!adminAlunoService) return res.status(503).json({ error: 'Firebase nao inicializado' });
+    const adminService = getAdminAlunoService();
+    if (!adminService) return res.status(503).json({ error: 'Firebase nao inicializado' });
 
     const { decisao } = req.body || {};
     if (!['APROVADO', 'RECUSADO'].includes(decisao)) {
       return res.status(400).json({ error: 'decisao deve ser APROVADO ou RECUSADO.' });
     }
 
-    const solicitacao = await adminAlunoService.firestoreService.buscarSolicitacaoExclusaoPorId(req.params.id);
-    if (!solicitacao) return res.status(404).end();
+    const doc = await adminService.firestoreService.buscarSolicitacaoExclusaoPorId(req.params.id);
+    if (!doc) return res.status(404).end();
 
     if (decisao === 'APROVADO') {
-      const alunoId = solicitacao.get('alunoId');
-      const ok = await adminAlunoService.remover(alunoId);
-      if (!ok) return res.status(404).json({ error: 'Aluno não encontrado para exclusão.' });
+      const alunoId = doc.get('alunoId');
+      const ok = await getAdminAlunoService().remover(alunoId);
+      if (!ok) return res.status(404).json({ error: 'Aluno nao encontrado para exclusao.' });
     }
 
-    await adminAlunoService.firestoreService.atualizarSolicitacaoExclusao(req.params.id, {
+    await adminService.firestoreService.atualizarSolicitacaoExclusao(req.params.id, {
       status: decisao,
       decididoEm: new Date().toISOString(),
     });

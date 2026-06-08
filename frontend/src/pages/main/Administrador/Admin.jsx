@@ -7,8 +7,8 @@ import {
   Menu,
   MoreHorizontal,
   Plus,
-  Settings,
   Sparkles,
+  Trash2,
   Users,
 } from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
@@ -33,11 +33,11 @@ const Admin = () => {
   });
 
   const itensMenuAdmin = [
-    { id: "painel", name: "Painel Admin", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
-    { id: "coordenadores", name: "Gestao de Coordenadores", icon: <Users size={20} />, onClick: () => navigate("/gestaocoord") },
-    { id: "alunos", name: "Adicionar Aluno", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoalunos") },
-    { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/gestaocursos") },
-    { id: "logs", name: "Logs", icon: <Settings size={20} /> },
+    { id: "painel", name: "Painel", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
+    { id: "alunos", name: "Alunos", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoalunos") },
+    { id: "coordenadores", name: "Coordenação", icon: <Users size={20} />, onClick: () => navigate("/gestaocoord") },
+    { id: "cursos", name: "Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/gestaocursos") },
+    { id: "solicitacoes", name: "Solicitações", icon: <Trash2 size={20} />, onClick: () => navigate("/admin/solicitacoes-exclusao") },
   ];
 
   const [stats, setStats] = useState([
@@ -46,7 +46,6 @@ const Admin = () => {
     { label: "Cursos ativos", value: "...", delta: "Catalogo", tone: "amber", accent: "dots" },
   ]);
   const [coordinators, setCoordinators] = useState([]);
-
   useEffect(() => {
     if (!menuOpen) return undefined;
 
@@ -64,6 +63,16 @@ const Admin = () => {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [menuOpen]);
+
+  const totalAlunos = parseInt(stats[1]?.value || "0");
+  const totalCursos = parseInt(stats[2]?.value || "0");
+  const totalCoords = parseInt(stats[0]?.value || "0");
+  const porcentagemSaude = (totalAlunos > 0 && totalCursos > 0 && totalCoords > 0)
+    ? Math.min(100, Math.round(
+        ((totalAlunos + totalCursos + totalCoords) /
+        (totalAlunos + totalCursos + totalCoords + 1)) * 100
+      ))
+    : (totalAlunos > 0 || totalCursos > 0 || totalCoords > 0) ? 50 : 0;
 
   useEffect(() => {
     if (!token) return;
@@ -95,6 +104,7 @@ const Admin = () => {
   return (
     <div className="admin-shell">
       <main className="admin-main admin-main--full">
+
         <header className="admin-topbar">
           <div className="admin-topbar__menu-area">
             <button
@@ -159,11 +169,16 @@ const Admin = () => {
             </div>
 
             <div className="admin-tabs">
-              <button type="button" className="active">Overview</button>
+              <button type="button" className="active">Painel</button>
               <button type="button" onClick={() => navigate("/gestaoalunos")}>Alunos</button>
               <button type="button" onClick={() => navigate("/gestaocoord")}>Coordenadores</button>
               <button type="button" onClick={() => navigate("/gestaocursos")}>Cursos</button>
-              <button type="button" onClick={() => navigate("/solicitacoes-exclusao")}>Solicitacoes de exclusao</button>
+              <button
+                type="button"
+                onClick={() => navigate("/admin/solicitacoes-exclusao")}
+              >
+                Solicitações de exclusão
+              </button>
             </div>
           </div>
         </header>
@@ -196,7 +211,7 @@ const Admin = () => {
                 <div>
                   <span className="admin-hero-card__label">Operacao do sistema</span>
                   <h2>
-                    87<span>% saudavel</span>
+                    {porcentagemSaude}<span>% saudavel</span>
                   </h2>
                 </div>
                 <span className="admin-hero-card__badge">Monitoramento ativo</span>
@@ -208,7 +223,7 @@ const Admin = () => {
                   <span>{stats[2]?.value} cursos ativos</span>
                 </div>
                 <div className="admin-hero-card__track">
-                  <div className="admin-hero-card__fill" />
+                  <div className="admin-hero-card__fill" style={{ width: `${porcentagemSaude}%` }} />
                 </div>
               </div>
             </section>
@@ -295,14 +310,7 @@ const Admin = () => {
           </aside>
         </section>
 
-        <button
-          type="button"
-          className="admin-floating-submit"
-          onClick={() => navigate("/gestaocoord")}
-        >
-          <Plus size={18} />
-          <span>Novo coordenador</span>
-        </button>
+
       </main>
     </div>
   );

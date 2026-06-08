@@ -1,149 +1,249 @@
-import React, { useEffect, useState } from "react";
-import { Trash2 } from "lucide-react";
-
-import Sidebar from "../../../assets/Sidebar";
-import "./SolicitacoesExclusao.css";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  BarChart3,
+  BookOpen,
+  CheckCircle,
+  ClipboardCheck,
+  Menu,
+  Sparkles,
+  Trash2,
+  Users,
+  XCircle,
+} from "lucide-react";
 import { useAuth } from "../../../assets/contexts/AuthContext";
+import { buildGreeting, deriveDisplayName } from "../../../utils/userDisplay";
 import { listarSolicitacoesExclusao, decidirSolicitacaoExclusao } from "../../../services/admin";
-import { deriveDisplayName } from "../../../utils/userDisplay";
+import "./Admin.css";
+import "./GestaoAlunos.css";
 
 const SolicitacoesExclusao = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [items, setItems] = useState([]);
-  const [pendingId, setPendingId] = useState(null);
+  const navigate = useNavigate();
+  const { user, logout, token } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [modalDecisao, setModalDecisao] = useState(null);
 
-  const { token, user } = useAuth();
   const nomeUsuario = deriveDisplayName({
     name: user?.name,
     email: user?.email,
     fallback: "Administrador",
   });
 
-  useEffect(() => {
-    if (!token) return;
-    let active = true;
+  const itensMenuAdmin = [
+    { id: "painel", name: "Painel", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
+    { id: "alunos", name: "Adicionar Aluno", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoalunos") },
+    { id: "coordenadores", name: "Gestao de Coordenadores", icon: <Users size={20} />, onClick: () => navigate("/gestaocoord") },
+    { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/gestaocursos") },
+  ];
 
-    const load = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-        const docs = await listarSolicitacoesExclusao(token);
-        const lista = (docs?.data || docs || []).map((d) => d);
-        if (!active) return;
-        setItems(lista);
-      } catch (e) {
-        if (!active) return;
-        setError(e.message || "Nao foi possivel carregar solicitacoes de exclusao.");
-      } finally {
-        if (active) setLoading(false);
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const handleOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
       }
     };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [menuOpen]);
 
-    load();
-    return () => {
-      active = false;
-    };
+  const carregar = async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const data = await listarSolicitacoesExclusao(token);
+      setSolicitacoes(data);
+    } catch (error) {
+      alert("Erro ao carregar solicitações: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    carregar();
   }, [token]);
 
-  const decidir = async (id, decisao) => {
-    if (!token) return;
-    setPendingId(id);
-    setError(null);
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
+  const abrirModal = (solicitacao, decisao) => {
+    setModalDecisao({ ...solicitacao, decisao });
+  };
+
+  const confirmarDecisao = async () => {
     try {
-      await decidirSolicitacaoExclusao(token, id, decisao);
-      setItems((prev) => prev.filter((x) => x.id !== id));
-    } catch (e) {
-      setError(e.message || "Erro ao processar decisao.");
-    } finally {
-      setPendingId(null);
+      await decidirSolicitacaoExclusao(token, modalDecisao.id, modalDecisao.decisao);
+      setModalDecisao(null);
+      await carregar();
+    } catch (error) {
+      alert("Erro ao processar decisão: " + error.message);
+      setModalDecisao(null);
     }
   };
 
   return (
-    <div className="sol-exc-shell">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        activePage="admin"
-        menuItems={[]}
-        userName={nomeUsuario}
-        userEmail={user?.email || ""}
-        variant="student-dark"
-      />
-
-      <main className="sol-exc-main">
-        <header className="sol-exc-topbar">
-          <div className="sol-exc-title-row">
-            <Trash2 size={18} />
-            <h1>Solicitacoes de exclusao</h1>
-          </div>
-          <p>Decida sobre pedidos de exclusao feitos pelos coordenadores.</p>
-        </header>
-
-        {error ? (
-          <div className="sol-exc-alert">
-            <span>{error}</span>
-            <button type="button" onClick={() => window.location.reload()}>
-              Recarregar
+    <div className="admin-shell">
+      <main className="admin-main admin-main--full">
+        <header className="admin-topbar">
+          <div className="admin-topbar__menu-area">
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="admin-menu-toggle"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label="Abrir menu"
+            >
+              <Menu size={18} />
             </button>
-          </div>
-        ) : null}
 
-        <section className="sol-exc-card">
-          <div className="sol-exc-card__header">
+            {menuOpen && (
+              <div ref={menuRef} className="admin-menu-popover">
+                <div className="admin-menu-popover__header">
+                  <div>
+                    <strong>{nomeUsuario}</strong>
+                    <span>{user?.email || "admin@senac.pe.br"}</span>
+                  </div>
+                </div>
+                <div className="admin-menu-popover__list">
+                  {itensMenuAdmin.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="admin-menu-popover__item"
+                      onClick={() => { if (item.onClick) item.onClick(); setMenuOpen(false); }}
+                    >
+                      <span className="admin-menu-popover__icon">{item.icon}</span>
+                      <span>{item.name}</span>
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="admin-menu-popover__logout" onClick={handleLogout}>
+                  Sair da conta
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="admin-topbar__content">
             <div>
-              <h2>{loading ? "Carregando..." : `${items.length} pendentes`}</h2>
-              <span className="sol-exc-subtle">Somente solicitacoes PENDENTE.</span>
+              <span className="admin-eyebrow">
+                <Sparkles size={14} />
+                Solicitações de exclusão
+              </span>
+              <h1>{buildGreeting(nomeUsuario)}</h1>
+              <p>Gerencie os pedidos de exclusão de alunos enviados pelos coordenadores.</p>
+            </div>
+
+            <div className="admin-tabs">
+              <button type="button" onClick={() => navigate("/admin")}>Painel</button>
+              <button type="button" onClick={() => navigate("/gestaoalunos")}>Alunos</button>
+              <button type="button" onClick={() => navigate("/gestaocoord")}>Coordenadores</button>
+              <button type="button" onClick={() => navigate("/gestaocursos")}>Cursos</button>
+              <button type="button" className="active">Solicitações de exclusão</button>
             </div>
           </div>
+        </header>
 
-          <div className="sol-exc-table">
-            <div className="sol-exc-table__head">
-              <span>Aluno</span>
-              <span>Status</span>
-              <span>Coordenador</span>
-              <span>Acoes</span>
+        <section className="admin-page-layout">
+          <section className="admin-agenda-card admin-page-card">
+            <div className="admin-section-heading">
+              <div>
+                <h3>Solicitações pendentes</h3>
+                <p>
+                  {loading
+                    ? "Carregando..."
+                    : `${solicitacoes.length} solicitação(ões) encontrada(s).`}
+                </p>
+              </div>
             </div>
 
             {loading ? (
-              <div className="sol-exc-empty">Carregando...</div>
-            ) : items.length === 0 ? (
-              <div className="sol-exc-empty">Nenhuma solicitacao encontrada.</div>
+              <p style={{ padding: "1.5rem", color: "#6b7280" }}>Carregando solicitações...</p>
+            ) : solicitacoes.length === 0 ? (
+              <p style={{ padding: "1.5rem", color: "#6b7280" }}>Nenhuma solicitação pendente.</p>
             ) : (
-              items.map((item) => (
-                <div key={item.id} className="sol-exc-table__row">
-                  <span className="sol-exc-cell sol-exc-cell--strong">{item.nomeAluno || item.alunoId}</span>
-                  <span className="sol-exc-cell">{item.status}</span>
-                  <span className="sol-exc-cell">{item.emailCoordenador || item.uidCoordenador}</span>
-                  <span className="sol-exc-cell sol-exc-cell--actions">
-                    <button
-                      type="button"
-                      className="sol-exc-btn-approve"
-                      disabled={pendingId === item.id}
-                      onClick={() => decidir(item.id, "APROVADO")}
-                    >
-                      Aprovar
-                    </button>
-                    <button
-                      type="button"
-                      className="sol-exc-btn-reject"
-                      disabled={pendingId === item.id}
-                      onClick={() => decidir(item.id, "RECUSADO")}
-                    >
-                      Recusar
-                    </button>
-                  </span>
-                </div>
-              ))
+              <div className="admin-coordinator-list">
+                {solicitacoes.map((s) => (
+                  <article key={s.id} className="admin-coordinator-item">
+                    <div className="admin-coordinator-item__meta">
+                      <span>Solicitado em {s.criadoEm ? new Date(s.criadoEm).toLocaleDateString("pt-BR") : "—"}</span>
+                    </div>
+                    <div className="admin-coordinator-item__body">
+                      <div>
+                        <h4>{s.nomeAluno}</h4>
+                        <p>{s.emailCoordenador || "Coordenador não identificado"}</p>
+                        <div className="admin-coordinator-item__tags">
+                          <span className="admin-status-chip admin-status-chip--ativo">
+                            {s.status || "PENDENTE"}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button
+                          type="button"
+                          className="admin-ghost-action"
+                          title="Aprovar exclusão"
+                          style={{ color: "#b91c1c", borderColor: "#fee2e2", background: "#fff5f5" }}
+                          onClick={() => abrirModal(s, "APROVADO")}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-ghost-action"
+                          title="Recusar solicitação"
+                          onClick={() => abrirModal(s, "RECUSADO")}
+                        >
+                          <XCircle size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
-          </div>
+          </section>
         </section>
+
+        {modalDecisao && (
+          <div className="modal-overlay-exclusao">
+            <div className="modal-exclusao">
+              <h3>
+                {modalDecisao.decisao === "APROVADO"
+                  ? "Aprovar exclusão"
+                  : "Recusar solicitação"}
+              </h3>
+              <p>
+                {modalDecisao.decisao === "APROVADO"
+                  ? <>Confirma a exclusão permanente do aluno <strong>{modalDecisao.nomeAluno}</strong>? Esta ação não pode ser desfeita.</>
+                  : <>Confirma a recusa da solicitação de exclusão do aluno <strong>{modalDecisao.nomeAluno}</strong>?</>}
+              </p>
+              <div className="modal-exclusao-actions">
+                <button className="btn-confirmar-solicitacao" onClick={confirmarDecisao}>
+                  {modalDecisao.decisao === "APROVADO" ? "Confirmar exclusão" : "Confirmar recusa"}
+                </button>
+                <button className="btn-cancelar-modal" onClick={() => setModalDecisao(null)}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
 export default SolicitacoesExclusao;
-

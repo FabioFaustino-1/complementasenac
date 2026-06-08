@@ -7,6 +7,7 @@ import {
   Menu,
   Plus,
   Sparkles,
+  Trash2,
   Users,
   X,
 } from "lucide-react";
@@ -35,10 +36,11 @@ const GestaoCursos = () => {
   const [loading, setLoading] = useState(false);
 
   const itensMenuAdmin = [
-    { id: "painel", name: "Painel Admin", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
-    { id: "coordenadores", name: "Gestao de Coordenadores", icon: <Users size={20} />, onClick: () => navigate("/GestaoCoord") },
-    { id: "alunos", name: "Adicionar Aluno", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoAlunos") },
-    { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/GestaoCursos") },
+    { id: "painel", name: "Painel", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
+    { id: "alunos", name: "Alunos", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoalunos") },
+    { id: "coordenadores", name: "Coordenação", icon: <Users size={20} />, onClick: () => navigate("/gestaocoord") },
+    { id: "cursos", name: "Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/gestaocursos") },
+    { id: "solicitacoes", name: "Solicitações", icon: <Trash2 size={20} />, onClick: () => navigate("/admin/solicitacoes-exclusao") },
   ];
 
   useEffect(() => {
@@ -159,11 +161,17 @@ const GestaoCursos = () => {
               <p>Gerencie cursos e parametros de horas complementares.</p>
             </div>
 
-            <div className="admin-tabs">
-              <button type="button" onClick={() => navigate("/admin")}>Overview</button>
+<div className="admin-tabs">
+              <button type="button" onClick={() => navigate("/admin")}>Painel</button>
               <button type="button" onClick={() => navigate("/gestaoAlunos")}>Alunos</button>
               <button type="button" onClick={() => navigate("/GestaoCoord")}>Coordenadores</button>
               <button type="button" className="active">Cursos</button>
+              <button
+                type="button"
+                onClick={() => navigate("/admin/solicitacoes-exclusao")}
+              >
+                Solicitações de exclusão
+              </button>
             </div>
           </div>
         </header>

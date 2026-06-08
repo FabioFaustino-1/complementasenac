@@ -46,10 +46,11 @@ const GestaoCoord = () => {
   const [formData, setFormData] = useState({ nome: "", email: "", depto: "", status: "Ativo" });
 
   const itensMenuAdmin = [
-    { id: "painel", name: "Painel Admin", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
-    { id: "coordenadores", name: "Gestao de Coordenadores", icon: <Users size={20} />, onClick: () => navigate("/GestaoCoord") },
-    { id: "alunos", name: "Adicionar Aluno", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoAlunos") },
-    { id: "cursos", name: "Gerenciamento de Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/GestaoCursos") },
+    { id: "painel", name: "Painel", icon: <BarChart3 size={20} />, onClick: () => navigate("/admin") },
+    { id: "alunos", name: "Alunos", icon: <ClipboardCheck size={20} />, onClick: () => navigate("/gestaoalunos") },
+    { id: "coordenadores", name: "Coordenação", icon: <Users size={20} />, onClick: () => navigate("/gestaocoord") },
+    { id: "cursos", name: "Cursos", icon: <BookOpen size={20} />, onClick: () => navigate("/gestaocursos") },
+    { id: "solicitacoes", name: "Solicitações", icon: <Trash2 size={20} />, onClick: () => navigate("/admin/solicitacoes-exclusao") },
   ];
 
   useEffect(() => {
@@ -153,6 +154,30 @@ const GestaoCoord = () => {
     <div className="admin-shell">
       <main className="admin-main admin-main--full">
         <header className="admin-topbar">
+          <div className="admin-topbar__content">
+            <div>
+              <span className="admin-eyebrow">
+                <Sparkles size={14} />
+                Gestao de coordenadores
+              </span>
+              <h1>{buildGreeting(nomeUsuario)}</h1>
+              <p>Cadastre e gerencie os coordenadores do sistema.</p>
+            </div>
+
+<div className="admin-tabs">
+              <button type="button" onClick={() => navigate("/admin")}>Painel</button>
+              <button type="button" onClick={() => navigate("/gestaoAlunos")}>Alunos</button>
+              <button type="button" className="active">Coordenadores</button>
+              <button type="button" onClick={() => navigate("/GestaoCursos")}>Cursos</button>
+              <button
+                type="button"
+                onClick={() => navigate("/admin/solicitacoes-exclusao")}
+              >
+                Solicitações de exclusão
+              </button>
+            </div>
+          </div>
+
           <div className="admin-topbar__menu-area">
             <button
               ref={menuButtonRef}
@@ -178,7 +203,7 @@ const GestaoCoord = () => {
                     <button
                       key={item.id}
                       type="button"
-                      className={`admin-menu-popover__item ${item.id === "coordenadores" ? "active" : ""}`}
+                      className={`admin-menu-popover__item ${item.id === "painel" ? "active" : ""}`}
                       onClick={() => {
                         item.onClick?.();
                         setMenuOpen(false);
@@ -195,24 +220,6 @@ const GestaoCoord = () => {
                 </button>
               </div>
             )}
-          </div>
-
-          <div className="admin-topbar__content">
-            <div>
-              <span className="admin-eyebrow">
-                <Sparkles size={14} />
-                Gestao de coordenadores
-              </span>
-              <h1>{buildGreeting(nomeUsuario)}</h1>
-              <p>Cadastre e gerencie os coordenadores do sistema.</p>
-            </div>
-
-            <div className="admin-tabs">
-              <button type="button" onClick={() => navigate("/admin")}>Overview</button>
-              <button type="button" onClick={() => navigate("/gestaoAlunos")}>Alunos</button>
-              <button type="button" className="active">Coordenadores</button>
-              <button type="button" onClick={() => navigate("/GestaoCursos")}>Cursos</button>
-            </div>
           </div>
         </header>
 
