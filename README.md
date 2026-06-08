@@ -1,5 +1,5 @@
 # Complementa+ (complementasenac)
-
+#testUserConfig
 Sistema academico para gestao de horas complementares do Senac. Alunos submetem atividades com comprovante, coordenadores aprovam ou negam, e administradores gerenciam alunos, coordenadores e cursos.
 
 **Stack:** React (Vite) + Node.js (Express) + Firebase Auth + Firestore + Firebase Storage.
