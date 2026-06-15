@@ -29,7 +29,7 @@ O Complementa Senac é uma plataforma web responsiva projetada para resolver o g
 
 O sistema atende a três públicos-alvo distintos, cada um com fluxos específicos de navegação:
 
-* **👨‍🎓 Alunos:**
+**👨‍🎓 Alunos:**
 * Acompanhamento de progresso individual, separando a carga horária em concluídas, em espera e pendentes (distribuídas pelas áreas de Ensino, Pesquisa e Extensão).
 
 
@@ -41,7 +41,7 @@ O sistema atende a três públicos-alvo distintos, cada um com fluxos específic
 
 
 
-* **👨‍🏫 Coordenadores:**
+**👨‍🏫 Coordenadores:**
 * Visualização do dashboard das turmas sob sua responsabilidade para acompanhar o engajamento e as entregas.
 
 
@@ -53,7 +53,7 @@ O sistema atende a três públicos-alvo distintos, cada um com fluxos específic
 
 
 
-* **⚙️ SuperAdmin (Administração):**
+**⚙️ SuperAdmin (Administração):**
 * Configuração de regras, eixos tecnológicos e parâmetros institucionais para todos os cursos.
 
 
