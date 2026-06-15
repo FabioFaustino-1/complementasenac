@@ -1,155 +1,188 @@
-# Complementa+ (complementasenac)
-#testUserConfig
-Sistema academico para gestao de horas complementares do Senac. Alunos submetem atividades com comprovante, coordenadores aprovam ou negam, e administradores gerenciam alunos, coordenadores e cursos.
+# Complementa Senac
 
-**Stack:** React (Vite) + Node.js (Express) + Firebase Auth + Firestore + Firebase Storage.
+## Sobre o projeto
 
----
+O Complementa Senac é uma plataforma web responsiva projetada para resolver o gargalo burocrático na entrega, controle e validação de horas de atividades complementares na rede Senac. O sistema proporciona autonomia para os alunos e uma gestão eficiente para os coordenadores e administração. Não há necessidade de realizar download ou instalação de aplicativo, pois o sistema é 100% Web.
 
-## Requisitos
-
-- **Node.js** 18+ (LTS recomendado)
-- Conta Firebase com Auth, Firestore e Storage habilitados
-- Arquivo JSON de service account do Firebase Admin
+🔗 **Acesso ao Sistema (Produção):** [https://complementasenac.vercel.app/](https://complementasenac.vercel.app/)
 
 ---
 
-## Estrutura do projeto
+## Tecnologias
 
-| Pasta | Descricao |
-|-------|-----------|
-| `frontend/` | Interface React (Vite, PWA) |
-| `backend/` | API REST Node.js + Express |
+**Stack Principal:**
+
+* **Frontend:** React (Vite)
+* **Backend:** Node.js (Express)
+* **Autenticação:** Firebase Auth
+* **Banco de Dados:** Cloud Firestore
+* **Armazenamento de Arquivos:** Firebase Storage
+
+**Requisitos para rodar:**
+
+* Node.js 18+ (LTS recomendado).
+* Conta ativa no Firebase (com Auth, Firestore e Storage habilitados).
 
 ---
 
+## Funcionalidades
 
+O sistema atende a três públicos-alvo distintos, cada um com fluxos específicos de navegação:
+
+* **👨‍🎓 Alunos:**
+* Acompanhamento de progresso individual, separando a carga horária em concluídas, em espera e pendentes (distribuídas pelas áreas de Ensino, Pesquisa e Extensão).
+
+
+* Submissão de atividades informando dados do evento e carga horária descrita no certificado.
+
+
+* Upload de comprovantes em formato digital (PDF ou PNG).
+
+
+
+
+* **👨‍🏫 Coordenadores:**
+* Visualização do dashboard das turmas sob sua responsabilidade para acompanhar o engajamento e as entregas.
+
+
+* Validação de solicitações pendentes, verificando se a carga horária está dentro dos limites da subcategoria.
+
+
+* Aprovação ou Reprovação de horas (exigindo justificativa obrigatória em caso de recusa, como "Comprovante ilegível").
+
+
+
+
+* **⚙️ SuperAdmin (Administração):**
+* Configuração de regras, eixos tecnológicos e parâmetros institucionais para todos os cursos.
+
+
+* Gerenciamento (Criação, Edição, Remoção) de Alunos, Coordenadores e Cursos.
+
+
+* Parametrização das travas de aproveitamento (limites de horas por pilar).
+
+
+
+
+
+---
 
 ## Como rodar localmente
 
-### 1. Backend
-
-```powershell
-cd backend
-npm install
-# Configure backend/.env com FIREBASE_CREDENTIALS_FILE
-npm run dev
-```
-
-API disponivel em **http://localhost:8080**  
-Health check: **http://localhost:8080/api/health**
-
-### 2. Frontend
-
-Em outro terminal:
-
-```powershell
-cd frontend
-npm install
-# Configure frontend/.env
-npm run dev
-```
-
-Interface em **http://localhost:5173**
-
----
-
-## Build de producao (sem deploy)
-
-### Frontend
-
-```powershell
-cd frontend
-npm run build
-```
-
-Artefatos em `frontend/dist/`. Sirva estaticamente (Firebase Hosting, Vercel, Netlify, etc.) apontando todas as rotas para `index.html`.
+Para rodar o projeto em sua máquina para desenvolvimento, siga os passos abaixo:
 
 ### Backend
 
+1. Abra um terminal e acesse a pasta da API:
 ```powershell
 cd backend
-npm install --production
-npm start
+npm install
+
 ```
 
-Hospede em Render, Railway, Cloud Run, VPS ou similar. Defina as variaveis de ambiente do backend na plataforma.
+
+2. Configure o arquivo `.env` na pasta do backend incluindo o caminho para o `FIREBASE_CREDENTIALS_FILE` (Service Account do Firebase).
+3. Inicie o servidor:
+```powershell
+npm run dev
+
+```
+
+
+*A API estará disponível em `http://localhost:8080`.*
+
+### Frontend
+
+1. Abra um novo terminal e acesse a pasta da interface:
+```powershell
+cd frontend
+npm install
+
+```
+
+
+2. Configure o arquivo `.env` na pasta do frontend (certifique-se de que a variável de URL da API aponte para o localhost).
+3. Inicie a aplicação:
+```powershell
+npm run dev
+
+```
+
+
+*A interface estará rodando em `http://localhost:5173`.*
 
 ---
 
-## Fluxos do sistema
+## Estrutura de pastas
 
-### Login
-
-1. Usuario escolhe perfil (Aluno, Coordenador ou Admin) e informa e-mail/senha.
-2. Firebase Auth autentica e retorna ID token.
-3. Backend valida token em `GET /api/auth/me` e retorna perfil do Firestore.
-4. Frontend redireciona para `/aluno`, `/coordenador` ou `/admin`.
-
-### Aluno
-
-- **Submissao:** `/aluno/submissao` — envia titulo, tipo, data, horas e comprovante (PDF/imagem).
-- **Historico:** `/aluno/historico` — lista todas as atividades com status.
-- Dados salvos na colecao Firestore `Solicitacoes`; comprovantes no bucket `**********.firebasestorage.app`.
-
-### Coordenador
-
-- Visualiza fila de atividades pendentes.
-- **Aprovar** ou **Indeferir** com justificativa (obrigatoria na recusa).
-- Link **Visualizar PDF** abre o comprovante enviado pelo aluno.
-- Horas aprovadas sao creditadas automaticamente no saldo do aluno.
-
-### Administrador
-
-- **Alunos:** criar, editar e remover (`/gestaoAlunos`). Senha inicial = matricula.
-- **Coordenadores:** criar, editar e remover (`/GestaoCoord`). Senha inicial = parte do e-mail + `2026`.
-- **Cursos:** criar e listar (`/GestaoCursos`).
+| Diretório | Descrição |
+| --- | --- |
+| `frontend/` | Contém toda a interface do usuário construída em React (Vite) e as configurações de PWA. |
+| `backend/` | Contém a API REST em Node.js (Express) responsável pela lógica de negócios e comunicação segura com o Firebase. |
 
 ---
 
-## Modelo Firestore
+## Rotas da aplicação
 
-| Colecao | Campos principais |
-|---------|-------------------|
-| `Usuarios` | `uid`, `nome`, `email`, `role`, `vinculo` |
-| `Solicitacoes` | `uid_aluno`, `titulo_atividade`, `categoria`, `horas_informadas`, `status`, `url_certificado`, `data_evento` |
-| `Cursos` | `id_curso`, `nome_curso`, `eixo_tecnologico` |
+As rotas da API são protegidas e exigem autenticação via token, exceto a rota de verificação de integridade (health check).
 
-Campos em **minusculas com underscore** (`uid_aluno`, `id_curso`, etc.), sem acentos.
+| Método | Rota | Perfil de Acesso | Descrição |
+| --- | --- | --- | --- |
+| GET | `/api/health` | Público | Verifica se a API está online. |
+| GET | `/api/auth/me` | Autenticado | Valida o token e retorna a role (papel) do usuário. |
+| GET/POST | `/api/aluno/*` | Aluno | Rotas para submissão e listagem de histórico. |
+| GET/POST | `/api/coordenador/*` | Coordenador | Rotas para validação (aprovar/reprovar) fila de atividades. |
+| GET/POST/PUT/DELETE | `/api/admin/*` | SuperAdmin | Rotas para gestão completa de usuários e cursos. |
 
----
-
-## API (resumo)
-
-| Metodo | Rota | Perfil |
-|--------|------|--------|
-| GET | `/api/health` | Publico |
-| GET | `/api/auth/me` | Autenticado |
-| GET/POST | `/api/aluno/*` | Aluno |
-| GET/POST | `/api/coordenador/*` | Coordenador |
-| GET/POST/PUT/DELETE | `/api/admin/*` | Admin |
-
-Todas as rotas (exceto `/api/health`) exigem header `Authorization: Bearer <idToken>`.
+*Nota: Todas as rotas protegidas exigem o cabeçalho `Authorization: Bearer <idToken>`.*
 
 ---
 
-## PWA
+## PWA (Progressive Web App)
 
-O frontend inclui service worker via `vite-plugin-pwa`. Em producao, a aplicacao pode ser instalada como app standalone.
-
----
-
-## Checklist antes do deploy
-
-- [ ] `backend/.env` configurado na plataforma de hospedagem
-- [ ] `frontend/.env` com `VITE_API_BASE` apontando para a URL publica da API
-- [ ] `CORS_ORIGIN` no backend com a URL publica do frontend
-- [ ] Service account JSON disponivel no servidor (via variavel ou secret)
-- [ ] Regras do Firestore e Storage configuradas no Firebase Console
-- [ ] Usuarios admin/coordenador/aluno criados no Firestore com `role` correto
+O frontend foi desenvolvido pensando em mobilidade e inclui um Service Worker via `vite-plugin-pwa`. Em ambiente de produção, a plataforma pode ser "instalada" pelos usuários como um aplicativo standalone diretamente na tela inicial do celular ou desktop (Android, iOS, Windows, macOS), garantindo uma experiência nativa e rápida.
 
 ---
 
-## Observacao
+## Credenciais de teste
 
-Projeto academico do Senac. Nao faca commit de arquivos `.env` ou credenciais Firebase.
+Para testar os fluxos do sistema localmente ou no ambiente de produção, utilize as contas pré-configuradas no banco de dados.
+*(Nota para a equipe: Para criar novos usuários no teste, faça login como SuperAdmin).*
+
+* **Padrão de Senha Aluno:** Matrícula do aluno gerada no cadastro.
+* **Padrão de Senha Coordenador:** Primeira parte do e-mail + `2026` (Exemplo: se o e-mail for `joao@senac.br`, a senha será `joao2026`).
+
+*(Se necessário, insira aqui um e-mail e senha genéricos de testes que vocês criaram no Firebase para os professores avaliarem o sistema).*
+
+---
+
+## Deploy
+
+O sistema encontra-se integralmente em produção utilizando as seguintes plataformas:
+
+* **Frontend (Interface):** Hospedado na **Vercel** com CI/CD ativado. Atualizações na branch principal refletem automaticamente no link oficial.
+* **Backend (API):** Hospedado no **Render**. As variáveis de ambiente (incluindo chaves do Firebase e regras de CORS limitando acessos à Vercel) estão configuradas diretamente no painel do Render.
+
+---
+
+## Dicas para a equipe
+
+* **Segurança:** Nunca façam commit de arquivos `.env` ou do arquivo JSON com as credenciais do Firebase (Service Account) no repositório.
+* **CORS:** Sempre que subirem uma alteração de rotas ou domínios novos, lembrem-se de verificar se o domínio de origem está liberado no `CORS_ORIGIN` lá nas variáveis de ambiente do Render.
+* **Manutenção Firestore:** As regras de segurança do Firestore devem proibir leitura/escrita pública. Toda operação de gravação das `Solicitações` deve ser validada e autenticada pelo Backend.
+* **Trabalho em Squad:** Mantenham a comunicação fluida e realizem *Pull Requests* detalhados em futuras manutenções.
+
+---
+
+## Equipe
+
+Projeto Integrador (PI) do 3º módulo desenvolvido com dedicação pelo squad:
+
+* Abraão Melo
+* Fabio Faustino
+* Júlio César
+* Kauã
+* Gabriel Feliciano
+* Angelo Mascarenhas
+* Rhuan Pietro
