@@ -40,10 +40,17 @@ router.post('/coordenador/atividades/:id/decisao', async (req, res, next) => {
     if (!service) return;
 
     const { status = 'PENDENTE', horasAprovadas, justificativa } = req.body || {};
+    const horasParsed =
+      horasAprovadas == null || horasAprovadas === ''
+        ? null
+        : Number(horasAprovadas);
+    const horasFinal =
+      Number.isFinite(horasParsed) ? Math.trunc(horasParsed) : null;
+
     const result = await service.decidir(
       req.params.id,
       String(status).toUpperCase(),
-      typeof horasAprovadas === 'number' ? horasAprovadas : null,
+      horasFinal,
       justificativa == null ? null : String(justificativa)
     );
 

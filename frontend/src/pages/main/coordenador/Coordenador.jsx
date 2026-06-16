@@ -21,6 +21,7 @@ import {
 } from "../../../services/coordenador";
 import { buildGreeting, deriveDisplayName, formatDisplayText } from "../../../utils/userDisplay";
 import "./Coordenador.css";
+import { MAX_HORAS_POR_ATIVIDADE, validarHorasAtividade } from "../../../constants/hoursLimits";
 
 const ActivityCard = ({
   id,
@@ -150,11 +151,11 @@ const Coordenador = () => {
       setError(null);
       const extras = {};
       if (status === "APROVADO") {
-        const horas = parseInt(horasAprovadas, 10);
-        if (Number.isNaN(horas) || horas < 0) {
-          throw new Error("Informe um numero valido de horas aprovadas.");
+        const validacaoHoras = validarHorasAtividade(horasAprovadas);
+        if (!validacaoHoras.valido) {
+          throw new Error(validacaoHoras.mensagem || "Informe um numero valido de horas aprovadas.");
         }
-        extras.horasAprovadas = horas;
+        extras.horasAprovadas = validacaoHoras.horas;
       } else {
         if (!justificativa.trim()) {
           throw new Error("A justificativa da rejeicao e obrigatoria.");
@@ -442,11 +443,12 @@ const Coordenador = () => {
 
             {decisionModal.status === "APROVADO" ? (
               <>
-                <p>Informe quantas horas serao creditadas para esta submissao.</p>
+                <p>Informe quantas horas serao creditadas para esta submissao (max. {MAX_HORAS_POR_ATIVIDADE}h).</p>
                 <input
                   className="coordenador-modal__input"
                   type="number"
                   min={0}
+                  max={MAX_HORAS_POR_ATIVIDADE}
                   value={decisionModal.horasAprovadas}
                   onChange={(event) =>
                     setDecisionModal((prev) => ({ ...prev, horasAprovadas: event.target.value }))

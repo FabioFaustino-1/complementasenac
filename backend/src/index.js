@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const alunoRoutes = require('./routes/alunoRoutes');
 const coordenadorRoutes = require('./routes/coordenadorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const configRoutes = require('./routes/configRoutes');
 
 const app = express();
 
@@ -52,6 +53,8 @@ app.use(
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'complementasenac-api' });
 });
+
+app.use('/api', configRoutes);
 
 app.use('/api', authFirebaseMiddleware);
 app.use('/api', authRoutes);
