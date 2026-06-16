@@ -1,3 +1,4 @@
+const { getMaxHorasPorAtividade } = require('../config/hoursLimit');
 const { IllegalArgumentError } = require('../middleware/errorHandler');
 
 class CoordenadorService {
@@ -24,7 +25,11 @@ class CoordenadorService {
     const doc = await this.firestoreService.buscarSolicitacaoPorId(id);
     if (!doc) return null;
 
-    const horasFinal = horasAprovadas != null ? horasAprovadas : this.asInt(doc.get('horas_informadas'));
+    const horasInformadas = this.asInt(doc.get('horas_informadas'));
+    const horasFinal = horasAprovadas != null ? horasAprovadas : horasInformadas;
+    if (st === 'APROVADO') {
+      this.validarHorasAprovacao(horasFinal, horasInformadas);
+    }
 
     const updates = {
       status: st,
@@ -101,6 +106,23 @@ class CoordenadorService {
   validarStatus(status) {
     if (!['APROVADO', 'REPROVADO', 'PENDENTE'].includes(status)) {
       throw new IllegalArgumentError('Status invalido. Use APROVADO, REPROVADO ou PENDENTE.');
+    }
+  }
+
+  validarHorasAprovacao(horasAprovadas, horasInformadas) {
+    if (horasAprovadas < 0) {
+      throw new IllegalArgumentError('Horas aprovadas nao podem ser negativas.');
+    }
+    const maxHoras = getMaxHorasPorAtividade();
+    if (horasAprovadas > maxHoras) {
+      throw new IllegalArgumentError(
+        `Horas aprovadas excedem o limite de ${maxHoras}h por atividade.`
+      );
+    }
+    if (horasInformadas > 0 && horasAprovadas > horasInformadas) {
+      throw new IllegalArgumentError(
+        `Horas aprovadas nao podem ser maiores que as horas informadas (${horasInformadas}h).`
+      );
     }
   }
 

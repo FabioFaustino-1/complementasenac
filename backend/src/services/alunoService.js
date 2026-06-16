@@ -1,3 +1,4 @@
+const { getMaxHorasPorAtividade } = require('../config/hoursLimit');
 const { IllegalArgumentError } = require('../middleware/errorHandler');
 
 class AlunoService {
@@ -119,6 +120,12 @@ class AlunoService {
     }
     if (payload.horas <= 0) {
       throw new IllegalArgumentError('Horas deve ser maior que zero.');
+    }
+    const maxHoras = getMaxHorasPorAtividade();
+    if (payload.horas > maxHoras) {
+      throw new IllegalArgumentError(
+        `Horas informadas excedem o limite de ${maxHoras}h por atividade.`
+      );
     }
   }
 

@@ -23,6 +23,7 @@ import {
   submeterNovaAtividade,
   uiStatus,
 } from "../../../services/aluno";
+import { MAX_HORAS_POR_ATIVIDADE, validarHorasAtividade } from "../../../constants/hoursLimits";
 
 const MAX_FILE_BYTES = 800 * 1024;
 const tipoOptions = [
@@ -209,11 +210,13 @@ const AlunoEntrega = () => {
     event.preventDefault();
     setSubmissionError("");
 
-    const horasInt = parseInt(horas, 10);
-    if (!titulo.trim() || !tipo || !dataEvento || Number.isNaN(horasInt) || horasInt <= 0) {
-      setSubmissionError("Preencha titulo, tipo, data e horas validas.");
+    const validacaoHoras = validarHorasAtividade(horas);
+    if (!titulo.trim() || !tipo || !dataEvento || !validacaoHoras.valido) {
+      setSubmissionError(validacaoHoras.mensagem || "Preencha titulo, tipo, data e horas validas.");
       return;
     }
+
+    const horasInt = validacaoHoras.horas;
 
     setSubmitting(true);
     try {
@@ -348,12 +351,14 @@ const AlunoEntrega = () => {
                     <input
                       type="number"
                       min={1}
+                      max={MAX_HORAS_POR_ATIVIDADE}
                       placeholder="8"
                       value={horas}
                       onChange={(event) => setHoras(event.target.value)}
                       disabled={submitting}
                     />
                   </div>
+                  <small className="submission-modal__hint">Maximo de {MAX_HORAS_POR_ATIVIDADE}h por atividade.</small>
                 </div>
 
                 <div className="submission-modal__field">

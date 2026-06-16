@@ -10,7 +10,7 @@ function resolveRequiredRole(path) {
 function roleGuard(req, res, next) {
   const path = req.path || '';
 
-  if (path.startsWith('/auth') || path === '/health') {
+  if (path.startsWith('/auth') || path === '/health' || path.startsWith('/config')) {
     next();
     return;
   }

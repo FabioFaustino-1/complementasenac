@@ -11,7 +11,7 @@ function corsHeadersFromRequest(req, res) {
 }
 
 function isPublicRoute(fullPath) {
-  return fullPath.includes('/api/health');
+  return fullPath.includes('/api/health') || fullPath.includes('/api/config/limites');
 }
 
 function authFirebaseMiddleware(req, res, next) {
