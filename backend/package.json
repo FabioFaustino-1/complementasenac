@@ -1,0 +1,22 @@
+{
+  "name": "complementasenac-backend-node",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "firebase-admin": "^13.10.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^8.0.8"
+  },
+  "overrides": {
+    "uuid": "^11.1.0"
+  }
+}
